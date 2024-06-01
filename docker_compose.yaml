@@ -1,0 +1,17 @@
+services:
+  julia:
+    container_name: julia
+    tty: true
+    build: .
+    working_dir: /root
+    volumes:
+      - ./workdir:/root/workdir
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+
+networks:
+  default:
+    driver: bridge
+    
