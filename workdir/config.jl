@@ -1,13 +1,15 @@
+
+using Dates
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Declare variables                                                                            #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-FOODSORCE = 10      # Number of food sources
-DIMENSION = 10      # Number of dimensions
-LIMIT     = 256     # Number of limit
+N         = 100       # Number of dimensions
+BN        = 2       # Number of behavior dimensions
 MAXTIME   = 100000  # Number of max time
-SOLUTION  = 1.0     # Number of solution
-ε         = 1.0e-8  # Number of epsilon
-FILENAME  = "result.dat"
+ε         = 1.0e-6  # Number of epsilon
+DATE      = Dates.format(now(), "yyyy-mm-dd HH:MM:SS\n")
+FILENAME  = "./result/result-$DATE.dat"
+F         = 0.3     # DE parameter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
