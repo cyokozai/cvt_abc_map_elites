@@ -1,3 +1,4 @@
+# Behavior function: odd and even
 using LinearAlgebra
 using Statistics
 using Random
@@ -72,13 +73,12 @@ end
 function map_to_grid(individual::Individual, archive::Archive)
     # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
     len  = (UPP - LOW) / archive.grid_size
-    idx1 = clamp(individual.behavior[1], LOW, UPP)
-    idx2 = clamp(individual.behavior[2], LOW, UPP)
+    idx = clamp.(individual.behavior, LOW, UPP)
 
     # グリッドに現在の個体を保存
     for i in 1:archive.grid_size
         for j in 1:archive.grid_size
-            if LOW + len * (i - 1) <= idx1 < LOW + len * i && LOW + len * (j - 1) <= idx2 < LOW + len * j
+            if LOW + len * (i - 1) <= idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] < LOW + len * j
                 if archive.grid[i, j] !== nothing
                     if individual.fitness > archive.grid[i, j].fitness
                         archive.grid[i, j] = individual
@@ -114,43 +114,4 @@ function select_random_elite(archive::Archive)
             return archive.grid[i, j]
         end
     end
-end
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Main loop: アルゴリズムのメインループ
-function map_elites(pop_size::Int, grid_size::Int)
-    # 初期個体群の生成
-    population = Population([evaluator(Individual(randn(N), 0.0, [], randn(N), 0.0, [])) for _ in 1:pop_size])
-    archive = Archive(Matrix{Union{Nothing, Individual}}(nothing, grid_size, grid_size), grid_size)
-    best_solution = evaluator(Individual(randn(N), 0.0, [], randn(N), 0.0, []))
-    
-    # Main loop
-    for iter in 1:MAXTIME
-        println("Generation: ", iter)
-
-        for individual in population.individuals
-            map_to_grid(individual, archive)
-        end
-        
-        # Reproduction
-        population = Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
-        
-        # 全体最良個体の取得
-        for individual in population.individuals
-            if individual.fitness > best_solution.fitness
-                best_solution = individual
-            end
-        end
-        
-        println("Now best: ", best_solution.genes)
-        println("Now best fitness: ", best_solution.fitness)
-        println("Now best behavior: ", best_solution.behavior)
-        
-        # 終了条件の確認
-        if sum(abs.(best_solution.genes .- SOLUTION)) < ε
-            break
-        end
-    end
-    
-    return best_solution, archive
 end

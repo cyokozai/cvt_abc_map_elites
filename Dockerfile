@@ -19,6 +19,7 @@ COPY *.jl /root/
 RUN apt -y update && apt -y upgrade &&\
     apt -y install tzdata \
     locales \
+    curl \
     wget \
     tar \
     language-pack-ja-base language-pack-ja locales &&\
@@ -37,5 +38,3 @@ ENV LANGUAGE ${lang}
 ENV LC_ALL ${lang}
 ENV TZ=Asia/Tokyo
 ENV TZ JST-9
-
-EXPOSE 22

@@ -4,12 +4,7 @@
 
 using Printf
 include("config.jl")
-# include("me.jl")
-include("me-b1.jl")
-# include("abc-me.jl")
-# include("cvt-me.jl")
-# include("de-me.jl")
-# include("cvt-de-me.jl")
+include("me.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
@@ -23,15 +18,22 @@ function main()
 
     begin_time = now()
 
-    best, arch = map_elites(1000, 64)
+    best, arch, top_10_subsolutions = map_elites(1000, 64, METHOD)
 
     finish_time = now()
     
     println(f, "===================================================================================")
     println("Finish!")
+
+    println("Top 10 solutions:")
+    for (i, individual) in enumerate(top_10_subsolutions)
+        println("Rank ", i, ": ", individual.genes, " Fitness: ", individual.fitness, " Behavior: ", individual.behavior)
+    end
+
     println("Best solution: ", best.genes)
     println("Best fitness: ", best.fitness)
     println("Best behavior: ", best.behavior)
+
     lookScore(Dates.value(finish_time - begin_time) / 1000)
 end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

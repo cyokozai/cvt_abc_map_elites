@@ -1,3 +1,4 @@
+# ME: Map Elites
 using LinearAlgebra
 using Statistics
 using Random
@@ -6,6 +7,12 @@ using Random
 
 include("config.jl")
 include("benchmark/benchmark.jl")
+
+# include("me-b1.jl")
+include("abc.jl")
+# include("cvt-me.jl")
+# include("de-me.jl")
+# include("cvt-de-me.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -50,9 +57,10 @@ function evaluator(individual::Individual)
     individual.fitness = fitness(individual.genes)
 
     # 行動識別子の生成
-    mid = div(length(individual.genes), 2)
-    b1  = sum(individual.genes[1:mid])
-    b2  = sum(individual.genes[mid+1:end])
+    g_len = length(individual.genes)
+    mid   = rand(1:g_len)
+    b1    = sum(individual.genes[1:mid]) * (1/mid)
+    b2    = sum(individual.genes[mid+1:end]) * (1/(g_len - mid))
 
     individual.behavior = [b1, b2]
     
@@ -116,12 +124,34 @@ function select_random_elite(archive::Archive)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function Reproduction()
+    return () -> Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
-function map_elites(pop_size::Int, grid_size::Int)
+function map_elites(pop_size::Int, grid_size::Int, method::String)
     # 初期個体群の生成
     population = Population([evaluator(Individual(randn(N), 0.0, [], randn(N), 0.0, [])) for _ in 1:pop_size])
     archive = Archive(Matrix{Union{Nothing, Individual}}(nothing, grid_size, grid_size), grid_size)
     best_solution = evaluator(Individual(randn(N), 0.0, [], randn(N), 0.0, []))
+
+    println("Method: ", method)
+
+    if method == "ABC"
+        Reproduction = (archive::Archive) -> begin
+            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
+        end
+    elseif method == "CVT"
+        Reproduction = (archive::Archive) -> begin
+            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
+        end
+    else
+        Reproduction = (archive::Archive) -> begin
+            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size]) 
+        end
+    end
     
     # Main loop
     for iter in 1:MAXTIME
@@ -132,13 +162,11 @@ function map_elites(pop_size::Int, grid_size::Int)
         end
         
         # Reproduction
-        population = Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
+        population = Reproduction()
         
-        # 全体最良個体の取得
-        for individual in population.individuals
-            if individual.fitness > best_solution.fitness
-                best_solution = individual
-            end
+        all_individuals = sort(population.individuals, by = x -> x.fitness, rev = true)
+        if all_individuals[1].fitness > best_solution.fitness
+            best_solution = all_individuals[1]
         end
         
         println("Now best: ", best_solution.genes)
@@ -151,5 +179,5 @@ function map_elites(pop_size::Int, grid_size::Int)
         end
     end
     
-    return best_solution, archive
+    return best_solution, archive, all_individuals[2:11]
 end
