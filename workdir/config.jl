@@ -1,16 +1,23 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Import library                                                                               #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Dates
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Declare variables                                                                            #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-N         = 100       # Number of dimensions
+
+N         = 10     # Number of dimensions
 BN        = 2       # Number of behavior dimensions
 MAXTIME   = 100000  # Number of max time
 ε         = 1.0e-6  # Number of epsilon
-METHOD    = "ABC"   # Method
-DATE      = Dates.format(now(), "yyyy-mm-dd\n")
-FILENAME  = "~/workdir/result/result-$DATE-$METHOD.dat"
+METHOD    = "default"   # Method
+DATE      = Dates.format(now(), "yyyy-mm-dd")
+FILENAME  = "result-$DATE-$METHOD.dat"
 F         = 0.3     # DE parameter
+FOODSORCE = 10      # Number of foodsorce
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

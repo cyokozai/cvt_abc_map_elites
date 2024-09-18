@@ -7,42 +7,19 @@ using Random
 
 include("config.jl")
 include("benchmark/benchmark.jl")
+include("struct.jl")
 
 # include("me-b1.jl")
-include("abc.jl")
+# include("abc.jl")
 # include("cvt-me.jl")
 # include("de-me.jl")
 # include("cvt-de-me.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-mutable struct Individual
-    genes::Vector{Float64}  # N次元の遺伝子
-    fitness::Float64  # 評価値
-    behavior::Vector{Float64}  # 行動識別子
-
-    best_solution_gene::Vector{Float64}
-    best_solution_fitness::Float64
-    best_solution_behavior::Vector{Float64}
-end
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-struct Population
-    individuals::Vector{Individual}  # 個体群
-end
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-struct Archive
-    grid::Matrix{Union{Nothing, Individual}}  # グリッドマップ、各セルに個体を保存
-    grid_size::Int  # グリッドのサイズ
-end
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
 function fitness(x::Vector{Float64})::Float64
     sum_val = sum(objective_function(x))
+
     if sum_val >= 0
         return  1.0 / (sum_val + 1.0)
     else
@@ -61,7 +38,7 @@ function evaluator(individual::Individual)
     mid   = rand(1:g_len)
     b1    = sum(individual.genes[1:mid]) * (1/mid)
     b2    = sum(individual.genes[mid+1:end]) * (1/(g_len - mid))
-
+    
     individual.behavior = [b1, b2]
     
     # ベストソリューションの更新
@@ -124,12 +101,6 @@ function select_random_elite(archive::Archive)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-function Reproduction()
-    return () -> Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
-end
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
 function map_elites(pop_size::Int, grid_size::Int, method::String)
     # 初期個体群の生成
@@ -139,20 +110,10 @@ function map_elites(pop_size::Int, grid_size::Int, method::String)
 
     println("Method: ", method)
 
-    if method == "ABC"
-        Reproduction = (archive::Archive) -> begin
-            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
-        end
-    elseif method == "CVT"
-        Reproduction = (archive::Archive) -> begin
-            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size])
-        end
-    else
-        Reproduction = (archive::Archive) -> begin
-            return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size]) 
-        end
+    if method == "default"
+        function Reproduction(archive::Archive) return Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:pop_size]) end
     end
-    
+
     # Main loop
     for iter in 1:MAXTIME
         println("Generation: ", iter)
@@ -162,7 +123,7 @@ function map_elites(pop_size::Int, grid_size::Int, method::String)
         end
         
         # Reproduction
-        population = Reproduction()
+        population = Reproduction(archive)
         
         all_individuals = sort(population.individuals, by = x -> x.fitness, rev = true)
         if all_individuals[1].fitness > best_solution.fitness

@@ -9,37 +9,41 @@ include("me.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 function main()
-    open(FILENAME, "w") do f
+    open("result/$FILENAME", "w") do f
         println(f, "Date: ", DATE)
         println(f, "Config")
         println(f, "===================================================================================")
+
+        begin_time = now()
+
+        best, arch, top_10_subsolutions = map_elites(1000, 64, METHOD)
+
+        finish_time = now()
+        
+        println(f, "===================================================================================")
+        println(f, "Finish!")
+        println(f, "Time: ", finish_time - begin_time, " sec")
+        println(f, "===================================================================================")
+        println(f, "Top 10 solutions:")
+        for (i, individual) in enumerate(top_10_subsolutions)
+            println(f, "Rank ", i, ": ", individual.genes, " Fitness: ", individual.fitness, " Behavior: ", individual.behavior)
+        end
+        println(f, "===================================================================================")
+        println(f, "Best solution: ", best.genes)
+        println(f, "Best fitness: ", best.fitness)
+        println(f, "Best behavior: ", best.behavior)
+        println(f, "===================================================================================")
     end
-
-    begin_time = now()
-
-    best, arch, top_10_subsolutions = map_elites(1000, 64, METHOD)
-
-    finish_time = now()
-    
-    println(f, "===================================================================================")
-    println("Finish!")
-
-    println("Top 10 solutions:")
-    for (i, individual) in enumerate(top_10_subsolutions)
-        println("Rank ", i, ": ", individual.genes, " Fitness: ", individual.fitness, " Behavior: ", individual.behavior)
-    end
-
-    println("Best solution: ", best.genes)
-    println("Best fitness: ", best.fitness)
-    println("Best behavior: ", best.behavior)
-
-    lookScore(Dates.value(finish_time - begin_time) / 1000)
 end
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Run                                                                                          #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 main()
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
