@@ -2,10 +2,6 @@ mutable struct Individual
     genes::Vector{Float64}  # N次元の遺伝子
     fitness::Float64  # 評価値
     behavior::Vector{Float64}  # 行動識別子
-
-    best_solution_gene::Vector{Float64}
-    best_solution_fitness::Float64
-    best_solution_behavior::Vector{Float64}
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

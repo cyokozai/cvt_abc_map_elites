@@ -3,6 +3,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Printf
+using Dates
+
 include("config.jl")
 include("me.jl")
 
@@ -15,25 +17,37 @@ function main()
         println(f, "Date: ", DATE)
         println(f, "Config")
         println(f, "===================================================================================")
+    end
 
-        begin_time = now()
+    begin_time = time()
 
-        best, arch, top_10_subsolutions = map_elites(1000, 64, METHOD)
+    P, _ = map_elites()
 
-        finish_time = now()
-        
+    finish_time = time()
+
+    println("===================================================================================")
+    println("Finish!")
+    println("Time: ", (finish_time - begin_time), " sec")
+
+    open("result/$FILENAME", "a") do f
         println(f, "===================================================================================")
         println(f, "Finish!")
-        println(f, "Time: ", finish_time - begin_time, " sec")
+        println(f, "Time: ", (finish_time - begin_time), " sec")
         println(f, "===================================================================================")
         println(f, "Top 10 solutions:")
-        for (i, individual) in enumerate(top_10_subsolutions)
-            println(f, "Rank ", i, ": ", individual.genes, " Fitness: ", individual.fitness, " Behavior: ", individual.behavior)
+
+        I = sort(P.individuals, by = x -> x.fitness, rev = true)[1:10]
+        for i in 1:10
+            println(f, "Rank ", i, ": ")
+            println(f, " Solution: ", I[i].genes)
+            println(f, " Fitness:  ", I[i].fitness)
+            println(f, " Behavior: ", I[i].behavior)
         end
+
         println(f, "===================================================================================")
-        println(f, "Best solution: ", best.genes)
-        println(f, "Best fitness: ", best.fitness)
-        println(f, "Best behavior: ", best.behavior)
+        println(f, "Best solution: ", best_solution.genes)
+        println(f, "Best fitness:  ", best_solution.fitness)
+        println(f, "Best behavior: ", best_solution.behavior)
         println(f, "===================================================================================")
     end
 end
