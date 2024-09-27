@@ -33,10 +33,11 @@ function main()
     for i in 1:GRID_SIZE
         for j in 1:GRID_SIZE
             if arch.grid[i, j] !== nothing
-                arch_list = arch.grid[i, j]
+                push!(arch_list, arch.grid[i, j])
             end
         end
     end
+    arch_list = sort(arch_list, by = x -> x.fitness, rev = true)
 
     open("result/$FILENAME", "a") do f
         println(f, "===================================================================================")
@@ -47,9 +48,9 @@ function main()
         
         for i in 1:10
             println(f, "Rank ", i, ": ")
-            println(f, " Solution: ", I[i].genes)
-            println(f, " Fitness:  ", I[i].fitness)
-            println(f, " Behavior: ", I[i].behavior)
+            println(f, " Solution: ", arch_list[i].genes)
+            println(f, " Fitness:  ", arch_list[i].fitness)
+            println(f, " Behavior: ", arch_list[i].behavior)
         end
 
         println(f, "===================================================================================")
