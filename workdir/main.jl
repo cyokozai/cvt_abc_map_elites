@@ -21,7 +21,7 @@ function main()
 
     begin_time = time()
 
-    P, _ = map_elites()
+    popn, arch = map_elites()
 
     finish_time = time()
 
@@ -36,7 +36,8 @@ function main()
         println(f, "===================================================================================")
         println(f, "Top 10 solutions:")
 
-        I = sort(P.individuals, by = x -> x.fitness, rev = true)[1:10]
+        I = sort(arch.grid.i, by = x -> x.fitness, rev = true)[1:10]
+        
         for i in 1:10
             println(f, "Rank ", i, ": ")
             println(f, " Solution: ", I[i].genes)
