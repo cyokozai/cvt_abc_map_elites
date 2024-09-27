@@ -28,6 +28,15 @@ function main()
     println("===================================================================================")
     println("Finish!")
     println("Time: ", (finish_time - begin_time), " sec")
+    
+    arch_list = []
+    for i in 1:GRID_SIZE
+        for j in 1:GRID_SIZE
+            if arch.grid[i, j] !== nothing
+                arch_list = arch.grid[i, j]
+            end
+        end
+    end
 
     open("result/$FILENAME", "a") do f
         println(f, "===================================================================================")
@@ -35,8 +44,6 @@ function main()
         println(f, "Time: ", (finish_time - begin_time), " sec")
         println(f, "===================================================================================")
         println(f, "Top 10 solutions:")
-
-        I = sort(arch.grid.i, by = x -> x.fitness, rev = true)[1:10]
         
         for i in 1:10
             println(f, "Rank ", i, ": ")

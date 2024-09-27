@@ -16,6 +16,13 @@ MAXTIME   = 10  # Number of max time
 MUT_RATE  = 0.10   # Number of mutation rate
 ε         = 1.0e-6 # Number of epsilon
 
+#----------------------------------------------------------------------------------------------------#
+
+F         = 0.3     # DE parameter
+FOODSORCE = 10      # Number of foodsorce
+
+#----------------------------------------------------------------------------------------------------#
+
 # Method: default, abc, de, cvt, cvt-de
 METHOD = "default" 
 
