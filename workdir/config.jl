@@ -22,13 +22,15 @@ ABC_LIMIT = N * D # Limit number that scout bee can search
 
 #----------------------------------------------------------------------------------------------------#
 # Method: default, abc, de, cvt, cvt-de
-METHOD = "abc"
+METHOD = if length(ARGS) > 0 ARGS[1] else "default" end
 
 # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-OBJ_F = "sphere"
+OBJ_F = if length(ARGS) > 1 ARGS[2] else "sphere" end
 
 # Result file
 DATE     = Dates.format(now(), "yyyy.mm.dd.HH.MM.SS")
 FILENAME = "result-$DATE-$METHOD-$OBJ_F.dat"
+LOGDATE  = Dates.format(now(), "yyyy-mm-dd")
+LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

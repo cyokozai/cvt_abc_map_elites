@@ -28,6 +28,7 @@ RUN apt -y update && apt -y upgrade &&\
     rm julia-1.7.0-linux-x86_64.tar.gz &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
+    julia --version &&\
     mkdir /root/${dir} &&\
     locale-gen ${lang}
 
@@ -39,4 +40,6 @@ ENV LC_ALL ${lang}
 ENV TZ=Asia/Tokyo
 ENV TZ JST-9
 
-CMD [ "julia main.jl --thread=4" ]
+WORKDIR /root/${dir}
+
+CMD [ "julia main.jl" ]

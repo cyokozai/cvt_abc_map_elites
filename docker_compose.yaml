@@ -10,11 +10,13 @@ services:
       - default
     environment:
       - TZ=Asia/Tokyo
-  julia-run:
-    container_name: map_elites
+  julia-run-ds:
+    container_name: map_elites-ds
     tty: true
-    build: .
-    working_dir: /root
+    build:
+      context: .
+      dockerfile: Dockerjuliarun
+    working_dir: /root/workdir
     volumes:
       - ./workdir:/root/workdir
     networks:
@@ -26,6 +28,26 @@ services:
         limits:
           cpus: 4.5
           memory: 8G
+    command: ["julia", "/root/workdir/main.jl", "default", "sphere"]
+  julia-run-as:
+    container_name: map_elites-as
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerjuliarun
+    working_dir: /root/workdir
+    volumes:
+      - ./workdir:/root/workdir
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: ["julia", "/root/workdir/main.jl", "abc", "sphere"]
 
 networks:
   default:
