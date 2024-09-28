@@ -1,5 +1,5 @@
 services:
-  julia:
+  julia-build:
     container_name: julia
     tty: true
     build: .
@@ -10,6 +10,22 @@ services:
       - default
     environment:
       - TZ=Asia/Tokyo
+  julia-run:
+    container_name: map_elites
+    tty: true
+    build: .
+    working_dir: /root
+    volumes:
+      - ./workdir:/root/workdir
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
 
 networks:
   default:

@@ -1,35 +1,34 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#       Import library                                                                               #
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#       Declare variables                                                                            #
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-N         = 10     # Number of dimensions
-BN        = 2      # Number of behavior dimensions
-POP_SIZE  = 1000   # Number of population size
-GRID_SIZE = 64     # Number of grid size
-MAXTIME   = 10  # Number of max time
+# parameter
+D         = 1000   # Number of dimensions
+BD        = 2      # Dumber of behavior dimensions
+N         = 1000   # Number of population size
+GRID_SIZE = 32     # Number of grid size
+MAXTIME   = 1000   # Number of max time
 MUT_RATE  = 0.10   # Number of mutation rate
 ε         = 1.0e-6 # Number of epsilon
 
 #----------------------------------------------------------------------------------------------------#
-
-F         = 0.3     # DE parameter
-FOODSORCE = 10      # Number of foodsorce
+# DE parameter
+F = 0.3 # DE parameter
 
 #----------------------------------------------------------------------------------------------------#
+# ABC parameter
+ABC_LIMIT = N * D # Limit number that scout bee can search
 
+#----------------------------------------------------------------------------------------------------#
 # Method: default, abc, de, cvt, cvt-de
-METHOD = "default" 
+METHOD = "abc"
+
+# Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
+OBJ_F = "sphere"
 
 # Result file
-DATE      = Dates.format(now(), "yyyy-mm-dd")
-FILENAME  = "result-$DATE-$METHOD.dat"
+DATE     = Dates.format(now(), "yyyy.mm.dd.HH.MM.SS")
+FILENAME = "result-$DATE-$METHOD-$OBJ_F.dat"
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

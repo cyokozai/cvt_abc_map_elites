@@ -1,4 +1,7 @@
-# ME: Map Elites
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       ME: Map Elites                                                                               #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 using LinearAlgebra
 using Statistics
 using Random
@@ -6,22 +9,19 @@ using Random
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 include("config.jl")
-include("benchmark/benchmark.jl")
+include("benchmark.jl")
 include("struct.jl")
+include("logger.jl")
 include("abc.jl")
-
-# include("cvt-me.jl")
-# include("de-me.jl")
-# include("cvt-de-me.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-global best_solution = Individual(randn(N), 0.0, [])
+global best_solution = Individual(rand(Float64, D) .* (UPP - LOW) .+ LOW, 0.0, [])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
 function fitness(x::Vector{Float64})::Float64
-    sum_val = sum(objective_function(x))
+    sum_val = objective_function(x)
 
     if sum_val >= 0
         return  1.0 / (sum_val + 1.0)
@@ -32,7 +32,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Evaluator: 評価関数と行動識別子の生成
-function evaluator(individual::Individual)
+function evaluator(individual::Individual)::Individual
     global best_solution
 
     # 評価関数を定義
@@ -43,38 +43,41 @@ function evaluator(individual::Individual)
     b1    = sum(individual.genes[1:Int(g_len/2)])
     b2    = sum(individual.genes[Int(g_len/2+1):end])
     
+    # 行動識別子を個体に保存
     individual.behavior = [b1, b2]
 
-    if individual.fitness > best_solution.fitness
-        best_solution = individual
-    end
+    # 最良解の更新
+    if individual.fitness > best_solution.fitness best_solution = individual end
     
     return individual
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mapping: 個体を行動空間にプロット
-function map_to_grid(population::Population, archive::Archive)
+function map_to_grid(population::Population, archive::Archive)::Archive
     # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
     ind = population.individuals
     len = (UPP - LOW) / GRID_SIZE
 
     # グリッドに現在の個体を保存
-    for individual in ind
+    for (index, individual) in enumerate(ind)
         idx = clamp.(individual.behavior, LOW, UPP)
 
         for i in 1:GRID_SIZE
             for j in 1:GRID_SIZE
+                # グリッドのインデックスを計算
                 if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j
+                    # グリッドに個体を保存
                     if archive.grid[i, j] !== nothing
-                        if individual.fitness > archive.grid[i, j].fitness
-                            archive.grid[i, j] = individual
+                        # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存
+                        if individual.fitness > ind[archive.grid[i, j]].fitness
+                            archive.grid[i, j] = index
                         end
-
-                        break
+                    else
+                        # 個体が存在しない場合、個体をグリッドに保存
+                        archive.grid[i, j] = index
                     end
 
-                    archive.grid[i, j] = individual
                     break
                 end
             end
@@ -86,7 +89,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Reproduction: 突然変異を伴う個体生成
-function mutate(individual::Individual)
+function mutate(individual::Individual)::Individual
     if rand() > MUT_RATE
         return individual
     else
@@ -98,55 +101,57 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function select_random_elite(archive::Archive)
+function select_random_elite(population::Population, archive::Archive)
     while true
         i = rand(1:GRID_SIZE)
         j = rand(1:GRID_SIZE)
         
-        if archive.grid[i, j] !== nothing return archive.grid[i, j] end
+        if archive.grid[i, j] != 1 return population.individuals[archive.grid[i, j]] end
     end
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 Reproduction = if METHOD == "default"
-    archive::Archive -> Population([evaluator(mutate(select_random_elite(archive))) for _ in 1:POP_SIZE])
+    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
 elseif METHOD == "abc"
-    # archive = ABC(archive)
-    # (archive::Archive) -> Population([evaluator(select_random_elite(archive)) for _ in 1:POP_SIZE])
+    (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
 elseif METHOD == "cvt"
-elseif METHOD == "cvt-de"
 else
     error("Invalid method")
-    
+
+    logger("ERROR", "Invalid method")
+
     exit(1)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
 function map_elites()
-    # initialize
-    population = Population([evaluator(Individual(randn(N), 0.0, [])) for _ in 1:POP_SIZE])
-    archive = Archive(Matrix{Union{Nothing, Individual}}(nothing, GRID_SIZE, GRID_SIZE), GRID_SIZE)
+    # Initialize
+    logger("INFO", "Initialize")
+    
+    global best_solution
+    population = Population([evaluator(Individual(rand(Float64, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
+    archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
 
     # Main loop
-    open("result/$FILENAME", "a") do f
-        println("Method: ", METHOD)
-        println(f, "Method: ", METHOD)
+    logger("INFO", "Start Iteration")
 
+    open("result/$FILENAME", "a") do f
         for iter in 1:MAXTIME
             println("Generation: ", iter)
             println(f, "Generation: ", iter)
 
             # Evaluator
-            population = Population([evaluator(population.individuals[i]) for i in 1:POP_SIZE])
+            population = Population([evaluator(population.individuals[i]) for i in 1:N])
 
-            # Archive
+            # Mapping
             archive = map_to_grid(population, archive)
-            
+
             # Reproduction
-            population = Reproduction(archive)
+            population = Reproduction(population, archive)
             
             println("Now best: ", best_solution.genes)
             println(f, "Now best: ", best_solution.genes)
@@ -157,6 +162,8 @@ function map_elites()
             
             # 終了条件の確認
             if sum(abs.(best_solution.genes .- SOLUTION)) < ε
+                logger("INFO", "Convergence")
+
                 break
             end
 
@@ -164,5 +171,11 @@ function map_elites()
         end
     end
 
+    logger("INFO", "End of Iteration")
+    
     return population, archive
 end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

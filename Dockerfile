@@ -38,3 +38,5 @@ ENV LANGUAGE ${lang}
 ENV LC_ALL ${lang}
 ENV TZ=Asia/Tokyo
 ENV TZ JST-9
+
+CMD [ "julia main.jl --thread=4" ]

@@ -1,4 +1,7 @@
-# ABC: Artificial Bee Colony
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       ABC: Artificial Bee Colony                                                                   #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 using LinearAlgebra
 using Statistics
 using Random
@@ -6,20 +9,25 @@ using Random
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 include("config.jl")
-include("benchmark/benchmark.jl")
+include("benchmark.jl")
 include("struct.jl")
+include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function greedySelection(f::Vector{Float64}, v::Vector{Float64}, t::Int)
-    if fitness(f) < fitness(v)
-        if fitness(best_solution) < fitness(v)
-            best_solution .= v
-        end
+global trial = zeros(Int, N)
 
-        return v, t
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
+    global trial
+
+    if fitness(f) < fitness(v)
+        return v
     else
-        return f, t + 1
+        trial[i] += 1
+
+        return f
     end
 end
 
@@ -27,10 +35,9 @@ end
 
 function roulleteSelection(q::Float64)
     index = 1
-    r = rand()
 
-    for i = 1 : FOODSORCE
-        if r <= q
+    for i in 1:N
+        if rand() <= q
             index = i
             break
         end
@@ -41,71 +48,89 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function employee_bee(archive::Archive)
+function employed_bee(population::Population, archive::Archive)
+    ind = population.individuals
     k = 0
-    v = zeros(Float64, FOODSORCE, N)
+    v = zeros(Float64, N, D)
 
-    for i = 1 : FOODSORCE
-        for j = 1 : N
+    for i in 1:N
+        for j in 1:D
             while true
-                k = rand(1 : FOODSORCE)
+                k = rand(1:N)
 
                 if k != i
                     break
                 end
             end
 
-            v[i, j] = archive[i, j] + (rand() * 2 - 1.0) * (archive[i, j] - archive[k, j])
+            v[i, j] = ind[i].genes[j] + (rand() * 2 - 1.0) * (ind[i].genes[j] - ind[k].genes[j])
         end
 
-        archive[i, :], trial[i] = greedySelection(archive[i, :], v[i, :], trial[i])
+        ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
     end
 
-    return archive
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function onlooker_bee(archive::Archive)
-    Fsum = sum(fitness(archive[i, :]) for i = 1 : FOODSORCE)
-    p = [fitness(archive[i, :])/Fsum for i = 1 : FOODSORCE]
+function onlooker_bee(population::Population, archive::Archive)
+    global trial
+    ind = population.individuals
+    p = [ind[i].fitness / sum(ind[i].fitness for i = 1 : N) for i = 1 : N]
     cum_p = 0.0
     k = 0
 
-    new_archive = zeros(Float64, FOODSORCE, DIMENSION)
-    v = zeros(Float64, FOODSORCE, DIMENSION)
+    new_archive = zeros(Float64, N, D)
+    v = zeros(Float64, N, D)
 
-    for i = 1 : FOODSORCE
+    for i in 1:N
         cum_p += p[i]
-        index = roulleteSelection(cum_p)
-        new_archive[i, : ] = archive[index, :]
+        new_archive[i, :] = ind[roulleteSelection(cum_p)].genes
 
-        for j = 1 : DIMENSION
+        for j = 1 : D
             while true
-                k = rand(1 : FOODSORCE)
+                k = rand(1 : N)
 
-                if k != i
-                    break
-                end
+                if k != i break end
             end
 
             v[i, j] = new_archive[i, j] + (rand() * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
         end
-        archive[i, :], trial[i] = greedySelection(archive[i, :], v[i, :], trial[i])
+        
+        ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
     end
 
-    return archive
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function ABC(archive::Archive)
-    print("Employed Bee ... ")
-    archive = employedBee(archive)
-    println("OK.")
-    print("Onlooker Bee ... ")
-    archive = onlookerBee(archive)
-    println("OK.")
+function scout_bee(population::Population, archive::Archive)
+    global trial
+    ind = population.individuals
 
-    return archive
+    for i in 1:N
+        if trial[i] >= ABC_LIMIT
+            ind[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
+            trial[i] = 0
+        end
+    end
+
+    return population, archive
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function ABC(population::Population, archive::Archive)
+    # Employee bee phase
+    population, archive = employed_bee(population, archive)
+
+    # Onlooker bee phase
+    population, archive = onlooker_bee(population, archive)
+
+    # Scout bee phase
+    population, archive = scout_bee(population, archive)
+
+    return population
 end
