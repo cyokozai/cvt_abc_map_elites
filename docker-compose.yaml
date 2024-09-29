@@ -1,0 +1,40 @@
+services:
+  julia-build:
+    container_name: julia
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /root/workdir
+    volumes:
+      - ./src:/root/workdir
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+  julia-run:
+    container_name: "${FUNCTION}-${METHOD}"
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerjuliarun
+    working_dir: /root/src
+    volumes:
+      - ./src:/root/src
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+      - FUNCTION=${FUNCTION}
+      - METHOD=${METHOD}
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: ["julia", "/root/src/main.jl", "${METHOD}", "${FUNCTION}", "10"]
+    # command: for D in 10 20 50 100 200 500 1000; do julia main.jl "${METHOD}" "${FUNCTION}" "$D"; done
+
+networks:
+  default:
+    driver: bridge

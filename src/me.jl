@@ -15,10 +15,6 @@ include("logger.jl")
 include("abc.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-global best_solution = Individual(rand(Float64, D) .* (UPP - LOW) .+ LOW, 0.0, [])
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
 function fitness(x::Vector{Float64})::Float64
     sum_val = objective_function(x)
@@ -47,7 +43,11 @@ function evaluator(individual::Individual)::Individual
     individual.behavior = [b1, b2]
 
     # 最良解の更新
-    if individual.fitness > best_solution.fitness best_solution = individual end
+    if individual.fitness > best_solution.fitness
+        best_solution.genes    = copy(individual.genes)
+        best_solution.fitness  = copy(individual.fitness)
+        best_solution.behavior = copy(individual.behavior)
+    end
     
     return individual
 end
@@ -127,6 +127,11 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Best solution: 最良解の初期化
+init_gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
+global best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
 function map_elites()
     # Initialize
@@ -161,8 +166,12 @@ function map_elites()
             println(f, "Now best behavior: ", best_solution.behavior)
             
             # 終了条件の確認
-            if sum(abs.(best_solution.genes .- SOLUTION)) < ε
+            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0
                 logger("INFO", "Convergence")
+
+                break
+            elseif iter == MAXTIME
+                logger("INFO", "Time out")
 
                 break
             end

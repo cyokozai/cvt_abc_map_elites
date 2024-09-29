@@ -4,17 +4,17 @@ using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # parameter
-D         = 1000   # Number of dimensions
+D         = if length(ARGS) > 1 parse(Int64, ARGS[3]) else 2 end   # Number of dimensions
+N         = 64     # Number of population size
+GRID_SIZE = 64     # Number of grid size
 BD        = 2      # Dumber of behavior dimensions
-N         = 1000   # Number of population size
-GRID_SIZE = 32     # Number of grid size
-MAXTIME   = 1000   # Number of max time
+MAXTIME   = 100000 # Number of max time
 MUT_RATE  = 0.10   # Number of mutation rate
 ε         = 1.0e-6 # Number of epsilon
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
-F = 0.3 # DE parameter
+F = 0.30
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter

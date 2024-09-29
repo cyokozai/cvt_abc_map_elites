@@ -14,7 +14,7 @@ ENV DISPLAY host.docker.internal:0.0
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
 
-COPY *.jl /root/
+COPY *.jl /root/${dir}/
 
 RUN apt -y update && apt -y upgrade &&\
     apt -y install tzdata \
@@ -29,7 +29,6 @@ RUN apt -y update && apt -y upgrade &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
     julia --version &&\
-    mkdir /root/${dir} &&\
     locale-gen ${lang}
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
@@ -39,7 +38,3 @@ ENV LANGUAGE ${lang}
 ENV LC_ALL ${lang}
 ENV TZ=Asia/Tokyo
 ENV TZ JST-9
-
-WORKDIR /root/${dir}
-
-CMD [ "julia main.jl" ]
