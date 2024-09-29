@@ -4,7 +4,7 @@ using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # parameter
-D         = if length(ARGS) > 1 parse(Int64, ARGS[3]) else 2 end   # Number of dimensions
+D         = if length(ARGS) > 2 parse(Int64, ARGS[3]) else 2 end   # Number of dimensions
 N         = 64     # Number of population size
 GRID_SIZE = 64     # Number of grid size
 BD        = 2      # Dumber of behavior dimensions

@@ -1,0 +1,26 @@
+services:{% for f in function %}{% for m in method %}
+  julia-run-{{ f }}-{{ m }}:
+    container_name: "julia-run-{{ f }}-{{ m }}"
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerjuliarun
+    working_dir: /root/src
+    volumes:
+      - ./src:/root/src
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+      - FUNCTION={{ f }}
+      - METHOD={{ m }}
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "{{ m }}" "{{ f }}" "$D"; done"{% endfor %}{% endfor %}
+
+networks:
+  default:
+    driver: bridge
