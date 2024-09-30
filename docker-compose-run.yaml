@@ -14,12 +14,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=sphere
       - METHOD=default
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "default" "sphere" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl default sphere $$D; done"]
   julia-run-sphere-abc:
     container_name: "julia-run-sphere-abc"
     tty: true
@@ -35,12 +36,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=sphere
       - METHOD=abc
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "abc" "sphere" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl abc sphere $$D; done"]
   julia-run-rastrigin-default:
     container_name: "julia-run-rastrigin-default"
     tty: true
@@ -56,12 +58,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=rastrigin
       - METHOD=default
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "default" "rastrigin" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl default rastrigin $$D; done"]
   julia-run-rastrigin-abc:
     container_name: "julia-run-rastrigin-abc"
     tty: true
@@ -77,12 +80,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=rastrigin
       - METHOD=abc
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "abc" "rastrigin" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl abc rastrigin $$D; done"]
   julia-run-rosenbrock-default:
     container_name: "julia-run-rosenbrock-default"
     tty: true
@@ -98,12 +102,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=rosenbrock
       - METHOD=default
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "default" "rosenbrock" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl default rosenbrock $$D; done"]
   julia-run-rosenbrock-abc:
     container_name: "julia-run-rosenbrock-abc"
     tty: true
@@ -119,12 +124,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=rosenbrock
       - METHOD=abc
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "abc" "rosenbrock" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl abc rosenbrock $$D; done"]
   julia-run-griewank-default:
     container_name: "julia-run-griewank-default"
     tty: true
@@ -140,12 +146,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=griewank
       - METHOD=default
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "default" "griewank" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl default griewank $$D; done"]
   julia-run-griewank-abc:
     container_name: "julia-run-griewank-abc"
     tty: true
@@ -161,12 +168,13 @@ services:
       - TZ=Asia/Tokyo
       - FUNCTION=griewank
       - METHOD=abc
+      - D=2
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: sh -c "for D in 10 20 50 100 200 500 1000; do julia /root/src/main.jl "abc" "griewank" "$D"; done"
+    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl abc griewank $$D; done"]
 
 networks:
   default:
