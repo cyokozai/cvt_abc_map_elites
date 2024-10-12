@@ -6,7 +6,7 @@ args = sys.argv
 
 FILENAME = 'docker-compose-run.yaml'
 
-FUNCTION = [ "sphere", "rastrigin", "rosenbrock", "griewank" ]
+FUNCTION = [ "sphere", "rosenbrock"] #  "sphere", "rastrigin", "rosenbrock", "griewank" 
 METHOD = [ "default", "abc" ]
 DIMENSION = "2"
 

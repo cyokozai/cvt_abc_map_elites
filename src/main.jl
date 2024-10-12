@@ -17,15 +17,26 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    open("result/$FILENAME", "w") do f
+    open("result/$RESULT", "w") do f
         println(f, "Date: ", DATE)
         println(f, "Method: ", METHOD)
         println(f, "Objective function: ", OBJ_F)
+        println(f, "Dimension: ", D)
         println(f, "===================================================================================")
+    end
+
+    if D == 2 logger("WARN", "Dimension is default value \"2\"") end
+
+    if CONV_FLAG
+        logger("INFO", "Convergence flag is true")
+    else
+        logger("INFO", "Convergence flag is false")
     end
     
     println("Method: ", METHOD)
     println("Objective function: ", OBJ_F)
+    println("Dimension: ", D)
+    println("===================================================================================")
 
     begin_time = time()
 
@@ -51,7 +62,7 @@ function main()
 
     arch_list = sort(arch_list, by = x -> x.fitness, rev = true)
 
-    open("result/$FILENAME", "a") do f
+    open("result/$RESULT", "a") do f
         println(f, "===================================================================================")
         println(f, "Finish!")
         println(f, "Time: ", finish_time - begin_time, " sec")
@@ -78,15 +89,15 @@ end
 #       Run                                                                                          #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# try
+try
     logger("INFO", "Start")
 
     main()
 
     logger("INFO", "Finish")
-# catch
-#     logger("ERROR", "An error occurred! :(")
-# end
+catch
+    logger("ERROR", "An error occurred! :(")
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #

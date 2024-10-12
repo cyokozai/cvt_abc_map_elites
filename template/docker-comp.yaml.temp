@@ -1,6 +1,6 @@
 services:{% for f in function %}{% for m in method %}
-  julia-run-{{ f }}-{{ m }}:
-    container_name: "julia-run-{{ f }}-{{ m }}"
+  julia-run-{{ m }}-{{ f }}:
+    container_name: "julia-run-{{ m }}-{{ f }}"
     tty: true
     build:
       context: .

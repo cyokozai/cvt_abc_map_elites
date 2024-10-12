@@ -2,7 +2,6 @@
 #       ABC: Artificial Bee Colony                                                                   #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-using LinearAlgebra
 using Statistics
 using Random
 
@@ -58,9 +57,7 @@ function employed_bee(population::Population, archive::Archive)
             while true
                 k = rand(1:N)
 
-                if k != i
-                    break
-                end
+                if k != i break end
             end
 
             v[i, j] = ind[i].genes[j] + (rand() * 2 - 1.0) * (ind[i].genes[j] - ind[k].genes[j])
@@ -76,9 +73,10 @@ end
 
 function onlooker_bee(population::Population, archive::Archive)
     global trial
+
+    cum_p = 0.0
     ind = population.individuals
     p = [ind[i].fitness / sum(ind[i].fitness for i = 1 : N) for i = 1 : N]
-    cum_p = 0.0
     k = 0
 
     new_archive = zeros(Float64, N, D)
@@ -108,6 +106,7 @@ end
 
 function scout_bee(population::Population, archive::Archive)
     global trial
+    
     ind = population.individuals
 
     for i in 1:N

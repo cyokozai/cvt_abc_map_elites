@@ -2,9 +2,8 @@
 #       ME: Map Elites                                                                               #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-using LinearAlgebra
-using Statistics
 using Random
+using DelaunayTriangulation
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -12,18 +11,15 @@ include("config.jl")
 include("benchmark.jl")
 include("struct.jl")
 include("logger.jl")
-include("abc.jl")
+include("abc/abc.jl")
+include("de/de.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
 function fitness(x::Vector{Float64})::Float64
     sum_val = objective_function(x)
 
-    if sum_val >= 0
-        return  1.0 / (sum_val + 1.0)
-    else
-        return -1.0 / (sum_val - 1.0)
-    end
+    return sum_val >= 0 ? 1.0 / (1.0 + sum_val) : abs(1.0 + sum_val)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -54,50 +50,51 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mapping: 個体を行動空間にプロット
-function map_to_grid(population::Population, archive::Archive)::Archive
-    # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
-    ind = population.individuals
-    len = (UPP - LOW) / GRID_SIZE
+mapping = if MAP_METHOD == "grid"
+    (population::Population, archive::Archive)::Archive -> begin
+        # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
+        ind = population.individuals
+        len = (UPP - LOW) / GRID_SIZE
 
-    # グリッドに現在の個体を保存
-    for (index, individual) in enumerate(ind)
-        idx = clamp.(individual.behavior, LOW, UPP)
+        # グリッドに現在の個体を保存
+        for (index, individual) in enumerate(ind)
+            idx = clamp.(individual.behavior, LOW, UPP)
 
-        for i in 1:GRID_SIZE
-            for j in 1:GRID_SIZE
-                # グリッドのインデックスを計算
-                if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j
-                    # グリッドに個体を保存
-                    if archive.grid[i, j] !== nothing
-                        # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存
-                        if individual.fitness > ind[archive.grid[i, j]].fitness
+            for i in 1:GRID_SIZE
+                for j in 1:GRID_SIZE
+                    # グリッドのインデックスを計算
+                    if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j
+                        # グリッドに個体を保存
+                        if archive.grid[i, j] !== nothing
+                            # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
+                            if individual.fitness >= ind[archive.grid[i, j]].fitness archive.grid[i, j] = index end
+                        else
+                            # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
                         end
-                    else
-                        # 個体が存在しない場合、個体をグリッドに保存
-                        archive.grid[i, j] = index
-                    end
 
-                    break
+                        break
+                    end
                 end
             end
         end
-    end
 
-    return archive
+        return archive
+    end
+elseif MAP_METHOD == "cvt"
+    (population::Population, archive::Archive)::Archive -> begin
+    end
+else
+    error("Invalid MAP method")
+
+    logger("ERROR", "Invalid MAP method")
+
+    exit(1)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Reproduction: 突然変異を伴う個体生成
-function mutate(individual::Individual)::Individual
-    if rand() > MUT_RATE
-        return individual
-    else
-        mutated_genes = individual.genes .+ 0.1 * randn(length(individual.genes))
-
-        return Individual(mutated_genes, 0.0, [])
-    end
-end
+mutate(individual::Individual)::Individual = rand() > MUT_RATE ? individual : Individual(individual.genes .+ 0.1 * randn(length(individual.genes)), 0.0, [])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -117,7 +114,7 @@ Reproduction = if METHOD == "default"
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
-elseif METHOD == "cvt"
+    # (population::Population, archive::Archive) -> DE(population, archive)
 else
     error("Invalid method")
 
@@ -139,7 +136,11 @@ function map_elites()
     
     global best_solution
     population = Population([evaluator(Individual(rand(Float64, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
-    archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
+    if MAP_METHOD == "grid"
+        archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
+    elseif MAP_METHOD == "cvt"
+        archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
+    end
 
     # Main loop
     logger("INFO", "Start Iteration")
@@ -166,7 +167,7 @@ function map_elites()
             println(f, "Now best behavior: ", best_solution.behavior)
             
             # 終了条件の確認
-            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0
+            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 || CONV_FLAG == true
                 logger("INFO", "Convergence")
 
                 break
