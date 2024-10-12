@@ -4,13 +4,12 @@
 
 using DelaunayTriangulation
 using CairoMakie
-# using StableRNGs
+using StableRNGs
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# rng = StableRNG(123)
-# points = 25randn(rng, 2, 500)
-points = 5randn(Float64, 2, 64)
+rng = StableRNG(123)
+points = 5randn(rng, 2, 64)
 # push!(points, [5.0 5.0])
 # push!(points, [-5.0 -5.0])
 # push!(points, [5.0 -5.0])
