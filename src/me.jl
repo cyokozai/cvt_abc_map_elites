@@ -2,18 +2,16 @@
 #       ME: Map Elites                                                                               #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-using DelaunayTriangulation
-using CairoMakie
 using StableRNGs
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-include("config.jl")
-include("benchmark.jl")
-include("struct.jl")
-include("logger.jl")
 include("abc.jl")
 include("de.jl")
+include("struct.jl")
+include("config.jl")
+include("benchmark.jl")
+include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
@@ -127,7 +125,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Best solution: 最良解の初期化
 init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-global best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
+global best_solution::Individual = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
@@ -136,11 +134,11 @@ function map_elites()
     logger("INFO", "Initialize")
     
     global best_solution
-    population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
+    population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
     if MAP_METHOD == "grid"
-        archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
+        archive::Archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE), _)
     elseif MAP_METHOD == "cvt"
-        archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
+        archive::Archive = Archive(_, Dict{Int64, Individual}())
     end
 
     # Main loop
@@ -155,7 +153,7 @@ function map_elites()
             population = Population([evaluator(population.individuals[i]) for i in 1:N])
 
             # Mapping
-            archive = map_to_grid(population, archive)
+            archive = mapping(population, archive)
 
             # Reproduction
             population = Reproduction(population, archive)

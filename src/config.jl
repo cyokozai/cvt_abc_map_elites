@@ -23,17 +23,14 @@ F = 0.30
 ABC_LIMIT = N * D # Limit number that scout bee can search
 
 #----------------------------------------------------------------------------------------------------#
-# Method: default, abc, de, cvt, cvt-de
-METHOD = if length(ARGS) > 0 ARGS[1] else "default" end
-MAP_METHOD = "cvt" # grid, cvt
 
-# Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-OBJ_F = if length(ARGS) > 1 ARGS[2] else "sphere" end
+METHOD = if length(ARGS) > 0 ARGS[1] else "default" end # Method: default, abc, de, cvt, cvt-de
+MAP_METHOD = "cvt" # Method: grid, cvt
+OBJ_F = if length(ARGS) > 1 ARGS[2] else "sphere" end # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
 
 # Result file
 DATE    = Dates.format(now(), "yyyy-mm-dd-HH-MM")
 LOGDATE = Dates.format(now(), "yyyy-mm-dd")
-
 F_RESULT   = "result-$DATE-$METHOD-$OBJ_F-$D.dat"
 F_FITNESS  = "fitness-$DATE-$METHOD-$OBJ_F-$D.dat"
 F_BEHAVIOR = "behavior-$DATE-$METHOD-$OBJ_F-$D.dat"

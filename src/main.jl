@@ -7,6 +7,7 @@ using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+include("struct.jl")
 include("config.jl")
 include("benchmark.jl")
 include("me.jl")
