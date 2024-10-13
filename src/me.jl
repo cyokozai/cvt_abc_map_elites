@@ -12,8 +12,8 @@ include("config.jl")
 include("benchmark.jl")
 include("struct.jl")
 include("logger.jl")
-include("abc/abc.jl")
-include("de/de.jl")
+include("abc.jl")
+include("de.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
