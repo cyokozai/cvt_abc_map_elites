@@ -174,7 +174,7 @@ function map_elites()
                 break
             elseif iter == MAXTIME
                 logger("INFO", "Time out")
-
+                
                 break
             end
 
