@@ -12,6 +12,7 @@ MAXTIME   = 100000 # Number of max time
 MUT_RATE  = 0.10   # Number of mutation rate
 ε         = 1.0e-6 # Number of epsilon
 CONV_FLAG = false  # Convergence flag | 'true' is available when you want to check the convergence.
+RNG       = StableRNG(123) # Random number generator
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter

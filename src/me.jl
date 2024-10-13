@@ -2,8 +2,9 @@
 #       ME: Map Elites                                                                               #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-using Random
 using DelaunayTriangulation
+using CairoMakie
+using StableRNGs
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -94,14 +95,14 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Reproduction: 突然変異を伴う個体生成
-mutate(individual::Individual)::Individual = rand() > MUT_RATE ? individual : Individual(individual.genes .+ 0.1 * randn(length(individual.genes)), 0.0, [])
+mutate(individual::Individual) = rand() > MUT_RATE ? individual : Individual(individual.genes .+ 0.1randn(RNG, length(individual.genes)), 0.0, [])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function select_random_elite(population::Population, archive::Archive)
     while true
-        i = rand(1:GRID_SIZE)
-        j = rand(1:GRID_SIZE)
+        i = rand(RNG, 1:GRID_SIZE)
+        j = rand(RNG, 1:GRID_SIZE)
         
         if archive.grid[i, j] != 1 return population.individuals[archive.grid[i, j]] end
     end
@@ -125,7 +126,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Best solution: 最良解の初期化
-init_gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
+init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
 global best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -135,7 +136,7 @@ function map_elites()
     logger("INFO", "Initialize")
     
     global best_solution
-    population = Population([evaluator(Individual(rand(Float64, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
+    population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
     if MAP_METHOD == "grid"
         archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE))
     elseif MAP_METHOD == "cvt"
