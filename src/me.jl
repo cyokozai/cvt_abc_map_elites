@@ -97,19 +97,19 @@ mutate(individual::Individual) = rand() > MUT_RATE ? individual : Individual(ind
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function select_random_elite(population::Population, archive::Archive)
+function select_random_elite(population::Population, grid::Matrix{Int64})
     while true
         i = rand(RNG, 1:GRID_SIZE)
         j = rand(RNG, 1:GRID_SIZE)
         
-        if archive.grid[i, j] != 1 return population.individuals[archive.grid[i, j]] end
+        if grid[i, j] != 1 return population.individuals[grid[i, j]] end
     end
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 Reproduction = if METHOD == "default"
-    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
+    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive.grid))) for _ in 1:N])
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
