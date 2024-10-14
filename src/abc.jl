@@ -5,16 +5,16 @@
 using Statistics
 using Random
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
-include("benchmark.jl")
 include("struct.jl")
+include("benchmark.jl")
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-global trial = zeros(Int, N)
+trial = zeros(Int, N)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -113,6 +113,15 @@ function scout_bee(population::Population, archive::Archive)
         if trial[i] >= ABC_LIMIT
             ind[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
             trial[i] = 0
+
+            logger("INFO", "Scout bee found a new food source")
+
+            if METHOD == "cvt"
+                new_archive = Archive(_, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
+                archive = cvt_mapping(population, new_archive)
+                
+                logger("INFO", "CVT is initialized")
+            end
         end
     end
 
@@ -133,3 +142,5 @@ function ABC(population::Population, archive::Archive)
 
     return population
 end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

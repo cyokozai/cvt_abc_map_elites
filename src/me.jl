@@ -4,14 +4,14 @@
 
 using StableRNGs
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#----------------------------------------------------------------------------------------------------#
 
-include("abc.jl")
-include("de.jl")
 include("struct.jl")
 include("config.jl")
 include("benchmark.jl")
 include("logger.jl")
+include("abc.jl")
+include("de.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness: 目的関数の定義
@@ -31,11 +31,17 @@ function evaluator(individual::Individual)::Individual
 
     # 行動識別子の生成
     g_len = length(individual.genes)
-    b1    = sum(individual.genes[1:Int(g_len/2)])
-    b2    = sum(individual.genes[Int(g_len/2+1):end])
-    
+    segment_length = div(g_len, BN)
+    behavior = Float64[]
+
+    for i in 1:BN
+        start_idx = (i - 1) * segment_length + 1
+        end_idx = i == BN ? g_len : i * segment_length
+        push!(behavior, sum(individual.genes[start_idx:end_idx]))
+    end
+
     # 行動識別子を個体に保存
-    individual.behavior = [b1, b2]
+    individual.behavior = behavior
 
     # 最良解の更新
     if individual.fitness > best_solution.fitness
@@ -54,7 +60,7 @@ mapping = if MAP_METHOD == "grid"
         # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
         ind = population.individuals
         len = (UPP - LOW) / GRID_SIZE
-
+        
         # グリッドに現在の個体を保存
         for (index, individual) in enumerate(ind)
             idx = clamp.(individual.behavior, LOW, UPP)
@@ -64,7 +70,7 @@ mapping = if MAP_METHOD == "grid"
                     # グリッドのインデックスを計算
                     if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j
                         # グリッドに個体を保存
-                        if archive.grid[i, j] !== nothing
+                        if archive.grid[i, j] > 0
                             # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
                             if individual.fitness >= ind[archive.grid[i, j]].fitness archive.grid[i, j] = index end
                         else
@@ -81,8 +87,7 @@ mapping = if MAP_METHOD == "grid"
         return archive
     end
 elseif MAP_METHOD == "cvt"
-    (population::Population, archive::Archive)::Archive -> begin
-    end
+    (population::Population, archive::Archive)::Archive -> cvt_mapping(population, archive)
 else
     error("Invalid MAP method")
 
@@ -96,24 +101,34 @@ end
 mutate(individual::Individual) = rand() > MUT_RATE ? individual : Individual(individual.genes .+ 0.1randn(RNG, length(individual.genes)), 0.0, [])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-function select_random_elite(population::Population, grid::Matrix{Int64})
-    while true
-        i = rand(RNG, 1:GRID_SIZE)
-        j = rand(RNG, 1:GRID_SIZE)
-        
-        if grid[i, j] != 1 return population.individuals[grid[i, j]] end
+select_random_elite = if MAP_METHOD == "grid"
+    (population::Population, archive::Archive) -> begin
+        while true
+            i = rand(RNG, 1:GRID_SIZE)
+            j = rand(RNG, 1:GRID_SIZE)
+            
+            if archive.grid[i, j] > 0 return population.individuals[archive.grid[i, j]] end
+        end
+    end
+elseif MAP_METHOD == "cvt"
+    (population::Population, archive::Archive) -> begin
+        while true
+            rand = rand(RNG, 1:length(polygon_dict))
+            if haskey(polygon_dict, rand)
+                if archive.area[rand] > 1 return population.individuals[archive.area[rand]] end
+            end
+        end
     end
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 Reproduction = if METHOD == "default"
-    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive.grid))) for _ in 1:N])
+    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
-    # (population::Population, archive::Archive) -> DE(population, archive)
+    (population::Population, archive::Archive) -> DE(population, archive)
 else
     error("Invalid method")
 
@@ -125,7 +140,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Best solution: 最良解の初期化
 init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-global best_solution::Individual = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
+best_solution::Individual = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
@@ -134,17 +149,20 @@ function map_elites()
     logger("INFO", "Initialize")
     
     global best_solution
+    global vorn
+    
     population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
-    if MAP_METHOD == "grid"
-        archive::Archive = Archive(ones(Int64, GRID_SIZE, GRID_SIZE), _)
+
+    archive::Archive = if MAP_METHOD == "grid"
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), _)
     elseif MAP_METHOD == "cvt"
-        archive::Archive = Archive(_, Dict{Int64, Individual}())
+        Archive(_, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
     end
 
     # Main loop
     logger("INFO", "Start Iteration")
 
-    open("result/$FILENAME", "a") do f
+    open("result/$F_RESULT", "a") do f
         for iter in 1:MAXTIME
             println("Generation: ", iter)
             println(f, "Generation: ", iter)
@@ -154,7 +172,7 @@ function map_elites()
 
             # Mapping
             archive = mapping(population, archive)
-
+            
             # Reproduction
             population = Reproduction(population, archive)
             
@@ -166,7 +184,7 @@ function map_elites()
             println(f, "Now best behavior: ", best_solution.behavior)
             
             # 終了条件の確認
-            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 || CONV_FLAG == true
+            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 && CONV_FLAG == true
                 logger("INFO", "Convergence")
 
                 break
@@ -179,7 +197,7 @@ function map_elites()
             println(f, "-----------------------------------------------------------------------------------")
         end
     end
-
+    
     logger("INFO", "End of Iteration")
     
     return population, archive

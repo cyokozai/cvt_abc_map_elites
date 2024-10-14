@@ -9,29 +9,42 @@ using StableRNGs
 using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+include("config.jl")
+include("struct.jl")
+include("logger.jl")
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 UPP =  100.0
 LOW = -100.0
 D = 2
 
 seed = Int(Dates.now().instant.periods.value)
 rng = StableRNG(seed)
-points = [rand(rng, D) .* (UPP - LOW) .+ LOW for _ in 1:25000]
+points = [rand(rng, D) .* (UPP - LOW) .+ LOW for _ in 1:k_max]
 
-tri = triangulate(points; rng)
-vorn = voronoi(tri, clip = false)
-smooth_vorn = centroidal_smooth(vorn; maxiters = 1000, rng = rng)
+smooth_vorn = centroidal_smooth(voronoi(triangulate(points; rng), clip = false); maxiters = 1000, rng = rng)
 
-# ここに既存のグラフ生成コード
-fig = Figure()
-ax1 = Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Smoothed", width = 400, height = 400)
-voronoiplot!(ax1, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
-resize_to_layout!(fig)
+println(typeof(smooth_vorn))
 
 Centroidal_point_list = DelaunayTriangulation.get_polygon_points(smooth_vorn)
 Centroidal_polygon_list = DelaunayTriangulation.get_generators(smooth_vorn)
 
+println(typeof(Centroidal_point_list))
+println(typeof(Centroidal_polygon_list))
+
+println(Centroidal_polygon_list)
+
+# ここに既存のグラフ生成コード
+fig = Figure()
+
+ax1 = Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Smoothed", width = 400, height = 400)
+voronoiplot!(ax1, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
+resize_to_layout!(fig)
+
 ax2 = Axis(fig[1, 2], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Ploted", width = 400, height = 400)
 voronoiplot!(ax2, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
+resize_to_layout!(fig)
 
 for _ in 1:10
     instance = rand(rng, D) .* (UPP - LOW) .+ LOW
@@ -50,3 +63,5 @@ resize_to_layout!(fig)
 
 # PDFに保存するコード
 save("output_graph.pdf", fig)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
