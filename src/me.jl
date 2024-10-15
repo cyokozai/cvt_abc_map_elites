@@ -9,16 +9,25 @@ using StableRNGs
 include("struct.jl")
 include("config.jl")
 include("benchmark.jl")
+include("fitness.jl")
 include("logger.jl")
 include("abc.jl")
 include("de.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Fitness: 目的関数の定義
-function fitness(x::Vector{Float64})::Float64
-    sum_val = objective_function(x)
+# 行動識別子の生成
+function devide_gene(gene::Vector{Float64})
+    g_len = length(gene)
+    segment_length = div(g_len, BN)
+    behavior = Float64[]
 
-    return sum_val >= 0 ? 1.0 / (1.0 + sum_val) : abs(1.0 + sum_val)
+    for i in 1:BN
+        start_idx = (i - 1) * segment_length + 1
+        end_idx = i == BN ? g_len : i * segment_length
+        push!(behavior, sum(gene[start_idx:end_idx]))
+    end
+    
+    return behavior
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -29,25 +38,14 @@ function evaluator(individual::Individual)::Individual
     # 評価関数を定義
     individual.fitness = fitness(individual.genes)
 
-    # 行動識別子の生成
-    g_len = length(individual.genes)
-    segment_length = div(g_len, BN)
-    behavior = Float64[]
-
-    for i in 1:BN
-        start_idx = (i - 1) * segment_length + 1
-        end_idx = i == BN ? g_len : i * segment_length
-        push!(behavior, sum(individual.genes[start_idx:end_idx]))
-    end
-
     # 行動識別子を個体に保存
-    individual.behavior = behavior
+    individual.behavior = devide_gene(individual.genes)
 
     # 最良解の更新
     if individual.fitness > best_solution.fitness
-        best_solution.genes    = copy(individual.genes)
-        best_solution.fitness  = copy(individual.fitness)
-        best_solution.behavior = copy(individual.behavior)
+        best_solution.genes    = deepcopy(individual.genes)
+        best_solution.fitness  = individual.fitness
+        best_solution.behavior = deepcopy(individual.behavior)
     end
     
     return individual
@@ -154,9 +152,9 @@ function map_elites()
     population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
 
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), _)
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), nothing)
     elseif MAP_METHOD == "cvt"
-        Archive(_, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
+        Archive(nothing, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
     end
 
     # Main loop

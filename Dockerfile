@@ -29,6 +29,7 @@ RUN apt -y update && apt -y upgrade &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
     julia --version &&\
+    julia pkginstall.jl &&\
     locale-gen ${lang}
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#

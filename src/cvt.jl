@@ -12,15 +12,12 @@ using Dates
 
 include("config.jl")
 include("struct.jl")
+include("fitness.jl")
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-vorn::VoronoiTessellation
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Initialize the CVT
-function init_CVT()
+function init_cvt()
     global vorn
 
     vorn = centroidal_smooth(voronoi(triangulate([rand(RNG, D) .* (UPP - LOW) .+ LOW for _ in 1:k_max]; RNG), clip = false); maxiters = 1000, rng = RNG)
@@ -44,5 +41,9 @@ function cvt_mapping(population::Population, archive::Archive)
 
     return archive
 end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+vorn::VoronoiTessellation = init_cvt()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

@@ -9,7 +9,7 @@ using Random
 
 include("config.jl")
 include("struct.jl")
-include("benchmark.jl")
+include("fitness.jl")
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -71,35 +71,68 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function onlooker_bee(population::Population, archive::Archive)
-    global trial
+onlooker_bee = if CVT_METHOD == "grid" 
+    (population::Population, archive::Archive) -> begin
+        global trial
 
-    cum_p = 0.0
-    ind = population.individuals
-    p = [ind[i].fitness / sum(ind[i].fitness for i = 1 : N) for i = 1 : N]
-    k = 0
+        cum_p = 0.0
+        ind = population.individuals
+        p = [ind[i].fitness / sum(ind[i].fitness for i = 1 : N) for i = 1 : N]
+        k = 0
 
-    new_archive = zeros(Float64, N, D)
-    v = zeros(Float64, N, D)
+        new_archive = zeros(Float64, N, D)
+        v = zeros(Float64, N, D)
 
-    for i in 1:N
-        cum_p += p[i]
-        new_archive[i, :] = ind[roulleteSelection(cum_p)].genes
+        for i in 1:N
+            cum_p += p[i]
+            new_archive[i, :] = ind[roulleteSelection(cum_p)].genes
 
-        for j = 1 : D
-            while true
-                k = rand(1 : N)
+            for j = 1 : D
+                while true
+                    k = rand(1 : N)
 
-                if k != i break end
+                    if k != i break end
+                end
+
+                v[i, j] = new_archive[i, j] + (rand() * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
             end
-
-            v[i, j] = new_archive[i, j] + (rand() * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
+            
+            ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
         end
-        
-        ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
-    end
 
-    return population, archive
+        return population, archive
+    end
+elseif CVT_METHOD == "cvt"
+    (population::Population, archive::Archive) -> begin
+        global trial
+
+        cum_p = 0.0
+        ind = population.individuals
+        p = [ind[i].fitness / sum(ind[i].fitness for i = 1 : N) for i = 1 : N]
+        k = 0
+
+        new_archive = zeros(Float64, N, D)
+        v = zeros(Float64, N, D)
+
+        for i in 1:N
+            cum_p += p[i]
+            new_archive[i, :] = ind[roulleteSelection(cum_p)].genes
+
+            for j = 1 : D
+                while true
+                    k = rand(1 : N)
+
+                    if k != i break end
+                end
+
+                v[i, j] = new_archive[i, j] + (rand() * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
+            end
+            
+            ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
+        end
+
+        return population, archive
+    end
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -117,9 +150,9 @@ function scout_bee(population::Population, archive::Archive)
             logger("INFO", "Scout bee found a new food source")
 
             if METHOD == "cvt"
-                new_archive = Archive(_, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
+                new_archive = Archive(nothing, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
                 archive = cvt_mapping(population, new_archive)
-                
+
                 logger("INFO", "CVT is initialized")
             end
         end
