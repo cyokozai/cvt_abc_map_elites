@@ -25,7 +25,7 @@ function main()
     end
 
     if D == 2 logger("WARN", "Dimension is default value \"2\"") end
-
+    
     if CONV_FLAG
         logger("INFO", "Convergence flag is true")
     else
@@ -88,15 +88,20 @@ end
 #       Run                                                                                          #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-try
-    logger("INFO", "Start")
+logger("INFO", "Start")
 
-    main()
+main()
 
-    logger("INFO", "Finish")
-catch
-    logger("ERROR", "An error occurred! :(")
-end
+logger("INFO", "Finish")
+# try
+#     logger("INFO", "Start")
+
+#     main()
+
+#     logger("INFO", "Finish")
+# catch
+#     logger("ERROR", "An error occurred! :(")
+# end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #

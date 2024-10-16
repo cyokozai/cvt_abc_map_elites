@@ -71,7 +71,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-onlooker_bee = if CVT_METHOD == "grid" 
+onlooker_bee = if MAP_METHOD == "grid" 
     (population::Population, archive::Archive) -> begin
         global trial
 
@@ -102,7 +102,7 @@ onlooker_bee = if CVT_METHOD == "grid"
 
         return population, archive
     end
-elseif CVT_METHOD == "cvt"
+elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
         global trial
 

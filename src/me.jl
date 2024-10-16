@@ -54,7 +54,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mapping: 個体を行動空間にプロット
 mapping = if MAP_METHOD == "grid"
-    (population::Population, archive::Archive)::Archive -> begin
+    (population::Population, archive::Archive) -> begin
         # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
         ind = population.individuals
         len = (UPP - LOW) / GRID_SIZE
@@ -85,7 +85,7 @@ mapping = if MAP_METHOD == "grid"
         return archive
     end
 elseif MAP_METHOD == "cvt"
-    (population::Population, archive::Archive)::Archive -> cvt_mapping(population, archive)
+    (population::Population, archive::Archive) -> cvt_mapping(population, archive)
 else
     error("Invalid MAP method")
 
@@ -138,7 +138,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Best solution: 最良解の初期化
 init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-best_solution::Individual = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
+best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ

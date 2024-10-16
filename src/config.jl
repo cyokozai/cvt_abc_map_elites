@@ -18,6 +18,7 @@ MUT_RATE  = 0.10   # Number of mutation rate.
 ε         = 1.0e-6 # Number of epsilon.
 CONV_FLAG = false  # Convergence flag | 'true' is available when you want to check the convergence.
 
+#----------------------------------------------------------------------------------------------------#
 # Map parameter
 GRID_SIZE = 158    # Number of grid size.
 k_max     = 25000  # Number of max k.
