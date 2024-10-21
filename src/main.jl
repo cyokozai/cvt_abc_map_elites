@@ -16,7 +16,7 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    open("result/$RESULT", "w") do f
+    open("result/$F_RESULT", "w") do f
         println(f, "Date: ", DATE)
         println(f, "Method: ", METHOD)
         println(f, "Objective function: ", OBJ_F)
@@ -61,7 +61,7 @@ function main()
 
     arch_list = sort(arch_list, by = x -> x.fitness, rev = true)
 
-    open("result/$RESULT", "a") do f
+    open("result/$F_RESULT", "a") do f
         println(f, "===================================================================================")
         println(f, "Finish!")
         println(f, "Time: ", finish_time - begin_time, " sec")

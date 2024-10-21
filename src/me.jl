@@ -10,20 +10,21 @@ include("struct.jl")
 include("config.jl")
 include("benchmark.jl")
 include("fitness.jl")
-include("logger.jl")
+include("cvt.jl")
 include("abc.jl")
 include("de.jl")
+include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # 行動識別子の生成
 function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
-    segment_length = div(g_len, BN)
+    segment_length = div(g_len, BD)
     behavior = Float64[]
 
-    for i in 1:BN
+    for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
-        end_idx = i == BN ? g_len : i * segment_length
+        end_idx = i == BD ? g_len : i * segment_length
         push!(behavior, sum(gene[start_idx:end_idx]))
     end
     
@@ -152,9 +153,9 @@ function map_elites()
     population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
 
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), nothing)
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}())
     elseif MAP_METHOD == "cvt"
-        Archive(nothing, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
+        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
     end
 
     # Main loop
@@ -185,7 +186,7 @@ function map_elites()
             if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 && CONV_FLAG == true
                 logger("INFO", "Convergence")
 
-                break
+                CONV_FLAG == false
             elseif iter == MAXTIME
                 logger("INFO", "Time out")
                 
