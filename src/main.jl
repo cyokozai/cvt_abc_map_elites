@@ -71,7 +71,6 @@ function main()
     end
 
     sort!(arch_list, by = x -> x.fitness, rev = true)
-    println(arch_list)
 
     open("result/$F_RESULT", "a") do f
         println(f, "===================================================================================")

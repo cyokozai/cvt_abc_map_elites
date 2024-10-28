@@ -27,19 +27,23 @@ function DE(population::Population, archive::Archive)
     v, trial = zeros(Float64, D, 2)
 
     for i in 1:N
-        while r1 == i || r2 == i || r3 == i r1, r2, r3 = rand(1:N, 3) end
+        while r1 == i || r2 == i || r3 == i
+            r1, r2, r3 = rand(1:N, 3)
+        end
 
         v = ind[r1].genes .+ F .* (ind[r2].genes .- ind[r3].genes)
         v = clamp.(v, LOW, UPP)
 
         trial = crossover(ind[i].genes, v)
         
-        if ind[i].fitness < fitness(trial)
+        if fitness(trial) > ind[i].fitness
             ind[i].genes = deepcopy(trial)
             ind[i].fitness = fitness(trial)
-            
+            ind[i].behavior = devide_gene(trial)
         end
     end
+
+    population.individuals = ind
     
     return population
 end

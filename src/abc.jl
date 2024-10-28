@@ -66,6 +66,8 @@ function employed_bee(population::Population)
         ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
     end
 
+    population.individuals = ind
+
     return population
 end
 
@@ -98,6 +100,8 @@ function onlooker_bee(population::Population)
         
         ind[i].genes = greedySelection(ind[i].genes, v[i, :], i)
     end
+
+    population.individuals = ind
     
     return population
 end
@@ -122,6 +126,8 @@ function scout_bee(population::Population, archive::Archive)
             end
         end
     end
+    
+    population.individuals = ind
 
     return population, archive
 end

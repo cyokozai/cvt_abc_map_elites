@@ -118,7 +118,7 @@ elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
         while true
             random_centroid_index = rand(RNG, 1:k_max)
-
+            
             if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0
                 return population.individuals[archive.area[random_centroid_index]]
             end
