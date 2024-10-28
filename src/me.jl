@@ -22,7 +22,7 @@ function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
     segment_length = div(g_len, BD)
     behavior = Float64[]
-
+    
     for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
@@ -34,7 +34,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Evaluator: 評価関数と行動識別子の生成
-function evaluator(individual::Individual)::Individual
+function evaluator(individual::Individual)
     global best_solution
 
     # 評価関数を定義
@@ -55,15 +55,15 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mapping: 個体を行動空間にプロット
-mapping = if MAP_METHOD == "grid"
+Mapping = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
         # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
-        ind = population.individuals
+        I = population.individuals
         len = (UPP - LOW) / GRID_SIZE
         
         # グリッドに現在の個体を保存
-        for (index, individual) in enumerate(ind)
-            idx = clamp.(individual.behavior, LOW, UPP)
+        for (index, ind) in enumerate(I)
+            idx = clamp.(ind.behavior, LOW, UPP)
             
             for i in 1:GRID_SIZE
                 for j in 1:GRID_SIZE
@@ -72,7 +72,9 @@ mapping = if MAP_METHOD == "grid"
                         # グリッドに個体を保存
                         if archive.grid[i, j] > 0
                             # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
-                            if individual.fitness >= ind[archive.grid[i, j]].fitness archive.grid[i, j] = index end
+                            if ind.fitness >= I[archive.grid[i, j]].fitness
+                                archive.grid[i, j] = index
+                            end
                         else
                             # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
@@ -107,7 +109,9 @@ select_random_elite = if MAP_METHOD == "grid"
             i = rand(RNG, 1:GRID_SIZE)
             j = rand(RNG, 1:GRID_SIZE)
             
-            if archive.grid[i, j] > 0 return population.individuals[archive.grid[i, j]] end
+            if archive.grid[i, j] > 0
+                return population.individuals[archive.grid[i, j]]
+            end
         end
     end
 elseif MAP_METHOD == "cvt"
@@ -115,7 +119,9 @@ elseif MAP_METHOD == "cvt"
         while true
             random_centroid_index = rand(RNG, 1:k_max)
 
-            if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0 return population.individuals[archive.area[random_centroid_index]] end
+            if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0
+                return population.individuals[archive.area[random_centroid_index]]
+            end
         end
     end
 end
@@ -139,7 +145,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Best solution: 最良解の初期化
 init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D/2)]), sum(init_gene[Int(D/2+1):end])])
+best_solution = Individual(init_gene, fitness(init_gene), devide_gene(init_gene))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
@@ -150,11 +156,10 @@ function map_elites()
     logger("INFO", "Initialize")
     
     population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
-    
     archive::Archive = if MAP_METHOD == "grid"
         Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}())
     elseif MAP_METHOD == "cvt"
-        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
+        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))))
     end
 
     # Main loop
@@ -169,7 +174,7 @@ function map_elites()
             population = Population([evaluator(population.individuals[i]) for i in 1:N])
 
             # Mapping
-            archive = mapping(population, archive)
+            archive = Mapping(population, archive)
             
             # Reproduction
             population = Reproduction(population, archive)

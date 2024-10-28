@@ -50,7 +50,6 @@ function main()
     logger("INFO", "$(finish_time - begin_time) sec")
 
     arch_list = []
-
     if MAP_METHOD == "grid"
         for i in 1:GRID_SIZE
             for j in 1:GRID_SIZE
@@ -71,7 +70,8 @@ function main()
         exit(1)
     end
 
-    arch_list = sort(arch_list, by = x -> x.fitness, rev = true)
+    sort!(arch_list, by = x -> x.fitness, rev = true)
+    println(arch_list)
 
     open("result/$F_RESULT", "a") do f
         println(f, "===================================================================================")
