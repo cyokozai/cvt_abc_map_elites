@@ -20,8 +20,8 @@ CONV_FLAG = false  # Convergence flag | 'true' is available when you want to che
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
-GRID_SIZE = 158    # Number of grid size.
-k_max     = 25000  # Number of max k.
+GRID_SIZE = 158   # Number of grid size.
+k_max     = 25000 # Number of max k.
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
@@ -34,9 +34,9 @@ ABC_LIMIT = N * D # Limit number that scout bee can search.
 
 #----------------------------------------------------------------------------------------------------#
 # Method
+OBJ_F = if length(ARGS) > 1 ARGS[2] else "sphere" end # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
 METHOD = if length(ARGS) > 0 ARGS[1] else "default" end # Method: default, abc, de, cvt, cvt-de
 MAP_METHOD = "cvt" # Method: grid, cvt
-OBJ_F = if length(ARGS) > 1 ARGS[2] else "sphere" end # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
 
 #----------------------------------------------------------------------------------------------------#
 # Result file

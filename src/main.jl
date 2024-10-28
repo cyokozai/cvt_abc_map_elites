@@ -51,12 +51,24 @@ function main()
 
     arch_list = []
 
-    for i in 1:GRID_SIZE
-        for j in 1:GRID_SIZE
-            if arch.grid[i, j] !== nothing
-                push!(arch_list, popn.individuals[arch.grid[i, j]])
+    if MAP_METHOD == "grid"
+        for i in 1:GRID_SIZE
+            for j in 1:GRID_SIZE
+                if arch.grid[i, j] !== nothing
+                    push!(arch_list, popn.individuals[arch.grid[i, j]])
+                end
             end
         end
+    elseif MAP_METHOD == "cvt"
+        for i in 1:length(keys(arch.area))
+            if arch.area[i] !== 0
+                push!(arch_list, popn.individuals[arch.area[i]])
+            end
+        end
+    else
+        logger("ERROR", "Map method is invalid")
+
+        exit(1)
     end
 
     arch_list = sort(arch_list, by = x -> x.fitness, rev = true)

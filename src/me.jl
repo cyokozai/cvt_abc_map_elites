@@ -3,6 +3,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using StableRNGs
+using Random
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -63,7 +64,7 @@ mapping = if MAP_METHOD == "grid"
         # グリッドに現在の個体を保存
         for (index, individual) in enumerate(ind)
             idx = clamp.(individual.behavior, LOW, UPP)
-
+            
             for i in 1:GRID_SIZE
                 for j in 1:GRID_SIZE
                     # グリッドのインデックスを計算
@@ -91,7 +92,7 @@ else
     error("Invalid MAP method")
 
     logger("ERROR", "Invalid MAP method")
-
+    
     exit(1)
 end
 
@@ -112,10 +113,9 @@ select_random_elite = if MAP_METHOD == "grid"
 elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
         while true
-            rand = rand(RNG, 1:length(polygon_dict))
-            if haskey(polygon_dict, rand)
-                if archive.area[rand] > 1 return population.individuals[archive.area[rand]] end
-            end
+            random_centroid_index = rand(RNG, 1:k_max)
+
+            if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0 return population.individuals[archive.area[random_centroid_index]] end
         end
     end
 end
@@ -160,7 +160,7 @@ function map_elites()
 
     # Main loop
     logger("INFO", "Start Iteration")
-
+    
     open("result/$F_RESULT", "a") do f
         for iter in 1:MAXTIME
             println("Generation: ", iter)

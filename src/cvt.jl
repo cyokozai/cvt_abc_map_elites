@@ -21,7 +21,7 @@ function init_CVT()
     global vorn
 
     vorn = centroidal_smooth(voronoi(triangulate([rand(RNG, D) .* (UPP - LOW) .+ LOW for _ in 1:k_max]; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
-    serialize("result/CVT-F_RESULT.dat", vorn)
+    serialize("result/CVT-$F_RESULT.dat", vorn)
 
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}
 end
@@ -30,13 +30,14 @@ end
 
 function cvt_mapping(population::Population, archive::Archive)
     global vorn
-    ind = population.individuals
+
+    I = population.individuals
     Centroidal_polygon_list = DelaunayTriangulation.get_generators(vorn)
 
-    for (index, behavior) in enumerate(ind.behavior)
-        distances = [norm([behavior[1] - centroid[1], behavior[2] - centroid[2]], 2) for centroid in values(Centroidal_polygon_list)]
+    for (index, ind) in enumerate(I)
+        distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(Centroidal_polygon_list)]
         closest_centroid_index = argmin(distances)
-        archive[closest_centroid_index] = index
+        archive.area[closest_centroid_index] = index
     end
 
     return archive
