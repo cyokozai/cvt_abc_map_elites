@@ -152,8 +152,6 @@ function scout_bee(population::Population, archive::Archive)
             if METHOD == "cvt"
                 new_archive = Archive(nothing, Dict{Int64, Int64}(i => 0 for i in keys(init_CVT())))
                 archive = cvt_mapping(population, new_archive)
-
-                logger("INFO", "CVT is initialized")
             end
         end
     end

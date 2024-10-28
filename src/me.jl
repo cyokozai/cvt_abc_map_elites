@@ -144,14 +144,13 @@ best_solution = Individual(init_gene, fitness(init_gene), [sum(init_gene[1:Int(D
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
 function map_elites()
+    global best_solution, vorn
+
     # Initialize
     logger("INFO", "Initialize")
     
-    global best_solution
-    global vorn
-    
     population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
-
+    
     archive::Archive = if MAP_METHOD == "grid"
         Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}())
     elseif MAP_METHOD == "cvt"

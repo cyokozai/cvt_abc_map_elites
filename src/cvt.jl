@@ -23,6 +23,7 @@ function init_CVT()
     vorn = centroidal_smooth(voronoi(triangulate([rand(RNG, D) .* (UPP - LOW) .+ LOW for _ in 1:k_max]; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
     serialize("result/CVT-$F_RESULT.dat", vorn)
 
+    logger("INFO", "CVT is initialized")
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}
 end
 

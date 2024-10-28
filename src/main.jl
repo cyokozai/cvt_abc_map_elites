@@ -23,7 +23,7 @@ function main()
         println(f, "Dimension: ", D)
         println(f, "===================================================================================")
     end
-
+    
     if D == 2 logger("WARN", "Dimension is default value \"2\"") end
     
     if CONV_FLAG
@@ -60,9 +60,9 @@ function main()
             end
         end
     elseif MAP_METHOD == "cvt"
-        for i in 1:length(keys(arch.area))
-            if arch.area[i] !== 0
-                push!(arch_list, popn.individuals[arch.area[i]])
+        for v in values(arch.area)
+            if v > 0
+                push!(arch_list, popn.individuals[v])
             end
         end
     else
