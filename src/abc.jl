@@ -80,7 +80,7 @@ function onlooker_bee(population::Population)
     
     new_archive = zeros(Float64, N, D)
     v = zeros(Float64, N, D)
-
+    
     for i in 1:N
         cum_p += p[i]
         new_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
@@ -127,7 +127,7 @@ function scout_bee(population::Population, archive::Archive)
     end
     
     population.individuals = I
-    
+
     return population, archive
 end
 
