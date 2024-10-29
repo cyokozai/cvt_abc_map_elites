@@ -34,10 +34,12 @@ if __name__ == '__main__':
             DIMENSION = "2"
         else:
             print("Invalid arguments")
+            
             exit(1)
-    
-        generate_yaml(FUNCTION, METHOD, DIMENSION)
+        
+        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION)
         subprocess.run(['docker', 'compose', '-f', FILENAME, 'up', '-d', '--build'])
     except Exception as e:
         print(e)
+        
         exit(1)

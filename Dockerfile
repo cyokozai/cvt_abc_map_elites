@@ -16,7 +16,6 @@ ENV TZ=Asia/Tokyo
 ENV TZ JST-9
 
 WORKDIR /root
-
 COPY ./pkginstall.jl /root
 
 RUN apt -y update && apt -y upgrade &&\
@@ -24,4 +23,5 @@ RUN apt -y update && apt -y upgrade &&\
     julia pkginstall.jl &&\
     rm -rf ./pkginstall.jl
 
+WORKDIR /root/${dir}
 COPY ./${dir}/*.jl /root/${dir}
