@@ -5,9 +5,9 @@ import sys
 args = sys.argv
 
 FILENAME = 'docker-compose-run.yaml'
-FUNCTION = [ "sphere", "rosenbrock"] #  "sphere", "rastrigin", "rosenbrock", "griewank" 
+FUNCTION = [ "sphere", "rastrigin", "rosenbrock", "griewank"] #  "sphere", "rastrigin", "rosenbrock", "griewank" 
 MAP_METHOD = "cvt" # "grep", "cvt"
-METHOD = [ "default", "abc" ]
+METHOD = [ "default", "abc", "de"]
 DIMENSION = "2"
 
 container_combinations = len(FUNCTION) * len(METHOD)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
             print("Invalid arguments")
             
             exit(1)
-        
+
         generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION)
         subprocess.run(['docker', 'compose', '-f', FILENAME, 'up', '-d', '--build'])
     except Exception as e:
