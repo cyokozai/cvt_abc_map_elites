@@ -64,7 +64,7 @@ function main()
     end
     
     #------MAP ELITES ALGORITHM------------------------------#
-
+    
     println("Method: ", METHOD)
     println("Map: ", MAP_METHOD)
     println("Objective function: ", OBJ_F)
@@ -78,13 +78,15 @@ function main()
     finish_time = time()
 
     println("===================================================================================")
-    println("Finish!")
+    println("End of Iteration.\n")
     println("Time of iteration: ", iter_time, " [sec]")
-    println("Time: ", (finish_time - begin_time), " [sec]")
-
+    println("Time:              ", (finish_time - begin_time), " [sec]")
+    
     #------MAP ELITES ALGORITHM------------------------------#
     
-    logger("INFO", "$(finish_time - begin_time) sec")
+    logger("INFO", "End of Iteration")
+    logger("INFO", "Time of iteration: $iter_time sec")
+    logger("INFO", "Time: $(finish_time - begin_time) sec")
 
     # Make result list
     arch_list = []
@@ -111,9 +113,9 @@ function main()
     sort!(arch_list, by = x -> x.fitness, rev = true)
 
     open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
-        println(fr, "===================================================================================")
-        println(fr, "Finish!")
-        println(fr, "Time: ", finish_time - begin_time, " sec")
+        println(fr, "End of Iteration.\n")
+        println(fr, "Time of iteration: ", iter_time, " [sec]")
+        println(fr, "Time:              ", (finish_time - begin_time), " [sec]")
         println(fr, "===================================================================================")
         println(fr, "Top 10 solutions:")
 
@@ -131,6 +133,12 @@ function main()
         println(fr, "Best behavior: ", best_solution.behavior)
         println(fr, "===================================================================================")
     end
+
+    println("===================================================================================")
+    println("Best solution: ", best_solution.genes)
+    println("Best fitness:  ", best_solution.fitness)
+    println("Best behavior: ", best_solution.behavior)
+    println("===================================================================================")
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

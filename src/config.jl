@@ -41,6 +41,8 @@ METHOD     = if length(ARGS) > 1 ARGS[2] else "de" end # Method: default, abc, d
 
 #----------------------------------------------------------------------------------------------------#
 # Result file
+mkpath("./result/$METHOD/$OBJ_F/")
+mkpath("./log/")
 DATE     = Dates.format(now(), "yyyy-mm-dd-HH-MM")
 LOGDATE  = Dates.format(now(), "yyyy-mm-dd")
 FILENAME = "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"

@@ -151,7 +151,7 @@ best_solution = Individual(init_gene, fitness(init_gene), devide_gene(init_gene)
 # Main loop: アルゴリズムのメインループ
 function map_elites()
     global best_solution, vorn
-
+    
     # Initialize
     logger("INFO", "Initialize")
     
@@ -161,14 +161,15 @@ function map_elites()
     elseif MAP_METHOD == "cvt"
         Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))))
     end
-
-    # Main loop
-    logger("INFO", "Start Iteration")
     
+    # Open file
     fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
     ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
     fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
     
+    # Main loop
+    logger("INFO", "Start Iteration")
+
     begin_time = time()
 
     for iter in 1:MAXTIME
@@ -200,12 +201,39 @@ function map_elites()
             
             break
         end
-
-        println(fr, "-----------------------------------------------------------------------------------")
     end
 
     finish_time = time()
 
+    # Write result
+    println(ff, "===================================================================================")
+    println(fb, "===================================================================================")
+    println(ff, "End of Iteration.\n")
+    println(fb, "End of Iteration.\n")
+
+    if MAP_METHOD == "grid"
+        for i in 1:GRID_SIZE
+            for j in 1:GRID_SIZE
+                if archive.grid[i, j] > 0
+                    println(ff, population.individuals[archive.grid[i, j]].fitness)
+                    println(fb, population.individuals[archive.grid[i, j]].behavior)
+                end
+            end
+        end
+    elseif MAP_METHOD == "cvt"
+        for v in values(archive.area)
+            if v > 0
+                println(ff, population.individuals[v].fitness)
+                println(fb, population.individuals[v].behavior)
+            end
+        end
+    else
+        logger("ERROR", "Map method is invalid")
+
+        exit(1)
+    end
+
+    # Close file
     close(fr)
     close(ff)
     close(fb)
