@@ -4,7 +4,7 @@ services:
     tty: true
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-edit
     working_dir: /root/workdir
     volumes:
       - ./src:/root/workdir

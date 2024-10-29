@@ -4,6 +4,7 @@
 
 using Printf
 using Dates
+using ProtoBuf
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -16,39 +17,76 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    open("result/$F_RESULT", "w") do f
-        println(f, "Date: ", DATE)
-        println(f, "Method: ", METHOD)
-        println(f, "Objective function: ", OBJ_F)
-        println(f, "Dimension: ", D)
-        println(f, "===================================================================================")
+    # Make 
+    open("result/$METHOD/$OBJ_F/$F_RESULT", "w") do fr
+        println(fr, "Date: ", DATE)
+        println(fr, "Method: ", METHOD)
+        println(fr, "Map: ", MAP_METHOD)
+        println(fr, "Objective function: ", OBJ_F)
+        println(fr, "Dimension: ", D)
+        println(fr, "===================================================================================")
+    end
+
+    open("result/$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
+        println(ff, "Date: ", DATE)
+        println(ff, "Method: ", METHOD)
+        println(ff, "Map: ", MAP_METHOD)
+        println(ff, "Objective function: ", OBJ_F)
+        println(ff, "Dimension: ", D)
+        println(ff, "===================================================================================")
+    end
+
+    open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "w") do fb
+        println(fb, "Date: ", DATE)
+        println(fb, "Method: ", METHOD)
+        println(fb, "Map: ", MAP_METHOD)
+        println(fb, "Objective function: ", OBJ_F)
+        println(fb, "Dimension: ", D)
+        println(fb, "===================================================================================")
     end
     
-    if D == 2 logger("WARN", "Dimension is default value \"2\"") end
+    # Dimension check
+    if D == 2
+        logger("WARN", "Dimension is default value \"2\"")
+    elseif D <= 0
+        logger("ERROR", "Dimension is invalid")
+        
+        exit(1)
+    else
+        logger("INFO", "Dimension is $D")
+    end
     
+    # Convergence mode check
     if CONV_FLAG
         logger("INFO", "Convergence flag is true")
     else
         logger("INFO", "Convergence flag is false")
     end
     
+    #------MAP ELITES ALGORITHM------------------------------#
+
     println("Method: ", METHOD)
+    println("Map: ", MAP_METHOD)
     println("Objective function: ", OBJ_F)
     println("Dimension: ", D)
     println("===================================================================================")
 
     begin_time = time()
 
-    popn, arch = map_elites()
+    popn, arch, iter_time = map_elites()
 
     finish_time = time()
 
     println("===================================================================================")
     println("Finish!")
-    println("Time: ", finish_time - begin_time, " sec")
+    println("Time of iteration: ", iter_time, " [sec]")
+    println("Time: ", (finish_time - begin_time), " [sec]")
+
+    #------MAP ELITES ALGORITHM------------------------------#
     
     logger("INFO", "$(finish_time - begin_time) sec")
 
+    # Make result list
     arch_list = []
     if MAP_METHOD == "grid"
         for i in 1:GRID_SIZE
@@ -72,26 +110,26 @@ function main()
 
     sort!(arch_list, by = x -> x.fitness, rev = true)
 
-    open("result/$F_RESULT", "a") do f
-        println(f, "===================================================================================")
-        println(f, "Finish!")
-        println(f, "Time: ", finish_time - begin_time, " sec")
-        println(f, "===================================================================================")
-        println(f, "Top 10 solutions:")
+    open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
+        println(fr, "===================================================================================")
+        println(fr, "Finish!")
+        println(fr, "Time: ", finish_time - begin_time, " sec")
+        println(fr, "===================================================================================")
+        println(fr, "Top 10 solutions:")
 
         for i in 1:10
-            println(f, "-----------------------------------------------------------------------------------")
-            println(f, "Rank ", i, ": ")
-            println(f, "├── Solution: ", arch_list[i].genes)
-            println(f, "├── Fitness:  ", arch_list[i].fitness)
-            println(f, "└── Behavior: ", arch_list[i].behavior)
+            println(fr, "-----------------------------------------------------------------------------------")
+            println(fr, "Rank ", i, ": ")
+            println(fr, "├── Solution: ", arch_list[i].genes)
+            println(fr, "├── Fitness:  ", arch_list[i].fitness)
+            println(fr, "└── Behavior: ", arch_list[i].behavior)
         end
 
-        println(f, "===================================================================================")
-        println(f, "Best solution: ", best_solution.genes)
-        println(f, "Best fitness:  ", best_solution.fitness)
-        println(f, "Best behavior: ", best_solution.behavior)
-        println(f, "===================================================================================")
+        println(fr, "===================================================================================")
+        println(fr, "Best solution: ", best_solution.genes)
+        println(fr, "Best fitness:  ", best_solution.fitness)
+        println(fr, "Best behavior: ", best_solution.behavior)
+        println(fr, "===================================================================================")
     end
 end
 
@@ -99,20 +137,26 @@ end
 #       Run                                                                                          #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-logger("INFO", "Start")
+try
+    logger("INFO", "Start")
+    println("Start")
 
-main()
+    main()
 
-logger("INFO", "Finish")
-# try
-#     logger("INFO", "Start")
+    logger("INFO", "Success! :)")
+    println("Success! :)")
+catch e
+    global exit_code = 1
 
-#     main()
+    logger("ERROR", "An error occurred! :(\n$e")
+    println("An error occurred! :(")
+    println(e)
+finally
+    logger("INFO", "Finish")
+    println("Finish")
 
-#     logger("INFO", "Finish")
-# catch
-#     logger("ERROR", "An error occurred! :(")
-# end
+    exit(exit_code)
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #

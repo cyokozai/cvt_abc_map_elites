@@ -12,17 +12,13 @@ using Dates
 
 include("config.jl")
 include("struct.jl")
-include("fitness.jl"
-)
+include("fitness.jl")
 include("logger.jl")
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Voronoi tessellation
-vorn = nothing
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Initialize the CVT
 function init_CVT(population::Population)
-    global vorn
+    global vorn, cvt_vorn_data_index
 
     I = population.individuals
 
@@ -31,7 +27,9 @@ function init_CVT(population::Population)
     append!(points, behavior)
 
     vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
-    serialize("result/CVT-$F_RESULT.dat", vorn)
+    
+    serialize("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_index", vorn)
+    cvt_vorn_data_index += 1
 
     logger("INFO", "CVT is initialized")
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}

@@ -9,6 +9,10 @@ Pkg.add("UnicodePlots")
 Pkg.add("Plots")
 Pkg.add("StatsPlots")
 
+#-----Data-----------------------#
+
+Pkg.add("ProtoBuf")
+
 #-----Math & Stat----------------#
 
 Pkg.add("DelaunayTriangulation")

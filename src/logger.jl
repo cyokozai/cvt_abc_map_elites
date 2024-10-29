@@ -5,8 +5,8 @@ using Dates
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function logger(status::String, message::String)
-    open("log/$F_LOGFILE", "a") do f
-        println(f, Dates.format(now(), "yyyy-mm-dd HH:MM:SS"), "[", status, "] ", message)
+    open("log/$F_LOGFILE", "a") do fl
+        println(fl, Dates.format(now(), "yyyy-mm-dd HH:MM:SS"), "[", status, "] ", message)
     end
 end
 

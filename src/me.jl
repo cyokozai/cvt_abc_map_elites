@@ -22,7 +22,7 @@ function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
     segment_length = div(g_len, BD)
     behavior = Float64[]
-    
+
     for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
@@ -133,7 +133,7 @@ Reproduction = if METHOD == "default"
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
-    (population::Population, archive::Archive) -> DE(population, archive)
+    (population::Population, archive::Archive) -> DE(population)
 else
     error("Invalid method")
 
@@ -165,45 +165,54 @@ function map_elites()
     # Main loop
     logger("INFO", "Start Iteration")
     
-    open("result/$F_RESULT", "a") do f
-        for iter in 1:MAXTIME
-            println("Generation: ", iter)
-            println(f, "Generation: ", iter)
+    fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
+    ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
+    fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    
+    begin_time = time()
 
-            # Evaluator
-            population = Population([evaluator(population.individuals[i]) for i in 1:N])
+    for iter in 1:MAXTIME
+        println("Generation: ", iter)
+        
+        # Evaluator
+        population = Population([evaluator(population.individuals[i]) for i in 1:N])
+        
+        # Mapping
+        archive = Mapping(population, archive)
+        
+        # Reproduction
+        population = Reproduction(population, archive)
+        
+        println("Now best: ", best_solution.genes)
+        println("Now best fitness: ", best_solution.fitness)
+        println("Now best behavior: ", best_solution.behavior)
 
-            # Mapping
-            archive = Mapping(population, archive)
+        println(ff, best_solution.fitness)
+        println(fb, best_solution.behavior)
+        
+        # 終了条件の確認
+        if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 && CONV_FLAG == true
+            logger("INFO", "Convergence")
+
+            CONV_FLAG == false
+        elseif iter == MAXTIME
+            logger("INFO", "Time out")
             
-            # Reproduction
-            population = Reproduction(population, archive)
-            
-            println("Now best: ", best_solution.genes)
-            println(f, "Now best: ", best_solution.genes)
-            println("Now best fitness: ", best_solution.fitness)
-            println(f, "Now best fitness: ", best_solution.fitness)
-            println("Now best behavior: ", best_solution.behavior)
-            println(f, "Now best behavior: ", best_solution.behavior)
-            
-            # 終了条件の確認
-            if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 && CONV_FLAG == true
-                logger("INFO", "Convergence")
-
-                CONV_FLAG == false
-            elseif iter == MAXTIME
-                logger("INFO", "Time out")
-                
-                break
-            end
-
-            println(f, "-----------------------------------------------------------------------------------")
+            break
         end
+
+        println(fr, "-----------------------------------------------------------------------------------")
     end
+
+    finish_time = time()
+
+    close(fr)
+    close(ff)
+    close(fb)
     
     logger("INFO", "End of Iteration")
     
-    return population, archive
+    return population, archive, (finish_time - begin_time)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

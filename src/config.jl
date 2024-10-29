@@ -16,7 +16,7 @@ BD        = 2      # Dumber of behavior dimensions | No need to change because i
 MAXTIME   = 10 # Number of max time.
 MUT_RATE  = 0.10   # Number of mutation rate.
 ε         = 1.0e-6 # Number of epsilon.
-CONV_FLAG = false  # Convergence flag | 'true' is available when you want to check the convergence.
+CONV_FLAG = true   # Convergence flag | 'true' is available when you want to check the convergence.
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
@@ -30,7 +30,8 @@ F  = 0.90 # The differentiation (mutation) scale factor (default: 0.9).
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
-ABC_LIMIT = N * D # Limit number that scout bee can search.
+ABC_LIMIT = N * D                # Limit number that scout bee can search.
+ABC_CVT_REINITIALIZE_RATE = 0.10 # The rate of reinitialize the CVT.
 
 #----------------------------------------------------------------------------------------------------#
 # Method
@@ -40,11 +41,23 @@ METHOD     = if length(ARGS) > 1 ARGS[2] else "de" end # Method: default, abc, d
 
 #----------------------------------------------------------------------------------------------------#
 # Result file
-DATE    = Dates.format(now(), "yyyy-mm-dd-HH-MM")
-LOGDATE = Dates.format(now(), "yyyy-mm-dd")
-F_RESULT   = "result-$DATE-$METHOD-$OBJ_F-$D.dat"
-F_FITNESS  = "fitness-$DATE-$METHOD-$OBJ_F-$D.dat"
-F_BEHAVIOR = "behavior-$DATE-$METHOD-$OBJ_F-$D.dat"
+DATE     = Dates.format(now(), "yyyy-mm-dd-HH-MM")
+LOGDATE  = Dates.format(now(), "yyyy-mm-dd")
+FILENAME = "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"
+F_RESULT   = "result-$FILENAME.dat"
+F_FITNESS  = "fitness-$FILENAME.dat"
+F_BEHAVIOR = "behavior-$FILENAME.dat"
 F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Variable                                                                                     #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Exit code
+exit_code = 0
+# Voronoi tessellation
+vorn = nothing
+cvt_vorn_data_index = 1
+# ABC Trial
+trial = zeros(Int, N)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
