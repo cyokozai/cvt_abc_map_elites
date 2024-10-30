@@ -60,10 +60,8 @@ function employed_bee(population::Population)
             v[i, j] = I[i].genes[j] + (rand(RNG) * 2 - 1.0) * (I[i].genes[j] - I[k].genes[j])
         end
 
-        I[i].genes = greedySelection(I[i].genes, v[i, :], i)
+        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
     end
-
-    population.individuals = I
 
     return population
 end
@@ -95,10 +93,8 @@ function onlooker_bee(population::Population)
             v[i, j] = new_archive[i, j] + (rand(RNG) * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
         end
         
-        I[i].genes = greedySelection(I[i].genes, v[i, :], i)
+        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
     end
-
-    population.individuals = I
     
     return population
 end
@@ -108,13 +104,11 @@ end
 function scout_bee(population::Population, archive::Archive)
     global trial
     
-    I = population.individuals
-    
     for i in 1:N
         if trial[i] >= ABC_LIMIT
             I[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
             trial[i] = 0
-
+            
             logger("INFO", "Scout bee found a new food source")
             
             if METHOD == "cvt" && rand(RNG) < ABC_CVT_REINITIALIZE_RATE
@@ -125,8 +119,6 @@ function scout_bee(population::Population, archive::Archive)
             end
         end
     end
-    
-    population.individuals = I
 
     return population, archive
 end

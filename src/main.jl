@@ -86,7 +86,7 @@ function main()
     
     logger("INFO", "Time of iteration: $iter_time sec")
     logger("INFO", "Time: $(finish_time - begin_time) sec")
-
+    
     # Make result list
     arch_list = []
     if MAP_METHOD == "grid"

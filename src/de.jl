@@ -37,13 +37,11 @@ function DE(population::Population)
         trial = crossover(I[i].genes, v)
         
         if fitness(trial) > I[i].fitness
-            I[i].genes = deepcopy(trial)
-            I[i].fitness = fitness(trial)
-            I[i].behavior = devide_gene(trial)
+            population.individuals[i].genes = deepcopy(trial)
+            population.individuals[i].fitness = fitness(trial)
+            population.individuals[i].behavior = devide_gene(trial)
         end
     end
-
-    population.individuals = I
     
     return population
 end
