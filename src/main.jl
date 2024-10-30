@@ -84,7 +84,6 @@ function main()
     
     #------MAP ELITES ALGORITHM------------------------------#
     
-    logger("INFO", "End of Iteration")
     logger("INFO", "Time of iteration: $iter_time sec")
     logger("INFO", "Time: $(finish_time - begin_time) sec")
 
