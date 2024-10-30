@@ -22,11 +22,11 @@ function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
     segment_length = div(g_len, BD)
     behavior = Float64[]
-
+    
     for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
-        push!(behavior, sum(gene[start_idx:end_idx]))
+        push!(behavior, sum(gene[start_idx:end_idx])/sum(abs.(gene)))
     end
     
     return behavior
