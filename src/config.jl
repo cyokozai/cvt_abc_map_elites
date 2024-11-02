@@ -26,12 +26,12 @@ k_max     = 25000 # Number of max k.
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
 CR = 0.80 # The crossover probability (default: 0.8).
-F  = 0.90 # The differentiation (mutation) scale factor (default: 0.9).
+F  = 0.90 # The differentiation (mutation) scaling factor (default: 0.9).
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
-ABC_LIMIT = N * D                # Limit number that scout bee can search.
-ABC_CVT_REINITIALIZE_RATE = 0.10 # The rate of reinitialize the CVT.
+TC = N * D # Limit number that scout bee can search.
+α  = 2.0   # The growth factors for the scout bee (default: 2.0).
 
 #----------------------------------------------------------------------------------------------------#
 # Method
@@ -61,5 +61,7 @@ vorn = nothing
 cvt_vorn_data_index = 1
 # ABC Trial
 trial = zeros(Int, N)
+# ABC Regeneration Counter
+rc = 0
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

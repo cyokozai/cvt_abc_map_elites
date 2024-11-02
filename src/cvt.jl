@@ -48,9 +48,7 @@ function cvt_mapping(population::Population, archive::Archive)
         closest_centroid_index = argmin(distances)
         
         if haskey(archive.area, closest_centroid_index)
-            if archive.area[closest_centroid_index] == 0
-                archive.area[closest_centroid_index] = index
-            elseif ind.fitness >= I[archive.area[closest_centroid_index]].fitness
+            if ind.fitness >= I[archive.area[closest_centroid_index]].fitness || archive.area[closest_centroid_index] == 0
                 archive.area[closest_centroid_index] = index
             end
         end
