@@ -19,6 +19,7 @@ end
 mutable struct Archive
     grid::Matrix{Int64}       # グリッドマップ　各セルに個体の要素番号を保存
     area::Dict{Int64, Int64}  # CVTのセルに個体の要素番号を保存
+    individuals::Dict{Int64, Individual}  # 個体の要素番号に対応する個体を保存
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

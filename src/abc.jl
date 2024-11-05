@@ -17,7 +17,9 @@ include("logger.jl")
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
 
-    if fitness(f) < fitness(v)
+    if fitness(v) > fitness(f)
+        trial[i] = 0
+
         return v
     else
         trial[i] += 1
@@ -57,7 +59,7 @@ function employed_bee(population::Population)
                 if k != i break end
             end
 
-            v[i, j] = I[i].genes[j] + (rand(RNG) * 2 - 1.0) * (I[i].genes[j] - I[k].genes[j])
+            v[i, j] = I[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I[i].genes[j] - I[k].genes[j])
         end
 
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
@@ -90,7 +92,7 @@ function onlooker_bee(population::Population)
                 if k != i break end
             end
 
-            v[i, j] = new_archive[i, j] + (rand(RNG) * 2 - 1.0) * (new_archive[i, j] - new_archive[k, j])
+            v[i, j] = new_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_archive[i, j] - new_archive[k, j])
         end
         
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
@@ -105,21 +107,16 @@ function scout_bee(population::Population, archive::Archive)
     global trial, rc
     
     for i in 1:N
-        if trial[i] >= TC
+        if trial[i] > TC_LIMIT
             I[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
             trial[i] = 0
-            
-            logger("INFO", "Scout bee found a new food source")
 
-            rc += 1
-            RR = 1.0 - exp(-α * rc)
-            
-            if METHOD == "cvt" && rand(RNG) > RR
-                new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))))
+            if METHOD == "cvt"
+                new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))), archive.individuals)
                 archive = deepcopy(cvt_mapping(population, new_archive))
-
-                break
             end
+
+            logger("INFO", "Scout bee found a new food source")
         end
     end
 
@@ -137,6 +134,10 @@ function ABC(population::Population, archive::Archive)
 
     # Scout bee phase
     population, archive = scout_bee(population, archive)
+
+    # RR = 1.0 - exp(-α * rc)
+    # if METHOD == "cvt" && rand(RNG) > RR
+    # end
 
     return population
 end

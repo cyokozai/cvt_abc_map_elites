@@ -24,4 +24,4 @@ docs/site/
 Manifest.toml
 result
 log
-pdf
+*.pdf

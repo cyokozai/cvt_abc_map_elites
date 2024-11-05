@@ -24,8 +24,8 @@ end
 function DE(population::Population)
     I = population.individuals
     r1, r2, r3 = 1, 1, 1
-    v, trial = zeros(Float64, D, 2)
-
+    v, tv = zeros(Float64, D, 2)
+    
     for i in 1:N
         while r1 == i || r2 == i || r3 == i
             r1, r2, r3 = rand(RNG, 1:N, 3)
@@ -34,12 +34,12 @@ function DE(population::Population)
         v = I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes)
         v = clamp.(v, LOW, UPP)
 
-        trial = crossover(I[i].genes, v)
+        tv = crossover(I[i].genes, v)
         
-        if fitness(trial) > I[i].fitness
-            population.individuals[i].genes = deepcopy(trial)
-            population.individuals[i].fitness = fitness(trial)
-            population.individuals[i].behavior = devide_gene(trial)
+        if fitness(tv) > I[i].fitness
+            population.individuals[i].genes = deepcopy(tv)
+            population.individuals[i].fitness = fitness(tv)
+            population.individuals[i].behavior = devide_gene(tv)
         end
     end
     

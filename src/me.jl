@@ -26,11 +26,23 @@ function devide_gene(gene::Vector{Float64})
     for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
+
         push!(behavior, sum(gene[start_idx:end_idx])/sum(abs.(gene)))
     end
     
     return behavior
 end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Initialize the best solution
+function init_solution()
+    gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
+    return Individual(gene, fitness(gene), devide_gene(gene))
+end
+
+#----------------------------------------------------------------------------------------------------#
+# Best solution
+best_solution = init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Evaluator: 評価関数と行動識別子の生成
@@ -74,10 +86,12 @@ Mapping = if MAP_METHOD == "grid"
                             # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
                             if ind.fitness >= I[archive.grid[i, j]].fitness
                                 archive.grid[i, j] = index
+                                archive.individuals[index] = ind
                             end
                         else
                             # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
+                            archive.individuals[index] = ind
                         end
 
                         break
@@ -100,17 +114,17 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Reproduction: 突然変異を伴う個体生成
-mutate(individual::Individual) = rand() > MUT_RATE ? individual : Individual(individual.genes .+ 0.1randn(RNG, length(individual.genes)), 0.0, [])
+mutate(individual::Individual) = rand() > MUTANT_R ? individual : init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Select random elite
 select_random_elite = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
         while true
-            i = rand(RNG, 1:GRID_SIZE)
-            j = rand(RNG, 1:GRID_SIZE)
+            i, j = rand(RNG, 1:GRID_SIZE, 2)
             
             if archive.grid[i, j] > 0
-                return population.individuals[archive.grid[i, j]]
+                return archive.individuals[archive.grid[i, j]]
             end
         end
     end
@@ -120,7 +134,7 @@ elseif MAP_METHOD == "cvt"
             random_centroid_index = rand(RNG, 1:k_max)
             
             if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0
-                return population.individuals[archive.area[random_centroid_index]]
+                return archive.individuals[archive.area[random_centroid_index]]
             end
         end
     end
@@ -143,11 +157,6 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Best solution: 最良解の初期化
-init_gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-best_solution = Individual(init_gene, fitness(init_gene), devide_gene(init_gene))
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Main loop: アルゴリズムのメインループ
 function map_elites()
     global best_solution, vorn
@@ -155,15 +164,14 @@ function map_elites()
     # Initialize
     logger("INFO", "Initialize")
     
-    population::Population = Population([evaluator(Individual(rand(RNG, D) .* (UPP - LOW) .+ LOW, 0.0, [])) for _ in 1:N])
+    population::Population = Population([evaluator(init_solution()) for _ in 1:N])
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}())
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}(), Dict{Int64, Individual}())
     elseif MAP_METHOD == "cvt"
-        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))))
+        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))), Dict{Int64, Individual}())
     end
     
     # Open file
-    fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
     ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
     fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
     
@@ -192,10 +200,14 @@ function map_elites()
         println(fb, best_solution.behavior)
         
         # 終了条件の確認
-        if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0 && CONV_FLAG == true
-            logger("INFO", "Convergence")
+        if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0
+            if CONV_FLAG == true
+                logger("INFO", "Convergence")
 
-            CONV_FLAG == false
+                CONV_FLAG = false
+            end
+
+            # break
         elseif iter == MAXTIME
             logger("INFO", "Time out")
             
@@ -205,41 +217,9 @@ function map_elites()
 
     finish_time = time()
 
-    # Write result
-    println(ff, "===================================================================================")
-    println(fb, "===================================================================================")
-    println(ff, "End of Iteration.\n")
-    println(fb, "End of Iteration.\n")
-
-    if MAP_METHOD == "grid"
-        for i in 1:GRID_SIZE
-            for j in 1:GRID_SIZE
-                if archive.grid[i, j] > 0
-                    println(ff, population.individuals[archive.grid[i, j]].fitness)
-                    println(fb, population.individuals[archive.grid[i, j]].behavior)
-                end
-            end
-        end
-    elseif MAP_METHOD == "cvt"
-        for v in values(archive.area)
-            if v > 0
-                println(ff, population.individuals[v].fitness)
-                println(fb, population.individuals[v].behavior)
-            end
-        end
-    else
-        logger("ERROR", "Map method is invalid")
-
-        exit(1)
-    end
-
-    # Close file
-    close(fr)
     close(ff)
     close(fb)
-    
-    logger("INFO", "End of Iteration")
-    
+
     return population, archive, (finish_time - begin_time)
 end
 

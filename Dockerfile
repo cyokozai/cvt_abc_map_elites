@@ -1,27 +1,40 @@
 ###################### BUILDER ######################
-FROM julia:latest
+FROM ubuntu:latest AS builder
 
 SHELL ["/bin/bash", "-c"]
 
-ARG lang="C"
-ARG dir="src"
+WORKDIR /root
 
-ENV DEBIAN_FRONTEND noninter active
+ARG lang="C"
+ARG dir="workdir"
+
+ENV DEBIAN_FRONTEND = noninter active
 ENV TERM xterm
 ENV DISPLAY host.docker.internal:0.0
+
+#~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
+
+COPY *.jl /root/
+
+RUN apt -y update && apt -y upgrade &&\
+    apt -y install tzdata \
+    locales \
+    curl \
+    wget \
+    tar \
+    language-pack-ja-base language-pack-ja locales &&\
+    wget https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.0-linux-x86_64.tar.gz &&\
+    tar zxvf julia-1.7.0-linux-x86_64.tar.gz -C /usr --strip-components 1 &&\
+    rm julia-1.7.0-linux-x86_64.tar.gz &&\
+    echo "alias newalias='julia'" >> ~/.bashrc &&\
+    source ~/.bashrc &&\
+    julia pkginstall.jl &&\
+    locale-gen ${lang}
+
+#~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
+
 ENV LANG ${lang}
 ENV LANGUAGE ${lang}
 ENV LC_ALL ${lang}
 ENV TZ=Asia/Tokyo
 ENV TZ JST-9
-
-WORKDIR /root
-COPY ./pkginstall.jl /root
-
-RUN apt -y update && apt -y upgrade &&\
-    export JULIA_NUM_THREADS=4 &&\
-    julia pkginstall.jl &&\
-    rm -rf ./pkginstall.jl
-
-WORKDIR /root/${dir}
-COPY ./${dir}/*.jl /root/${dir}
