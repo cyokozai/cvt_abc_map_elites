@@ -18,7 +18,7 @@ services:{% for f in function %}{% for m in method %}
     deploy:
       resources:
         limits:
-          cpus: 4.5
+          cpus: 1.0
           memory: 8G
     command: ["sh", "-c", "for D in {{ dimention }}; do julia /root/src/main.jl $$D {{ m }} {{ map }} {{ f }}; done"]{% endfor %}{% endfor %}
 

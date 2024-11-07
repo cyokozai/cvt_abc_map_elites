@@ -120,7 +120,7 @@ function scout_bee(population::Population, archive::Archive)
             logger("INFO", "Scout bee found a new food source")
         end
     end
-
+    
     return population, archive
 end
 

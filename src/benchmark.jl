@@ -8,7 +8,7 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#  
 
 objective_function = if OBJ_F == "sphere"
-    x::Vector{Float64} -> sum((x .- 1) .^ 2)
+    x::Vector{Float64} -> sum((x .- 0) .^ 2)
 elseif OBJ_F == "rosenbrock"
     x::Vector{Float64} -> sum(100 .* (x[2:end] .- x[1:end-1].^2).^2 + (1 .- x[1:end-1]).^2)
 elseif OBJ_F == "rastrigin"

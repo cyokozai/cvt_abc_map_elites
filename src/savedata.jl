@@ -95,7 +95,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     if MAP_METHOD == "grid"
         for i in 1:GRID_SIZE
             for j in 1:GRID_SIZE
-                if archive.grid[i, j] !== nothing
+                if archive.grid[i, j] > 0
                     push!(arch_list, archive.individuals[archive.grid[i, j]])
                 end
             end

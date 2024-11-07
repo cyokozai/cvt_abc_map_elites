@@ -6,10 +6,14 @@ include("benchmark.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # 目的関数の定義
-function fitness(x::Vector{Float64})::Float64
-    sum_val = objective_function(x)
-
-    return sum_val >= 0 ? 1.0 / (1.0 + sum_val) : abs(1.0 + sum_val)
-end
+fitness = FIT_NOISE ?
+    (x::Vector{Float64}) -> begin
+        sum_val = objective_function(x)
+        sum_val >= 0 ? clamp(1.0 / (1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), 0.0, 1.0) : clamp(abs(1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), 0.0, 1.0)
+    end : 
+    (x::Vector{Float64}) -> begin
+        sum_val = objective_function(x)
+        sum_val >= 0 ? 1.0 / (1.0 + sum_val) : abs(1.0 + sum_val)
+    end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
