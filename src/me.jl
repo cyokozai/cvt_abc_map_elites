@@ -79,7 +79,7 @@ Mapping = if MAP_METHOD == "grid"
                         # グリッドに個体を保存
                         if archive.grid[i, j] > 0
                             # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
-                            if ind.fitness >= archive.individuals[archive.grid[i, j]].fitness
+                            if ind.fitness > archive.individuals[archive.grid[i, j]].fitness
                                 archive.grid[i, j] = index
                                 archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
                             end

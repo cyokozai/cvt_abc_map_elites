@@ -45,7 +45,7 @@ function cvt_mapping(population::Population, archive::Archive)
         closest_centroid_index = argmin(distances)
 
         if haskey(archive.individuals, closest_centroid_index)
-            if ind.fitness >= archive.individuals[closest_centroid_index].fitness
+            if ind.fitness > archive.individuals[closest_centroid_index].fitness
                 archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
             end
         else
