@@ -7,7 +7,7 @@ args = sys.argv
 FILENAME = 'docker-compose-run.yaml'
 FUNCTION = [ "sphere", "rastrigin", "rosenbrock", "griewank"] #  "sphere", "rastrigin", "rosenbrock", "griewank" 
 MAP_METHOD = "cvt" # "grep", "cvt"
-METHOD = [ "default", "abc", "de"]
+METHOD = [ "default", "de", "abc"]
 DIMENSION = "2"
 
 container_combinations = len(FUNCTION) * len(METHOD)

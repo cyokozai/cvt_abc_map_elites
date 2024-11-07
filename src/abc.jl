@@ -108,11 +108,12 @@ function scout_bee(population::Population, archive::Archive)
     
     for i in 1:N
         if trial[i] > TC_LIMIT
-            I[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
+            population.individuals[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
             trial[i] = 0
-
+            
             if METHOD == "cvt"
-                new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))), archive.individuals)
+                init_CVT(population)
+                new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
                 archive = deepcopy(cvt_mapping(population, new_archive))
             end
 

@@ -27,7 +27,7 @@ function devide_gene(gene::Vector{Float64})
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
 
-        push!(behavior, sum(gene[start_idx:end_idx])/sum(abs.(gene)))
+        push!(behavior, sum(gene[start_idx:end_idx])/Float64(g_len))
     end
     
     return behavior
@@ -51,7 +51,7 @@ function evaluator(individual::Individual)
 
     # 評価関数を定義
     individual.fitness = fitness(individual.genes)
-
+    
     # 行動識別子を個体に保存
     individual.behavior = devide_gene(individual.genes)
 
@@ -70,11 +70,10 @@ end
 Mapping = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
         # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
-        I = population.individuals
         len = (UPP - LOW) / GRID_SIZE
         
         # グリッドに現在の個体を保存
-        for (index, ind) in enumerate(I)
+        for (index, ind) in enumerate(population.individuals)
             idx = clamp.(ind.behavior, LOW, UPP)
             
             for i in 1:GRID_SIZE
@@ -84,14 +83,14 @@ Mapping = if MAP_METHOD == "grid"
                         # グリッドに個体を保存
                         if archive.grid[i, j] > 0
                             # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
-                            if ind.fitness >= I[archive.grid[i, j]].fitness
+                            if ind.fitness >= archive.individuals[archive.grid[i, j]].fitness
                                 archive.grid[i, j] = index
-                                archive.individuals[index] = ind
+                                archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
                             end
                         else
                             # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
-                            archive.individuals[index] = ind
+                            archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
                         end
 
                         break
@@ -133,8 +132,8 @@ elseif MAP_METHOD == "cvt"
         while true
             random_centroid_index = rand(RNG, 1:k_max)
             
-            if haskey(archive.area, random_centroid_index) && archive.area[random_centroid_index] > 0
-                return archive.individuals[archive.area[random_centroid_index]]
+            if haskey(archive.individuals, random_centroid_index)
+                return archive.individuals[random_centroid_index]
             end
         end
     end
@@ -166,9 +165,10 @@ function map_elites()
     
     population::Population = Population([evaluator(init_solution()) for _ in 1:N])
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Int64}(), Dict{Int64, Individual}())
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Individual}())
     elseif MAP_METHOD == "cvt"
-        Archive(zeros(Int64, 0, 0), Dict{Int64, Int64}(i => 0 for i in keys(init_CVT(population))), Dict{Int64, Individual}())
+        init_CVT(population)
+        Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
     end
     
     # Open file
@@ -204,7 +204,7 @@ function map_elites()
             if CONV_FLAG == true
                 logger("INFO", "Convergence")
 
-                CONV_FLAG = false
+                global CONV_FLAG = false
             end
 
             # break
@@ -212,6 +212,10 @@ function map_elites()
             logger("INFO", "Time out")
             
             break
+        elseif best_solution.fitness < 0.0
+            logger("ERROR", "Invalid fitness value")
+            
+            exit(1)
         end
     end
 

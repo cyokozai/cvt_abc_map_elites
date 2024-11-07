@@ -56,8 +56,8 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
 
     # Write result
     println(ff, "===================================================================================")
-    println(fb, "===================================================================================")
     println(ff, "End of Iteration.\n")
+    println(fb, "===================================================================================")
     println(fb, "End of Iteration.\n")
 
     if MAP_METHOD == "grid"
@@ -70,10 +70,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             end
         end
     elseif MAP_METHOD == "cvt"
-        for v in values(archive.area)
-            if v > 0
-                println(ff, archive.individuals[v].fitness)
-                println(fb, archive.individuals[v].behavior)
+        for k in keys(archive.individuals)
+            if k > 0
+                println(ff, archive.individuals[k].fitness)
+                println(fb, archive.individuals[k].behavior)
             end
         end
     else
@@ -91,18 +91,19 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
 
     # Make result list
     arch_list = []
+    
     if MAP_METHOD == "grid"
         for i in 1:GRID_SIZE
             for j in 1:GRID_SIZE
-                if arch.grid[i, j] !== nothing
-                    push!(arch_list, archive.individuals[arch.grid[i, j]])
+                if archive.grid[i, j] !== nothing
+                    push!(arch_list, archive.individuals[archive.grid[i, j]])
                 end
             end
         end
     elseif MAP_METHOD == "cvt"
-        for v in values(arch.area)
-            if v > 0
-                push!(arch_list, archive.individuals[v])
+        for k in keys(archive.individuals)
+            if k > 0
+                push!(arch_list, archive.individuals[k])
             end
         end
     else

@@ -54,12 +54,14 @@ function main()
 
     #------MAP ELITES ALGORITHM------------------------------#
 
+    elapsed_time = finish_time - begin_time
+    
     println("===================================================================================")
     println("End of Iteration.\n")
     println("Time of iteration: ", iter_time, " [sec]")
-    println("Time:              ", (finish_time - begin_time), " [sec]")
+    println("Time:              ", elapsed_time, " [sec]")
 
-    SaveResult(arch, iter_time, (finish_time - begin_time))
+    SaveResult(arch, iter_time, elapsed_time)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -67,9 +69,11 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 try
+    global exit_code = 0
+
     logger("INFO", "Start")
     println("Start")
-
+    
     main()
 
     logger("INFO", "Success! :)")
@@ -78,8 +82,7 @@ catch e
     global exit_code = 1
 
     logger("ERROR", "An error occurred! :(\n$e")
-    println("An error occurred! :(")
-    println(e)
+    println("An error occurred! :(\n$e")
 finally
     logger("INFO", "Finish")
     println("Finish")

@@ -19,7 +19,7 @@ include("logger.jl")
 # Initialize the CVT
 function init_CVT(population::Population)
     global vorn, cvt_vorn_data_index
-
+    
     points = [rand(RNG, BD) .* (UPP - LOW) .+ LOW for _ in 1:k_max-N]
     behavior = [population.individuals[i].behavior for i in 1:N]
     append!(points, behavior)
@@ -40,20 +40,19 @@ function cvt_mapping(population::Population, archive::Archive)
 
     Centroidal_polygon_list = DelaunayTriangulation.get_generators(vorn)
     
-    for (index, ind) in enumerate(population.individuals)
+    for ind in population.individuals
         distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(Centroidal_polygon_list)]
         closest_centroid_index = argmin(distances)
-        
-        if haskey(archive.area, closest_centroid_index)
-            if ind.fitness >= archive.individuals[archive.area[closest_centroid_index]].fitness || archive.area[closest_centroid_index] == 0
-                archive.area[closest_centroid_index] = index
-                archive.individuals[index].genes = deepcopy(ind.genes)
-                archive.individuals[index].fitness = ind.fitness
-                archive.individuals[index].behavior = deepcopy(ind.behavior)
+
+        if haskey(archive.individuals, closest_centroid_index)
+            if ind.fitness >= archive.individuals[closest_centroid_index].fitness
+                archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
             end
+        else
+            archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
         end
     end
-
+    
     return archive
 end
 
