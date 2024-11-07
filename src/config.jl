@@ -23,10 +23,6 @@ FIT_NOISE = true   # Fitness noise | 'true' is available when you want to add th
 NOIZE_R   = 0.10   # Noise rate. | 0.0 < NOIZE_R < 1.0
 
 #----------------------------------------------------------------------------------------------------#
-# Best solution
-best_solution = zeros(Float64, D)
-
-#----------------------------------------------------------------------------------------------------#
 # Map parameter
 GRID_SIZE = 158   # Number of grid size.
 k_max     = 25000 # Number of max k.

@@ -47,8 +47,6 @@ best_solution = init_solution()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Evaluator: 評価関数と行動識別子の生成
 function evaluator(individual::Individual)
-    global best_solution
-
     # 評価関数を定義
     individual.fitness = fitness(individual.genes)
     
@@ -56,10 +54,8 @@ function evaluator(individual::Individual)
     individual.behavior = devide_gene(individual.genes)
 
     # 最良解の更新
-    if individual.fitness > best_solution.fitness
-        best_solution.genes    = deepcopy(individual.genes)
-        best_solution.fitness  = individual.fitness
-        best_solution.behavior = deepcopy(individual.behavior)
+    if individual.fitness >= best_solution.fitness
+        global best_solution = Individual(deepcopy(individual.genes), individual.fitness, deepcopy(individual.behavior))
     end
     
     return individual
