@@ -11,7 +11,7 @@ exit_code = 0
 SEED      = Int(Dates.now().instant.periods.value)
 RNG       = StableRNG(SEED)
 
-D         = if length(ARGS) > 0 parse(Int64, ARGS[1]) else 10 end # Number of dimensions.
+D         = if length(ARGS) > 0 parse(Int64, ARGS[1]) else 2 end # Number of dimensions.
 N         = 64     # Number of population size.
 BD        = 2      # Dumber of behavior dimensions | No need to change because it isn't available.
 MAXTIME   = 100000 # Number of max time.
@@ -47,8 +47,8 @@ rc = 0                # ABC Regeneration Counter
 #----------------------------------------------------------------------------------------------------#
 # Method
 OBJ_F      = if length(ARGS) > 3 ARGS[4] else "rastrigin" end  # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "cvt" end     # Method: grid, cvt
-METHOD     = if length(ARGS) > 1 ARGS[2] else "abc" end # Method: default, abc, de, cvt, cvt-de
+MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "grid" end       # Method: grid, cvt
+METHOD     = if length(ARGS) > 1 ARGS[2] else "default" end    # Method: default, abc, de
 
 #----------------------------------------------------------------------------------------------------#
 # Result file

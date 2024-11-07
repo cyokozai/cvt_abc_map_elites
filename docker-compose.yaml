@@ -1,17 +1,26 @@
 services:
   julia-build:
-    container_name: julia
+    container_name: julia-build
     tty: true
     build:
       context: .
       dockerfile: Dockerfile
-    working_dir: /root/workdir
+    working_dir: /root/src
     volumes:
-      - ./src:/root/workdir
+      - ./src:/root/src
     networks:
       - default
     environment:
       - TZ=Asia/Tokyo
+      - FUNCTION=sphere
+      - METHOD=default
+      - D=2
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: ["sh", "-c", "for D in '10' '50'; do julia /root/src/main.jl $$D abc cvt rastrigin; done"]
 
 networks:
   default:
