@@ -1,6 +1,8 @@
-# How to use this program
+# CVT ABC MAP-Elites
 
-## Install
+## How to use this program
+
+### Install
 
 - Run the following command
 
@@ -18,7 +20,7 @@ $ pip -V
 pip 22.0.2 from /usr/lib/python3/dist-packages/pip (python 3.10)
 ```
 
-## Deploy the programs on Docker
+### Deploy the programs on Docker
 
 - Set the source code into `./src`
 - Test `./docker-runner.py`

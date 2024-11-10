@@ -14,7 +14,7 @@ services:{% for f in function %}{% for m in method %}
       - TZ=Asia/Tokyo
       - FUNCTION={{ f }}
       - METHOD={{ m }}
-      - D=2
+      - D=10
     deploy:
       resources:
         limits:

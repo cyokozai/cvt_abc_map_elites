@@ -129,16 +129,12 @@ end
 function ABC(population::Population, archive::Archive)
     # Employee bee phase
     population = employed_bee(population)
-
+    
     # Onlooker bee phase
     population = onlooker_bee(population)
 
     # Scout bee phase
     population, archive = scout_bee(population, archive)
-
-    # RR = 1.0 - exp(-α * rc)
-    # if METHOD == "cvt" && rand(RNG) > RR
-    # end
 
     return population
 end

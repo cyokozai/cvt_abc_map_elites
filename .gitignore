@@ -23,5 +23,7 @@ docs/site/
 # environment.
 Manifest.toml
 result
+*.dat
 log
+*.log
 *.pdf

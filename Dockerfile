@@ -3,18 +3,22 @@ FROM ubuntu:latest AS builder
 
 SHELL ["/bin/bash", "-c"]
 
-WORKDIR /root
-
 ARG lang="C"
 ARG dir="workdir"
 
 ENV DEBIAN_FRONTEND = noninter active
 ENV TERM xterm
 ENV DISPLAY host.docker.internal:0.0
+ENV LANG ${lang}
+ENV LANGUAGE ${lang}
+ENV LC_ALL ${lang}
+ENV TZ Asia/Tokyo
+ENV JULIA_NUM_THREADS 4
+
+WORKDIR /root
+COPY pkginstall.jl /root/
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
-
-COPY *.jl /root/
 
 RUN apt -y update && apt -y upgrade &&\
     apt -y install tzdata \
@@ -28,13 +32,8 @@ RUN apt -y update && apt -y upgrade &&\
     rm julia-1.7.0-linux-x86_64.tar.gz &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
-    julia pkginstall.jl &&\
-    locale-gen ${lang}
+    julia pkginstall.jl figure &&\
+    julia pkginstall.jl run &&\
+    rm -rf pkginstall.jl
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
-
-ENV LANG ${lang}
-ENV LANGUAGE ${lang}
-ENV LC_ALL ${lang}
-ENV TZ=Asia/Tokyo
-ENV TZ JST-9

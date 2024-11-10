@@ -121,7 +121,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         println(fr, "The number of solutions: ", length(arch_list))
         println(fr, "The number of regenerated CVT Map: ", cvt_vorn_data_index)
         println(fr, "===================================================================================")
-        println(fr, "Top 10 solutions:")
+        println(fr, "Top 10 suboptimal solutions:")
 
         for i in 1:10
             println(fr, "-----------------------------------------------------------------------------------")
