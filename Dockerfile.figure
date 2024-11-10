@@ -16,8 +16,10 @@ ENV JULIA_NUM_THREADS 4
 
 WORKDIR /root
 
-COPY pkginstall.jl make-plot.jl src/logger.jl src/config.jl /root/
+COPY pkginstall.jl /root/
 
 RUN apt -y update && apt -y upgrade &&\
     julia pkginstall.jl figure &&\
     rm -rf pkginstall.jl
+
+COPY make-plot.jl src/logger.jl src/config.jl /root/

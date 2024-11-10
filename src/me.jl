@@ -51,7 +51,7 @@ function evaluator(individual::Individual)
     individual.fitness = fitness(individual.genes)
     
     # 行動識別子を個体に保存
-    individual.behavior = devide_gene(individual.genes)
+    individual.behavior = deepcopy(devide_gene(individual.genes))
 
     # 最良解の更新
     if individual.fitness >= best_solution.fitness
@@ -180,7 +180,7 @@ function map_elites()
         println("Generation: ", iter)
         
         # Evaluator
-        population = Population([evaluator(population.individuals[i]) for i in 1:N])
+        population = Population([evaluator(ind) for ind in population.individuals])
         
         # Mapping
         archive = Mapping(population, archive)

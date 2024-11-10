@@ -3,13 +3,17 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Printf
+using LaTeXStrings
 using Dates
+using FileIO
+using JLD2
 using Plots
 using StatsPlots
 using UnicodePlots
 using PyCall
 using PyPlot
-using LaTeXStrings
+using DelaunayTriangulation
+using CairoMakie
 
 #----------------------------------------------------------------------------------------------------#
 
@@ -18,73 +22,114 @@ include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+function MakeFigure(yl="fitness")
+    fig = CairoMakie.Figure()
+    
+    return Axis(fig[1, 1], limits = ((1, 0.0), (MAXTIME, 1.0)), xlabel="Generation", ylabel=yl, title="Fitness: $METHOD", lw=2, height = 400) # Make plot
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 function MakeFigure()
-    # Load data
-    data = readdlm("result/$METHOD/$OBJ_F/$F_FITNESS", ',', Float64, '\n', header=false)
+    fig = CairoMakie.Figure()
 
-    # Make plot
-    p = plot(data, xlabel="Iteration", ylabel="Fitness", title="Fitness of $METHOD", label="Fitness", lw=2)
-
-    # Save plot
-    savefig(p, "result/$METHOD/$OBJ_F/$F_FITNESS.png")
+    return Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title="CVT Map and plotted behavior: $METHOD", lw=2, width = 400, height = 400) # Make plot
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function SavePDF()
-    # Load data
-    data = readdlm("result/$METHOD/$OBJ_F/$F_FITNESS", ',', Float64, '\n', header=false)
+function ReadData(dir::String, item::String)::Dict{Int64, Float64}
+    filepath = [path for path in readdir(dir) if occursin(item, path)]
 
-    # Make plot
-    p = plot(data, xlabel="Iteration", ylabel="Fitness", title="Fitness of $METHOD", label="Fitness", lw=2)
+    if length(filepath) == 0
+        println("No such file: $item")
 
-    # Save plot
-    savefig(p, "result/$METHOD/$OBJ_F/$F_FITNESS.pdf")
-end
+        return nothing, nothing
+    else
+        average_data = Dict{Int64, Float64}()
+        datas = Matrix{Any}[]
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-function parse_fitness_data(filename::String)
-    open(filename, "r") do io
-        reading_data = false # ボーダーライン検出用フラグ
-        generation = 1       # 世代数
-        fitness_data = []    # 出力用の配列
-        
-        # ファイルを1行ずつ読み込む
-        for line in eachline(io)
-            # ボーダーラインを検出
-            if occursin("=", line)
-                # データ読み取り開始
-                if !reading_data
-                    reading_data = true
+        for (i, f) in enumerate(filepath)
+            open(f, "r") do io
+                reading_data = false # ボーダーライン検出用フラグ
+                
+                for (j, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
+                    if occursin("=", line) # ボーダーラインを検出
+                        if !reading_data # データ読み取り開始
+                            reading_data = true
+                            
+                            continue
+                        else # 2つ目のボーダーラインに到達したら終了
+                            break
+                        end
+                    end
                     
-                    continue
-                else
-                    # 2つ目のボーダーラインに到達したら終了
-                    break
-                end
-            end
+                    if reading_data
+                        line_value = tryparse(Float64, line) # 行をFloat64としてパースして格納
 
-            # データ読み取り中の場合
-            if reading_data
-                # 行をFloat64としてパースして格納
-                fitness_value = tryparse(Float64, line)
-                if fitness_value !== nothing
-                    push!(fitness_data, (generation, fitness_value))
-                    generation += 1
+                        if line_value !== nothing
+                            push!(datas[i][j], line_value)
+                        end
+                    end
                 end
+
             end
         end
 
-        return fitness_data
+        for (g, data) in enumerate(datas)
+            average_data = push(g => mean(data))
+        end
+    end
+
+    return average_data
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function PlotData(data::Dict{Int64, Float64}, fig::Plots.Plot, yl="fitness")
+    return plot!(fig, data, ) # Plot data
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function PlotData(data::Dict{Int64, Float64}, fig::Plots.Plot, yl="behavior")
+    return plot(data)
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function SavePDF(p::Plots.Plot)
+    save("result/$METHOD/$OBJ_F/pdf/$F_FITNESS.pdf", p) # Save plot
+end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+function main()
+    filedir = "result/$METHOD/$OBJ_F/"
+
+    data::Dict{Int64, Float64} = ReadData(filedir, ARGS[1])
+
+    if data !== nothing
+        figure = MakeFigure(ARGS[1])
+
+        plot = PlotData(data, figure, ARGS[1])
+
+        SavePDF(plot)
     end
 end
 
-# データファイルから読み込んで結果を表示
-filename = "result/fitness-2024-11-08-05-17-abc-cvt-rastrigin-50.dat"
-fitness_data = parse_fitness_data(filename)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# 結果の確認
-for (gen, value) in fitness_data
-    println("Generation $gen: $value")
+try
+    main()
+catch e
+    logger("ERROR", e)
+
+    exit_code = 1
+finally
+    logger("INFO", "Finish the plotting process")
+
+    exit(exit_code)
 end
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

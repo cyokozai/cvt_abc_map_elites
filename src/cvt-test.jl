@@ -42,7 +42,7 @@ ax1 = Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel
 voronoiplot!(ax1, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
 resize_to_layout!(fig)
 
-ax2 = Axis(fig[1, 2], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Ploted", width = 400, height = 400)
+ax2 = Axis(fig[1, 2], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Plotted", width = 400, height = 400)
 voronoiplot!(ax2, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
 resize_to_layout!(fig)
 

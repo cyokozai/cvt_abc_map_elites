@@ -16,7 +16,7 @@ ENV TZ Asia/Tokyo
 ENV JULIA_NUM_THREADS 4
 
 WORKDIR /root
-COPY pkginstall.jl /root/
+COPY pkginstall.jl make-plot.jl src/logger.jl src/config.jl /root/
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -33,7 +33,6 @@ RUN apt -y update && apt -y upgrade &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
     julia pkginstall.jl figure &&\
-    julia pkginstall.jl run &&\
     rm -rf pkginstall.jl
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#

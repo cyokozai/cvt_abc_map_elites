@@ -1,6 +1,11 @@
 using Pkg
 
+Pkg.add("JLD2")
+Pkg.add("FileIO")
+
 Pkg.add("StableRNGs")
+Pkg.add("DelaunayTriangulation")
+Pkg.add("CairoMakie")
 
 if ARGS[1] == "figure"
     Pkg.add("LaTeXStrings")
@@ -9,9 +14,6 @@ if ARGS[1] == "figure"
     Pkg.add("UnicodePlots")
     Pkg.add("Plots")
     Pkg.add("StatsPlots")
-elseif ARGS[1] == "run"
-    Pkg.add("DelaunayTriangulation")
-    Pkg.add("CairoMakie")
 end
 
 Pkg.precompile()

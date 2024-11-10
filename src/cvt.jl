@@ -5,7 +5,8 @@
 using DelaunayTriangulation
 using LinearAlgebra
 using StableRNGs
-using Serialization
+using FileIO
+using JLD2
 using Dates
 
 #----------------------------------------------------------------------------------------------------#
@@ -26,7 +27,7 @@ function init_CVT(population::Population)
 
     vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
     
-    serialize("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_index", vorn)
+    save("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_index.jld2", "voronoi", vorn)
     cvt_vorn_data_index += 1
     
     logger("INFO", "CVT is initialized")
