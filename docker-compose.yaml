@@ -20,8 +20,8 @@ services:
         limits:
           cpus: 4.5
           memory: 8G
-    # command: ["sh", "-c", "for D in '10' '50'; do julia /root/src/main.jl $$D abc cvt rastrigin; done"]
-    command: ["bash"]
+    command: ["sh", "-c", "for D in '10' '50'; do julia /root/src/main.jl $$D abc cvt rosenbrock; done"]
+    # command: ["bash"]
   
   julia-figure:
     container_name: julia-figure

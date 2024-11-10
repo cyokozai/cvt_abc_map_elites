@@ -14,7 +14,7 @@ RNG       = StableRNG(SEED)
 D         = if length(ARGS) > 0 parse(Int64, ARGS[1]) else 2 end # Number of dimensions.
 N         = 64     # Number of population size.
 BD        = 2      # Dumber of behavior dimensions | No need to change because it isn't available.
-MAXTIME   = 100 # Number of max time.
+MAXTIME   = 100000 # Number of max time.
 MUTANT_R  = 0.10   # Number of mutation rate.
 ε         = 1.0e-6 # Number of epsilon.
 

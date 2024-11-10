@@ -5,6 +5,8 @@ SHELL ["/bin/bash", "-c"]
 
 ARG lang="C"
 ARG dir="workdir"
+ARG version="1.10"
+ARG patch="5"
 
 ENV DEBIAN_FRONTEND = noninter active
 ENV TERM xterm
@@ -27,9 +29,9 @@ RUN apt -y update && apt -y upgrade &&\
     wget \
     tar \
     language-pack-ja-base language-pack-ja locales &&\
-    wget https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.0-linux-x86_64.tar.gz &&\
-    tar zxvf julia-1.7.0-linux-x86_64.tar.gz -C /usr --strip-components 1 &&\
-    rm julia-1.7.0-linux-x86_64.tar.gz &&\
+    wget https://julialang-s3.julialang.org/bin/linux/x64/${version}/julia-${version}.${patch}-linux-x86_64.tar.gz &&\
+    tar zxvf julia-${version}.${patch}-linux-x86_64.tar.gz -C /usr --strip-components 1 &&\
+    rm julia-${version}.${patch}-linux-x86_64.tar.gz &&\
     echo "alias newalias='julia'" >> ~/.bashrc &&\
     source ~/.bashrc &&\
     julia pkginstall.jl figure &&\
