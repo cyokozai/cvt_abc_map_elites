@@ -24,9 +24,11 @@ function MakeFigure()
         ax = Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
-            xlabel="Generation",
+            xlabel=L"\"Generation\" (×10^4)",
             ylabel="Fitness",
-            title="Fitness: $METHOD"
+            title="Fitness: $METHOD D=$(ARGS[1])",
+            xticks=(1*10^4:10^4:MAXTIME, string.([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+            width = 500
         )
     elseif ARGS[5] == "cvt"
         load_path = [path for path in readdir("result/$(ARGS[2])/$(ARGS[4])/") if occursin("CVT-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
@@ -39,8 +41,8 @@ function MakeFigure()
             xlabel = L"b_1",
             ylabel = L"b_2",
             title="CVT Map and plotted behavior: $METHOD",
-            width = 400,
-            height = 400
+            width = 500,
+            height = 500
         )
 
         voronoiplot!(ax, load_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
@@ -123,19 +125,19 @@ end
 
 function PlotData(data, axis)
     if ARGS[5] == "fitness"
-        sum_data = zeros(size(data, 2))
+        sum_data = zeros(length(data[1, :]))
 
-        for i in eachindex(data)
-            d = data[i, axes(data, 2)]
+        for i in 1:length(data[:, 1])
+            d = data[i, :]
             
-            scatterlines!(axis, 1:size(d, 1), d, marker=nothing, linestyle=:solid, linewidth=0.5, color=:blue)
+            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=0.6, color=:blue)
 
             sum_data .+= d # Sum data
         end
 
-        average_data = sum_data ./ size(data, 1) # Calculate average data
+        average_data = sum_data ./ length(data[1, :]) # Calculate average data
         
-        scatterlines!(axis, 1:size(average_data, 1), average_data, marker=nothing, linestyle=:solid, linewidth=1.0, color=:red)
+        lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=0.8, color=:red)
     # elseif ARGS[5] == "cvt"
     #     scatter!(axis, data, marker = 'x', markersize = 14, color = :green) # Plot behavior points
     end
@@ -173,7 +175,7 @@ end
 #     global exit_code = 1
 # finally
 #     logger("INFO", "Finish the plotting process")
-    
+
 #     exit(exit_code)
 # end
 

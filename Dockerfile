@@ -18,7 +18,7 @@ ENV TZ Asia/Tokyo
 ENV JULIA_NUM_THREADS 4
 
 WORKDIR /root
-COPY pkginstall.jl make-plot.jl src/logger.jl src/config.jl /root/
+COPY pkginstall.jl /root/
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -38,3 +38,5 @@ RUN apt -y update && apt -y upgrade &&\
     rm -rf pkginstall.jl
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
+
+COPY make-plot.jl src/logger.jl src/config.jl /root/
