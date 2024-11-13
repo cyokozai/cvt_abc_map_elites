@@ -32,6 +32,7 @@ services:
     working_dir: /root
     volumes:
       - ./src/result:/root/result
+      - ./src/log:/root/log
     networks:
       - default
     environment:
