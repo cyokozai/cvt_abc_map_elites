@@ -32,7 +32,6 @@ function MakeFigure()
         )
     elseif ARGS[5] == "cvt"
         load_path = [path for path in readdir("result/$(ARGS[2])/$(ARGS[4])/") if occursin("CVT-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
-
         load_vorn = load(load_path[end], "voronoi")
         
         ax = Axis(
@@ -91,7 +90,7 @@ function ReadData(dir::String)
             end
         elseif ARGS[5] == "cvt"
             Data = Vector{Tuple{Float64, Float64}}[]
-
+            
             open(filepath[end], "r") do io
                 reading_data = false # ボーダーライン検出用フラグ
                 
@@ -135,11 +134,9 @@ function PlotData(data, axis)
             sum_data .+= d # Sum data
         end
 
-        average_data = sum_data ./ length(data[1, :]) # Calculate average data
+        average_data = sum_data / Float64(length(data[1, :])) # Calculate average data
         
         lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=0.8, color=:red)
-    # elseif ARGS[5] == "cvt"
-    #     scatter!(axis, data, marker = 'x', markersize = 14, color = :green) # Plot behavior points
     end
 end
 
@@ -165,18 +162,18 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# try
+try
     mkpath("result/$(ARGS[2])/$(ARGS[4])/pdf/") # Make directory
 
     main()
-# catch e
-#     logger("ERROR", e)
+catch e
+    logger("ERROR", e)
 
-#     global exit_code = 1
-# finally
-#     logger("INFO", "Finish the plotting process")
+    global exit_code = 1
+finally
+    logger("INFO", "Finish the plotting process")
 
-#     exit(exit_code)
-# end
+    exit(exit_code)
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

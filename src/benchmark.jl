@@ -15,6 +15,12 @@ elseif OBJ_F == "rastrigin"
     x::Vector{Float64} -> sum(x .^ 2 - 10 * cos.(2 * pi * x) .+ 10)
 elseif OBJ_F == "griewank"
     x::Vector{Float64} -> sum(x .^ 2 / 4000) - prod(cos.(x ./ sqrt.(1:length(x)))) + 1
+elseif OBJ_F == "ackley"
+    x::Vector{Float64} -> -20 * exp(-0.2 * sqrt(sum(x .^ 2) / length(x))) - exp(sum(cos.(2 * pi * x)) / length(x)) + 20 + exp(1)
+elseif OBJ_F == "schwefel"
+    x::Vector{Float64} -> 418.9829 * length(x) - sum(x .* sin.(sqrt.(abs.(x))))
+elseif OBJ_F == "michalewicz"
+    x::Vector{Float64} -> -sum(sin.(x) .* sin.((1:length(x)) .* x .^ 2 / pi) .^ 20)
 else
     logger("ERROR", "Objective function is invalid")
 
@@ -39,6 +45,18 @@ elseif OBJ_F == "griewank"
     SOLUTION = zeros(D)  # Number of solution
     UPP =  600.0         # Upper bound
     LOW = -600.0         # Lower bound
+elseif OBJ_F == "ackley"
+    SOLUTION = zeros(D)  # Number of solution
+    UPP =  32.0          # Upper bound
+    LOW = -32.0          # Lower bound
+elseif OBJ_F == "schwefel"
+    SOLUTION = zeros(D)  # Number of solution
+    UPP =  500.0         # Upper bound
+    LOW = -500.0         # Lower bound
+elseif OBJ_F == "michalewicz"
+    SOLUTION = zeros(D)  # Number of solution
+    UPP =  3.0           # Upper bound
+    LOW =  0.0           # Lower bound
 else
     logger("ERROR", "Objective parameter is invalid")
 

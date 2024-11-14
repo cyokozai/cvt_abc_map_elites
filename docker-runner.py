@@ -4,13 +4,11 @@ import sys
 
 args = sys.argv
 
-FILENAME = 'docker-compose-run.yaml'
-FUNCTION = [ "sphere", "rastrigin", "rosenbrock", "griewank"] #  "sphere", "rastrigin", "rosenbrock", "griewank" 
+COMPOSEFILE = "docker-compose-run.yaml"
+FUNCTION = "sphere rosenbrock rastrigin griewank schwefel ackley michalewicz"
 MAP_METHOD = "cvt" # "grep", "cvt"
-METHOD = [ "default", "de", "abc"]
-DIMENSION = "2"
-
-container_combinations = len(FUNCTION) * len(METHOD)
+METHOD = ["default", "de", "abc"]
+DIMENSION = ""
 
 def generate_yaml(function, method, map, dimention):
     # Jinja2環境を設定
@@ -23,13 +21,13 @@ def generate_yaml(function, method, map, dimention):
     output = template.render(function=function, method=method, map=map, dimention=dimention)
     
     # 結果をファイルに保存
-    with open(FILENAME, 'w') as file:
+    with open(COMPOSEFILE, 'w') as file:
         file.write(output)
 
 if __name__ == '__main__':
     try:
         if len(args) == 1:
-            DIMENSION = "'10' '20' '50' '100' '200' '500' '1000'"
+            DIMENSION = "10 20 50 100 200 500 1000"
         elif len(args) > 1 and args[1] == "test":
             DIMENSION = "2"
         else:
@@ -38,7 +36,7 @@ if __name__ == '__main__':
             exit(1)
 
         generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION)
-        subprocess.run(['docker', 'compose', '-f', FILENAME, 'up', '-d', '--build'])
+        subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
     except Exception as e:
         print(e)
         

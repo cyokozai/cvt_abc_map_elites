@@ -12,15 +12,16 @@ services:
       - default
     environment:
       - TZ=Asia/Tokyo
-      - FUNCTION='sphere'
-      - METHOD='default'
+      - FUNCTION=sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+      - METHOD=default de abc
       - D=10
+      - LOOP=1 2 3 4 5
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: ["sh", "-c", "for i in {1..6}; do for D in '10' '50'; do julia /root/src/main.jl $$D abc cvt rosenbrock; done; done"]
+    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do for m in $$METHOD; do julia /root/src/main.jl $$d $$m cvt $$f; done; done; done; done"]
   
   julia-figure:
     container_name: julia-figure
@@ -36,15 +37,15 @@ services:
       - default
     environment:
       - TZ=Asia/Tokyo
-      - FUNCTION='sphere'
-      - METHOD='default'
+      - FUNCTION=sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+      - METHOD=default de abc
       - D=10
     deploy:
       resources:
         limits:
           cpus: 4.5
           memory: 8G
-    command: ["sh", "-c", "for METHOD in 'default' 'de' 'abc'; do for D in '10' '50'; do for D in '10' '50'; do julia make-plot.jl $$D abc cvt rosenbrock fitness; done"]
+    command: ["sh", "-c", "for m in $$METHOD; do for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$m cvt $$f fitness; done; done; done"]
 
 networks:
   default:

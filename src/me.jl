@@ -197,7 +197,7 @@ function map_elites()
         println(fb, best_solution.behavior)
         
         # 終了条件の確認
-        if sum(abs.(best_solution.genes .- SOLUTION)) < ε || best_solution.fitness >= 1.0
+        if best_solution.fitness >= 1.0
             if CONV_FLAG == true
                 logger("INFO", "Convergence")
 
