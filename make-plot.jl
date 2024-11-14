@@ -24,8 +24,8 @@ function MakeFigure()
         ax = Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
-            xlabel=L"\"Generation\" (×10^4)",
-            ylabel="Fitness",
+            xlabel=L"\mathrm{Generation\,} (\times 10^4)",
+            ylabel=L"\mathrm{Fitness\,}",
             title="Fitness: $METHOD D=$(ARGS[1])",
             xticks=(1*10^4:10^4:MAXTIME, string.([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
             width = 500

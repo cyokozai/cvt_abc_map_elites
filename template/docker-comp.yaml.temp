@@ -20,7 +20,7 @@ services:{% for f in function %}{% for m in method %}
         limits:
           cpus: 1.0
           memory: 8G
-    command: ["sh", "-c", "for D in {{ dimention }}; do julia /root/src/main.jl $$D {{ m }} {{ map }} {{ f }}; done"]{% endfor %}{% endfor %}
+    command: ["sh", "-c", "for i in {1..20}; do for D in {{ dimention }}; do julia /root/src/main.jl $$D {{ m }} {{ map }} {{ f }}; done; done"]{% endfor %}{% endfor %}
 
 networks:
   default:

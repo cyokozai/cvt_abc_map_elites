@@ -20,7 +20,7 @@ services:
         limits:
           cpus: 4.5
           memory: 8G
-    command: ["sh", "-c", "for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl $$D default cvt sphere; done"]
+    command: ["sh", "-c", "for i in {1..20}; do for D in '10' '20' '50' '100' '200' '500' '1000'; do julia /root/src/main.jl $$D default cvt sphere; done"]
   julia-run-abc-sphere:
     container_name: "julia-run-abc-sphere"
     tty: true

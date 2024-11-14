@@ -21,6 +21,7 @@ include("logger.jl")
 function init_CVT(population::Population)
     global vorn, cvt_vorn_data_index
     
+    cvt_vorn_data_index += 1
     points = [rand(RNG, BD) .* (UPP - LOW) .+ LOW for _ in 1:k_max-N]
     behavior = [population.individuals[i].behavior for i in 1:N]
     append!(points, behavior)
@@ -28,7 +29,6 @@ function init_CVT(population::Population)
     vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
     
     save("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_index.jld2", "voronoi", vorn)
-    cvt_vorn_data_index += 1
     
     logger("INFO", "CVT is initialized")
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}
