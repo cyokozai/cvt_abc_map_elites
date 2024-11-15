@@ -30,7 +30,7 @@ function DE(population::Population)
         while r1 == i || r2 == i || r3 == i
             r1, r2, r3 = rand(RNG, 1:N, 3)
         end
-        
+
         v = clamp.(I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes), LOW, UPP)
         tv = crossover(I[i].genes, v)
         
