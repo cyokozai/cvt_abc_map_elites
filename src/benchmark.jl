@@ -33,6 +33,8 @@ if OBJ_F == "sphere"
     SOLUTION = zeros(D)  # Number of solution
     UPP =  100.0         # Upper bound
     LOW = -100.0         # Lower bound
+    F = 0.5              # Scaling factor
+    CR = 0.01            # Crossover rate
 elseif OBJ_F == "rosenbrock"
     SOLUTION = ones(D)   # Number of solution
     UPP =  30.0          # Upper bound

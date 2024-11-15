@@ -34,8 +34,8 @@ cvt_vorn_data_index = 0
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
-CR = 0.80 # The crossover probability (default: 0.8).
-F  = 0.90 # The differentiation (mutation) scaling factor (default: 0.9).
+CR # The crossover probability (default: 0.8).
+F  # The differentiation (mutation) scaling factor (default: 0.9).
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter

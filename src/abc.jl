@@ -16,7 +16,7 @@ include("logger.jl")
 
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
-
+    
     if fitness(v) > fitness(f)
         trial[i] = 0
 
@@ -104,15 +104,16 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function scout_bee(population::Population, archive::Archive)
-    global trial, rc
+    global trial
     
-    for i in 1:N
+    for I in population.individuals
         if trial[i] > TC_LIMIT
-            population.individuals[i].genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
+            I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
             trial = zeros(Int64, N)
             
-            if MAP_METHOD == "cvt"
+            if MAP_METHOD == "cvt" && best_solution.fitness >= I.fitness
                 init_CVT(population)
+
                 new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
                 archive = deepcopy(cvt_mapping(population, new_archive))
             end
