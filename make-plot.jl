@@ -19,7 +19,7 @@ include("logger.jl")
 
 function MakeFigure()
     fig = CairoMakie.Figure()
-    
+
     if ARGS[5] == "fitness"
         ax = Axis(
             fig[1, 1],
@@ -60,7 +60,7 @@ function ReadData(dir::String)
 
     if length(filepath) == 0
         println("No such file: $ARGS[5]")
-
+        
         return nothing
     else
         if ARGS[5] == "fitness"
@@ -138,6 +138,10 @@ function PlotData(data, axis)
         average_data = sum_data / Float64(length(data[1, :])) # Calculate average data
         
         lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=0.8, color=:red)
+    elseif ARGS[5] == "cvt"
+        for d in data
+            scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
+        end
     end
 end
 
@@ -145,6 +149,7 @@ end
 
 function SavePDF(fig)
     resize_to_layout!(fig)
+
     println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
     save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
 end
