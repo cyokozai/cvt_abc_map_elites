@@ -66,8 +66,8 @@ trial = zeros(Int, N) # ABC Trial
 #----------------------------------------------------------------------------------------------------#
 # Method
 OBJ_F      = if length(ARGS) > 3 ARGS[4] else "sphere" end  # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "grid" end       # Method: grid, cvt
-METHOD     = if length(ARGS) > 1 ARGS[2] else "default" end    # Method: default, abc, de
+MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "grid" end    # Method: grid, cvt
+METHOD     = if length(ARGS) > 1 ARGS[2] else "default" end # Method: default, abc, de
 
 #----------------------------------------------------------------------------------------------------#
 # Result file
