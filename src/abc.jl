@@ -19,7 +19,7 @@ function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     
     if fitness(v) > fitness(f)
         trial[i] = 0
-
+        
         return v
     else
         trial[i] += 1
@@ -72,7 +72,7 @@ end
 
 function onlooker_bee(population::Population)
     global trial
-
+    
     I = population.individuals
     cum_p = 0.0
     p = [I[i].fitness / sum(I[i].fitness for i = 1 : N) for i = 1 : N]
@@ -84,14 +84,14 @@ function onlooker_bee(population::Population)
     for i in 1:N
         cum_p += p[i]
         new_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
-
+        
         for j = 1 : D
             while true
                 k = rand(RNG, 1:N)
 
                 if k != i break end
             end
-
+            
             v[i, j] = new_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_archive[i, j] - new_archive[k, j])
         end
         
@@ -136,7 +136,7 @@ function ABC(population::Population, archive::Archive)
 
     # Scout bee phase
     population, archive = scout_bee(population, archive)
-
+    
     return population
 end
 
