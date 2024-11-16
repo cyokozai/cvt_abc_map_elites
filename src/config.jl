@@ -28,6 +28,25 @@ GRID_SIZE = 158   # Number of grid size.
 k_max     = 25000 # Number of max k.
 
 #----------------------------------------------------------------------------------------------------#
+# Method
+OBJ_F      = if length(ARGS) > 3 ARGS[4] else "sphere" end  # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
+MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "grid" end    # Method: grid, cvt
+METHOD     = if length(ARGS) > 1 ARGS[2] else "default" end # Method: default, abc, de
+
+#----------------------------------------------------------------------------------------------------#
+# Result file
+mkpath("./result/$METHOD/$OBJ_F/")
+mkpath("./log/")
+
+DATE       = Dates.format(now(), "yyyy-mm-dd-HH-MM")
+LOGDATE    = Dates.format(now(), "yyyy-mm-dd")
+FILENAME   = "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"
+F_RESULT   = "result-$FILENAME.dat"
+F_FITNESS  = "fitness-$FILENAME.dat"
+F_BEHAVIOR = "behavior-$FILENAME.dat"
+F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
+
+#----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
 vorn = nothing
 cvt_vorn_data_index = 0
@@ -62,24 +81,5 @@ end
 # ABC parameter
 TC_LIMIT = N * D      # Limit number that scout bee can search.
 trial = zeros(Int, N) # ABC Trial
-
-#----------------------------------------------------------------------------------------------------#
-# Method
-OBJ_F      = if length(ARGS) > 3 ARGS[4] else "sphere" end  # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-MAP_METHOD = if length(ARGS) > 2 ARGS[3] else "grid" end    # Method: grid, cvt
-METHOD     = if length(ARGS) > 1 ARGS[2] else "default" end # Method: default, abc, de
-
-#----------------------------------------------------------------------------------------------------#
-# Result file
-mkpath("./result/$METHOD/$OBJ_F/")
-mkpath("./log/")
-
-DATE       = Dates.format(now(), "yyyy-mm-dd-HH-MM")
-LOGDATE    = Dates.format(now(), "yyyy-mm-dd")
-FILENAME   = "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"
-F_RESULT   = "result-$FILENAME.dat"
-F_FITNESS  = "fitness-$FILENAME.dat"
-F_BEHAVIOR = "behavior-$FILENAME.dat"
-F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
