@@ -18,9 +18,9 @@ MAXTIME   = 100000 # Number of max time.
 MUTANT_R  = 0.10   # Number of mutation rate.
 ε         = 1.0e-6 # Number of epsilon.
 
-CONV_FLAG = true   # Convergence flag | 'true' is available when you want to check the convergence.
-FIT_NOISE = true   # Fitness noise | 'true' is available when you want to add the noise to the fitness.
-NOIZE_R   = 0.10   # Noise rate. | 0.0 < NOIZE_R < 1.0
+CONV_FLAG = true # Convergence flag | 'true' is available when you want to check the convergence.
+FIT_NOISE = true # Fitness noise | 'true' is available when you want to add the noise to the fitness.
+NOIZE_R   = 0.10 # Noise rate. | 0.0 < NOIZE_R < 1.0
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
