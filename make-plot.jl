@@ -19,7 +19,7 @@ include("logger.jl")
 
 function MakeFigure()
     fig = CairoMakie.Figure()
-
+    
     if ARGS[5] == "fitness"
         ax = Axis(
             fig[1, 1],
@@ -49,7 +49,7 @@ function MakeFigure()
     end
     
     resize_to_layout!(fig)
-
+    
     return fig, ax
 end
 
@@ -131,10 +131,10 @@ function PlotData(data, axis)
             d = data[i, :]
             
             lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=0.6, color=:blue)
-
+            
             sum_data .+= d # Sum data
         end
-
+        
         average_data = sum_data / Float64(length(data[1, :])) # Calculate average data
         
         lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=0.8, color=:red)
@@ -144,9 +144,9 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function SavePDF(fig)
-    resize_to_layout!(fig) # Resize to layout
-    println("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
-    save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig) # Save plot
+    resize_to_layout!(fig)
+    println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
+    save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -164,7 +164,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 try
-    mkpath("result/$(ARGS[2])/$(ARGS[4])/pdf/") # Make directory
+    mkpath("result/$(ARGS[2])/$(ARGS[4])/pdf/")
 
     main()
 catch e
