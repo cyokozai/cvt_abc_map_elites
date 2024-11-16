@@ -19,7 +19,7 @@ include("logger.jl")
 
 function MakeFigure()
     fig = CairoMakie.Figure()
-
+    
     if ARGS[5] == "fitness"
         ax = Axis(
             fig[1, 1],
@@ -65,7 +65,7 @@ function ReadData(dir::String)
     else
         if ARGS[5] == "fitness"
             Data = Matrix{Float64}(undef, length(filepath), MAXTIME)
-
+            
             for (i, f) in enumerate(filepath)
                 j = 1
                 reading_data = false # ボーダーライン検出用フラグ
