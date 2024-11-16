@@ -44,7 +44,7 @@ function MakeFigure()
             width = 500,
             height = 500
         )
-
+        
         voronoiplot!(ax, load_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
     end
     
