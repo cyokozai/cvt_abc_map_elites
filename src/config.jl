@@ -61,9 +61,7 @@ end
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
 TC_LIMIT = N * D      # Limit number that scout bee can search.
-α = 2.0               # The growth factors for the scout bee (default: 2.0).
 trial = zeros(Int, N) # ABC Trial
-rc = 0                # ABC Regeneration Counter
 
 #----------------------------------------------------------------------------------------------------#
 # Method
