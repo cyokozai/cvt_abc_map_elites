@@ -70,9 +70,7 @@ elseif OBJ_F == "schwefel" && METHOD == "DE"
 elseif OBJ_F == "michalewicz" && METHOD == "DE"
     [0.20, 0.50]
 else
-    logger("ERROR", "Objective parameter is invalid")
-
-    exit(1)
+    [0.8, 0.9]
 end
 
 #----------------------------------------------------------------------------------------------------#
