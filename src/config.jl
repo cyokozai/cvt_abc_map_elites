@@ -53,28 +53,26 @@ cvt_vorn_data_index = 0
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
-if METHOD == "DE"
-    # The crossover probability (default: 0.8).
-    # The differentiation (mutation) scaling factor (default: 0.9).
-    CR, F = if OBJ_F == "sphere"
-        [0.01, 0.50]
-    elseif OBJ_F == "rosenbrock"
-        [0.75, 0.70]
-    elseif OBJ_F == "rastrigin"
-        [0.001, 0.50]
-    elseif OBJ_F == "griewank"
-        [0.20, 0.50]
-    elseif OBJ_F == "ackley"
-        [0.20, 0.50]
-    elseif OBJ_F == "schwefel"
-        [0.20, 0.50]
-    elseif OBJ_F == "michalewicz"
-        [0.20, 0.50]
-    else
-        logger("ERROR", "Objective parameter is invalid")
+# The crossover probability (default: 0.8).
+# The differentiation (mutation) scaling factor (default: 0.9).
+CR, F = if OBJ_F == "sphere" && METHOD == "DE"
+    [0.01, 0.50]
+elseif OBJ_F == "rosenbrock" && METHOD == "DE"
+    [0.75, 0.70]
+elseif OBJ_F == "rastrigin" && METHOD == "DE"
+    [0.001, 0.50]
+elseif OBJ_F == "griewank" && METHOD == "DE"
+    [0.20, 0.50]
+elseif OBJ_F == "ackley" && METHOD == "DE"
+    [0.20, 0.50]
+elseif OBJ_F == "schwefel" && METHOD == "DE"
+    [0.20, 0.50]
+elseif OBJ_F == "michalewicz" && METHOD == "DE"
+    [0.20, 0.50]
+else
+    logger("ERROR", "Objective parameter is invalid")
 
-        exit(1)
-    end
+    exit(1)
 end
 
 #----------------------------------------------------------------------------------------------------#
