@@ -16,7 +16,9 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Binomial crossover
 function crossover(x::Vector{Float64}, v::Vector{Float64})
-    return [rand(RNG) <= CR || j == rand(RNG, 1:D) ? v[j] : x[j] for j in 1:D]
+    j_rand = rand(RNG, 1:D)
+    
+    return [rand(RNG) <= CR || j == j_rand ? v[j] : x[j] for j in 1:D]
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
