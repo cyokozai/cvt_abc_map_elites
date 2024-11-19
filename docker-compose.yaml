@@ -1,0 +1,52 @@
+services:
+  julia-dev:
+    container_name: julia-dev
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /root/src
+    volumes:
+      - ./src:/root/src
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+      - FUNCTION=sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+      - METHOD=default de abc
+      - D=10
+      - LOOP=1 2 3 4 5
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: ["bash"]
+  julia-figure:
+    container_name: julia-figure
+    tty: true
+    build:
+      context: .
+      dockerfile: Dockerfile.figure
+    working_dir: /root
+    volumes:
+      - ./src/result:/root/result
+      - ./src/log:/root/log
+    networks:
+      - default
+    environment:
+      - TZ=Asia/Tokyo
+      - FUNCTION=sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+      - METHOD=default de abc
+      - D=10
+      - PLOT=fitness cvt
+    deploy:
+      resources:
+        limits:
+          cpus: 4.5
+          memory: 8G
+    command: ["sh", "-c", "for m in $$METHOD; do for f in $$FUNCTION; do for d in $$D; do for plot in $$PLOT; do julia make-plot.jl $$d $$m cvt $$f $$plot; done; done; done; done"]
+
+networks:
+  default:
+    driver: bridge
