@@ -112,13 +112,13 @@ function scout_bee(population::Population, archive::Archive)
                 I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt" && I.fitness >= best_solution.fitness
+                if MAP_METHOD == "cvt" && I.fitness >= best_solution.fitness && cvt_vorn_data_index < 3
                     init_CVT(population)
-
+                    
                     new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
                     archive = deepcopy(cvt_mapping(population, new_archive))
                 end
-
+                
                 logger("INFO", "Scout bee found a new food source")
             end
         end

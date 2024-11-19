@@ -75,7 +75,7 @@ end
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
-TC_LIMIT = N * D      # Limit number that scout bee can search.
-trial = zeros(Int, N) # ABC Trial
+TC_LIMIT = floor(Int, k_max / N)  # Limit number that scout bee can search.
+trial    = zeros(Int, N)          # ABC Trial
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
