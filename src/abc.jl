@@ -109,10 +109,11 @@ function scout_bee(population::Population, archive::Archive)
     if maximum(trial) > TC_LIMIT
         for (i, I) in enumerate(population.individuals)
             if trial[i] > TC_LIMIT
-                I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
+                gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
+                population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt" && I.fitness >= best_solution.fitness && cvt_vorn_data_index < 3
+                if MAP_METHOD == "cvt" && cvt_vorn_data_index < 3 && fitness(gene) >= I.fitness
                     init_CVT(population)
                     
                     new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
