@@ -72,7 +72,7 @@ function main()
     println("End of Iteration.\n")
     println("Time of iteration: ", iter_time, " [sec]")
     println("Time:              ", elapsed_time, " [sec]")
-
+    println("===================================================================================")
     SaveResult(arch, iter_time, elapsed_time)
 end
 
@@ -80,7 +80,7 @@ end
 #       Run                                                                                          #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# try
+try
     global exit_code = 0
 
     logger("INFO", "Start")
@@ -88,19 +88,19 @@ end
     
     main()
 
-#     logger("INFO", "Success! :)")
-#     println("Success! :)")
-# catch e
-#     global exit_code = 1
+    logger("INFO", "Success! :)")
+    println("Success! :)")
+catch e
+    global exit_code = 1
 
-#     logger("ERROR", "An error occurred! :(\n$e")
-#     println("An error occurred! :(\n$e")
-# finally
-#     logger("INFO", "Finish")
-#     println("Finish")
+    logger("ERROR", "An error occurred! :(\n$e")
+    println("An error occurred! :(\n$e")
+finally
+    logger("INFO", "Finish")
+    println("Finish")
 
-#     exit(exit_code)
-# end
+    exit(exit_code)
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #
