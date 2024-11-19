@@ -27,7 +27,7 @@ function MakeFigure()
             xlabel=rich(L"\mathrm{Generation\,} (\times 10^4)"),
             ylabel=rich(L"\mathrm{Fitness\,}"),
             title="Fitness: $METHOD D=$(ARGS[1])",
-            xticks=(1*10^4:10^4:MAXTIME, string.([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])),
+            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
             yminorticks = IntervalsBetween(5),
             width = 500
         )
