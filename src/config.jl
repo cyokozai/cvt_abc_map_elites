@@ -56,7 +56,7 @@ cvt_vorn_data_index = 0
 # The crossover probability (default: 0.8).
 # The differentiation (mutation) scaling factor (default: 0.9).
 CR, F = if OBJ_F == "sphere" && METHOD == "DE"
-    [0.10, 0.50]
+    [0.10, 0.30]
 elseif OBJ_F == "rosenbrock" && METHOD == "DE"
     [0.75, 0.70]
 elseif OBJ_F == "rastrigin" && METHOD == "DE"
