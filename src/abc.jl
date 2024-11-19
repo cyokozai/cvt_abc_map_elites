@@ -117,6 +117,8 @@ function scout_bee(population::Population, archive::Archive)
                     
                     new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
                     archive = deepcopy(cvt_mapping(population, new_archive))
+
+                    logger("INFO", "Recreate Voronoi diagram")
                 end
                 
                 logger("INFO", "Scout bee found a new food source")

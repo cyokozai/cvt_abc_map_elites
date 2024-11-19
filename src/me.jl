@@ -53,7 +53,7 @@ function evaluator(individual::Individual)
     
     # 行動識別子を個体に保存
     individual.behavior = deepcopy(devide_gene(individual.genes))
-
+    
     # 最良解の更新
     if individual.fitness >= best_solution.fitness
         global best_solution = Individual(deepcopy(individual.genes), individual.fitness, deepcopy(individual.behavior))
