@@ -17,27 +17,63 @@ function MakeFiles()
     open("result/$METHOD/$OBJ_F/$F_RESULT", "w") do fr
         println(fr, "Date: ", DATE)
         println(fr, "Method: ", METHOD)
+        if METHOD == "DE"
+            println(fr, "F: ", F)
+            println(fr, "CR: ", CR)
+        elseif METHOD == "ABC"
+            println(fr, "Trial count limit: ", TC_LIMIT)
+        end
         println(fr, "Map: ", MAP_METHOD)
-        println(fr, "Objective function: ", OBJ_F)
+        if MAP_METHOD == "grid"
+            println(fr, "Grid size: ", GRID_SIZE)
+        elseif MAP_METHOD == "cvt"
+            println(fr, "Voronoi point: ", k_max)
+        end
+        println(fr, "Benchmark: ", OBJ_F)
         println(fr, "Dimension: ", D)
+        println(fr, "Population size: ", N)
         println(fr, "===================================================================================")
     end
 
     open("result/$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
         println(ff, "Date: ", DATE)
         println(ff, "Method: ", METHOD)
+        if METHOD == "DE"
+            println(ff, "F: ", F)
+            println(ff, "CR: ", CR)
+        elseif METHOD == "ABC"
+            println(ff, "Trial count limit: ", TC_LIMIT)
+        end
         println(ff, "Map: ", MAP_METHOD)
-        println(ff, "Objective function: ", OBJ_F)
+        if MAP_METHOD == "grid"
+            println(ff, "Grid size: ", GRID_SIZE)
+        elseif MAP_METHOD == "cvt"
+            println(ff, "Voronoi point: ", k_max)
+        end
+        println(ff, "Benchmark: ", OBJ_F)
         println(ff, "Dimension: ", D)
+        println(ff, "Population size: ", N)
         println(ff, "===================================================================================")
     end
 
     open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "w") do fb
         println(fb, "Date: ", DATE)
         println(fb, "Method: ", METHOD)
+        if METHOD == "DE"
+            println(fb, "F: ", F)
+            println(fb, "CR: ", CR)
+        elseif METHOD == "ABC"
+            println(fb, "Trial count limit: ", TC_LIMIT)
+        end
         println(fb, "Map: ", MAP_METHOD)
-        println(fb, "Objective function: ", OBJ_F)
+        if MAP_METHOD == "grid"
+            println(fb, "Grid size: ", GRID_SIZE)
+        elseif MAP_METHOD == "cvt"
+            println(fb, "Voronoi point: ", k_max)
+        end
+        println(fb, "Benchmark: ", OBJ_F)
         println(fb, "Dimension: ", D)
+        println(fb, "Population size: ", N)
         println(fb, "===================================================================================")
     end
 end

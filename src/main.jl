@@ -38,10 +38,22 @@ function main()
         logger("INFO", "Convergence flag is false")
     end
     
-    println("Method: ", METHOD)
-    println("Map: ", MAP_METHOD)
-    println("Objective function: ", OBJ_F)
+    println("Method   : ", METHOD)
+    if METHOD == "DE"
+        println("F : ", F)
+        println("CR: ", CR)
+    elseif METHOD == "ABC"
+        println("Trial count limit: ", TC_LIMIT)
+    end
+    println("Map      : ", MAP_METHOD)
+    if MAP_METHOD == "grid"
+        println("Grid size    : ", GRID_SIZE)
+    elseif MAP_METHOD == "cvt"
+        println("Voronoi point: ", k_max)
+    end
+    println("Benchmark: ", OBJ_F)
     println("Dimension: ", D)
+    println("Population size: ", N)
     println("===================================================================================")
 
     #------MAP ELITES ALGORITHM------------------------------#
