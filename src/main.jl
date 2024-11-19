@@ -39,10 +39,10 @@ function main()
     end
     
     println("Method   : ", METHOD)
-    if METHOD == "DE"
+    if METHOD == "de"
         println("F : ", F)
         println("CR: ", CR)
-    elseif METHOD == "ABC"
+    elseif METHOD == "abc"
         println("Trial count limit: ", TC_LIMIT)
     end
     println("Map      : ", MAP_METHOD)

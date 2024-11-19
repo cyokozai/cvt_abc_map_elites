@@ -18,10 +18,10 @@ function MakeFiles()
     open("result/$METHOD/$OBJ_F/$F_RESULT", "w") do fr
         println(fr, "Date: ", DATE)
         println(fr, "Method: ", METHOD)
-        if METHOD == "DE"
+        if METHOD == "de"
             println(fr, "F: ", F)
             println(fr, "CR: ", CR)
-        elseif METHOD == "ABC"
+        elseif METHOD == "abc"
             println(fr, "Trial count limit: ", TC_LIMIT)
         end
         println(fr, "Map: ", MAP_METHOD)
@@ -39,10 +39,10 @@ function MakeFiles()
     open("result/$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
         println(ff, "Date: ", DATE)
         println(ff, "Method: ", METHOD)
-        if METHOD == "DE"
+        if METHOD == "de"
             println(ff, "F: ", F)
             println(ff, "CR: ", CR)
-        elseif METHOD == "ABC"
+        elseif METHOD == "abc"
             println(ff, "Trial count limit: ", TC_LIMIT)
         end
         println(ff, "Map: ", MAP_METHOD)
