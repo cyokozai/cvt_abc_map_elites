@@ -60,7 +60,7 @@ CR, F = if OBJ_F == "sphere" && METHOD == "DE"
 elseif OBJ_F == "rosenbrock" && METHOD == "DE"
     [0.75, 0.70]
 elseif OBJ_F == "rastrigin" && METHOD == "DE"
-    [0.001, 0.50]
+    [0.01, 0.50]
 elseif OBJ_F == "griewank" && METHOD == "DE"
     [0.20, 0.50]
 elseif OBJ_F == "ackley" && METHOD == "DE"
