@@ -61,7 +61,7 @@ function employed_bee(population::Population)
 
             v[i, j] = I[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I[i].genes[j] - I[k].genes[j])
         end
-
+        
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
     end
 
@@ -106,19 +106,21 @@ end
 function scout_bee(population::Population, archive::Archive)
     global trial
     
-    for I in population.individuals
-        if trial[i] > TC_LIMIT
-            I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
-            trial = zeros(Int64, N)
-            
-            if MAP_METHOD == "cvt" && best_solution.fitness >= I.fitness
-                init_CVT(population)
+    if maximum(trial) > TC_LIMIT
+        for (i, I) in enumerate(population.individuals)
+            if trial[i] > TC_LIMIT
+                I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
+                trial[i] = 0
+                
+                if MAP_METHOD == "cvt" && best_solution.fitness >= I.fitness
+                    init_CVT(population)
 
-                new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
-                archive = deepcopy(cvt_mapping(population, new_archive))
+                    new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
+                    archive = deepcopy(cvt_mapping(population, new_archive))
+                end
+
+                logger("INFO", "Scout bee found a new food source")
             end
-
-            logger("INFO", "Scout bee found a new food source")
         end
     end
     

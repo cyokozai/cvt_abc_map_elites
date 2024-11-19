@@ -29,7 +29,7 @@ function DE(population::Population)
     v, tv = zeros(Float64, D, 2)
     
     for i in 1:N
-        while r1 == i || r2 == i || r3 == i
+        while r1 == i || r2 == i || r3 == i || r1 == r2 || r1 == r3 || r2 == r3
             r1, r2, r3 = rand(RNG, 1:N, 3)
         end
 

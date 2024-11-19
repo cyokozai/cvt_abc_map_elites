@@ -143,6 +143,8 @@ function PlotData(data, axis)
             scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
         end
     end
+    
+    ax.xtickformat = "*10^4"
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
