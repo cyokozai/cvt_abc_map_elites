@@ -9,6 +9,7 @@ using Dates
 
 include("config.jl")
 include("struct.jl")
+include("fitness.jl")
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -162,22 +163,25 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         for i in 1:10
             println(fr, "-----------------------------------------------------------------------------------")
             println(fr, "Rank ", i, ": ")
-            println(fr, "├── Solution: ", arch_list[i].genes)
-            println(fr, "├── Fitness:  ", arch_list[i].fitness)
-            println(fr, "└── Behavior: ", arch_list[i].behavior)
+            println(fr, "├── Solution:     ", arch_list[i].genes)
+            println(fr, "├── Fitness:      ", arch_list[i].fitness)
+            println(fr, "├── True fitness: ", fitness(arch_list[i].genes))
+            println(fr, "└── Behavior:     ", arch_list[i].behavior)
         end
 
         println(fr, "===================================================================================")
-        println(fr, "Best solution: ", best_solution.genes)
-        println(fr, "Best fitness:  ", best_solution.fitness)
-        println(fr, "Best behavior: ", best_solution.behavior)
+        println(fr, "Best solution:     ", best_solution.genes)
+        println(fr, "Best fitness:      ", best_solution.fitness)
+        println(fr, "True best fitness: ", fitness(best_solution.genes))
+        println(fr, "Best behavior:     ", best_solution.behavior)
         println(fr, "===================================================================================")
     end
 
     println("===================================================================================")
-    println("Best solution: ", best_solution.genes)
-    println("Best fitness:  ", best_solution.fitness)
-    println("Best behavior: ", best_solution.behavior)
+    println("Best solution:     ", best_solution.genes)
+    println("Best fitness:      ", best_solution.fitness)
+    println("True best fitness: ", fitness(best_solution.genes))
+    println("Best behavior:     ", best_solution.behavior)
     println("===================================================================================")
 end
 
