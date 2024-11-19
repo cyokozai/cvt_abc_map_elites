@@ -112,7 +112,7 @@ function scout_bee(population::Population, archive::Archive)
                 I.genes = rand(Float64, D) .* (UPP - LOW) .+ LOW
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt" && best_solution.fitness >= I.fitness
+                if MAP_METHOD == "cvt" && I.fitness >= best_solution.fitness
                     init_CVT(population)
 
                     new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
