@@ -113,13 +113,15 @@ function scout_bee(population::Population, archive::Archive)
                 population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt" && cvt_vorn_data_index < 3 && fitness(gene) >= I.fitness
-                    init_CVT(population)
-                    
-                    new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
-                    archive = deepcopy(cvt_mapping(population, new_archive))
+                if MAP_METHOD == "cvt"
+                    if cvt_vorn_data_index < 3
+                        init_CVT(population)
+                        
+                        new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
+                        archive = deepcopy(cvt_mapping(population, new_archive))
 
-                    logger("INFO", "Recreate Voronoi diagram")
+                        logger("INFO", "Recreate Voronoi diagram")
+                    end
                 end
                 
                 logger("INFO", "Scout bee found a new food source")
