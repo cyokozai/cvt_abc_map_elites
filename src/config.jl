@@ -49,7 +49,8 @@ F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
 vorn = nothing
-cvt_vorn_data_index = 0
+cvt_vorn_data_update = 0
+cvt_vorn_data_update_limit = 3
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter

@@ -17,7 +17,7 @@ include("logger.jl")
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
     
-    if fitness(v) > fitness(f)
+    if fitness(v)[1] > fitness(f)[1]
         trial[i] = 0
         
         return v
@@ -59,7 +59,9 @@ function employed_bee(population::Population)
                 if k != i break end
             end
 
-            v[i, j] = I[i].genes                                         
+            v[i, j] = I[i].genes
+        end
+                                             
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
     end
 
@@ -70,7 +72,7 @@ end
 
 function onlooker_bee(population::Population)
     global trial
-    
+
     I = population.individuals
     cum_p = 0.0
     p = [I[i].fitness / sum(I[i].fitness for i = 1 : N) for i = 1 : N]
@@ -108,14 +110,14 @@ function scout_bee(population::Population, archive::Archive)
         for (i, I) in enumerate(population.individuals)
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
-                population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
+                population.individuals[i] = Individual(deepcopy(gene), fitness(gene)[1], devide_gene(gene))
                 trial[i] = 0
                 
                 if MAP_METHOD == "cvt"
-                    if cvt_vorn_data_index < 3
+                    if cvt_vorn_data_update < cvt_vorn_data_update_limit
                         init_CVT(population)
                         
-                        new_archive = Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
+                        new_archive = Archive(zeros(Int64, 0, 0), grid_update_counts = zeros(Int64, k_max), Dict{Int64, Individual}())
                         archive = deepcopy(cvt_mapping(population, new_archive))
                         
                         logger("INFO", "Recreate Voronoi diagram")
@@ -124,13 +126,13 @@ function scout_bee(population::Population, archive::Archive)
                 
                 logger("INFO", "Scout bee found a new food source")
             end
-        end
+        end                                                                                                                                                                                                                                                                                                              
     end
-    
+                                                                                                                                                                                                                                                                                         
     return population, archive
 end
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                                                                                     
 
 function ABC(population::Population, archive::Archive)
     # Employee bee phase

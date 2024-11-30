@@ -24,16 +24,17 @@ function MakeFigure()
         ax = Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
-            xlabel=rich(L"\mathrm{Generation\,} (\times 10^4)"),
-            ylabel=rich(L"\mathrm{Fitness\,}"),
-            title="Fitness: $METHOD D=$(ARGS[1])",
+            xlabel=L"\mathrm{Generation\,} (\times 10^4)",
+            ylabel=L"\mathrm{Fitness\,}",
+            title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
             yminorticks = IntervalsBetween(5),
             width = 500
         )
     elseif ARGS[5] == "cvt"
         load_path = [path for path in readdir("result/$(ARGS[2])/$(ARGS[4])/") if occursin("CVT-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
-        load_vorn = load(load_path[end], "voronoi")
+        println("$dir$load_path[end]")
+        load_vorn = load("$dir$load_path[end]", "voronoi")
         
         ax = Axis(
             fig[1, 1],
@@ -67,50 +68,55 @@ function ReadData(dir::String)
             Data = Matrix{Float64}(undef, length(filepath), MAXTIME)
             
             for (i, f) in enumerate(filepath)
-                j = 1
-                reading_data = false # ボーダーライン検出用フラグ
-
-                open("$dir$f", "r") do io
-                    for line in eachline(io) # ファイルを1行ずつ読み込む
-                        if occursin("=", line) # ボーダーラインを検出
-                            if !reading_data # データ読み取り開始
-                                reading_data = true
-                                
-                                continue
-                            else # 2つ目のボーダーラインに到達したら終了
-                                break
+                if occursin(".dat", f)
+                    j, reading_data = 1, false # ボーダーライン検出用フラグ
+                    
+                    open("$dir$f", "r") do io # ファイルを開く
+                        for line in eachline(io) # ファイルを1行ずつ読み込む
+                            if occursin("=", line) # ボーダーラインを検出
+                                if !reading_data # データ読み取り開始
+                                    reading_data = true
+                                    
+                                    continue
+                                else # 2つ目のボーダーラインに到達したら終了
+                                    break
+                                end
                             end
-                        end
-                        
-                        if reading_data
-                            Data[i, j] = tryparse(Float64, line)
-                            j += 1
+                            
+                            if reading_data
+                                Data[i, j] = tryparse(Float64, line)
+                                j += 1
+                            end
                         end
                     end
                 end
             end
         elseif ARGS[5] == "cvt"
             Data = Vector{Tuple{Float64, Float64}}[]
-            
-            open(filepath[end], "r") do io
-                reading_data = false # ボーダーライン検出用フラグ
-                
-                for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
-                    if occursin("=", line) # ボーダーラインを検出
-                        if !reading_data # データ読み取り開始
-                            reading_data = true
-                            
-                            continue
-                        else # 2つ目のボーダーラインに到達したら終了
-                            break
-                        end
-                    end
-                    
-                    if reading_data
-                        line_value = tryparse(Float64, line) # 行をFloat64としてパースして格納
+
+            for (i, f) in enumerate((filepath[end:-1:1]))
+                if occursin(".jld2", f)
+                    open("$dir$f", "r") do io
+                        reading_data = false # ボーダーライン検出用フラグ
                         
-                        if line_value !== nothing
-                            push!(Data[k], line_value)
+                        for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
+                            if occursin("=", line) # ボーダーラインを検出
+                                if !reading_data # データ読み取り開始
+                                    reading_data = true
+                                    
+                                    continue
+                                else # 2つ目のボーダーラインに到達したら終了
+                                    break
+                                end
+                            end
+                            
+                            if reading_data
+                                line_value = tryparse(Float64, line) # 行をFloat64としてパースして格納
+                                
+                                if line_value !== nothing
+                                    push!(Data[k], line_value)
+                                end
+                            end
                         end
                     end
                 end
@@ -130,21 +136,19 @@ function PlotData(data, axis)
         for i in 1:length(data[:, 1])
             d = data[i, :]
             
-            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=0.6, color=:blue)
+            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=0.8, color=:blue)
             
-            sum_data .+= d # Sum data
+            sum_data[i] .+= d # Sum data
         end
         
-        average_data = sum_data / Float64(length(data[1, :])) # Calculate average data
+        average_data = sum_data ./ Float64(length(data[1, :])) # Calculate average data
         
-        lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=0.8, color=:red)
+        lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.0, color=:red)
     elseif ARGS[5] == "cvt"
         for d in data
             scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
         end
     end
-    
-    ax.xtickformat = "*10^4"
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -159,8 +163,8 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    data = ReadData("result/$(ARGS[2])/$(ARGS[4])/")
-
+    data = ReadData("./result/$(ARGS[2])/$(ARGS[4])/")
+    
     figure, axis = MakeFigure()
 
     PlotData(data, axis)
@@ -170,18 +174,18 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-try
-    mkpath("result/$(ARGS[2])/$(ARGS[4])/pdf/")
+# try
+    mkpath("./result/$(ARGS[2])/$(ARGS[4])/pdf/")
 
     main()
-catch e
-    logger("ERROR", e)
+# catch e
+#     logger("ERROR", e)
 
-    global exit_code = 1
-finally
-    logger("INFO", "Finish the plotting process")
+#     global exit_code = 1
+# finally
+#     logger("INFO", "Finish the plotting process")
 
-    exit(exit_code)
-end
+#     exit(exit_code)
+# end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

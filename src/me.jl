@@ -83,11 +83,13 @@ Mapping = if MAP_METHOD == "grid"
                             if ind.fitness > archive.individuals[archive.grid[i, j]].fitness
                                 archive.grid[i, j] = index
                                 archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                                archive.grid_update_counts[index] += 1
                             end
                         else
                             # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
                             archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                            archive.grid_update_counts[index] += 1
                         end
 
                         break
@@ -162,10 +164,10 @@ function map_elites()
     
     population::Population = Population([evaluator(init_solution()) for _ in 1:N])
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Individual}())
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), grid_update_counts = zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Individual}())
     elseif MAP_METHOD == "cvt"
         init_CVT(population)
-        Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
+        Archive(zeros(Int64, 0, 0), grid_update_counts = zeros(Int64, k_max), Dict{Int64, Individual}())
     end
     
     # Open file
@@ -190,10 +192,21 @@ function map_elites()
         population = Reproduction(population, archive)
         
         println("Now best: ", best_solution.genes)
-        println("Now best fitness: ", best_solution.fitness)
+        if FIT_NOISE
+            println("Now best fitness: ", best_solution.fitness[1])
+        else
+            println("Now noised best fitness: ", best_solution.fitness[1])
+            println("Now corrected best fitness: ", best_solution.fitness[2])
+        end
         println("Now best behavior: ", best_solution.behavior)
-        
-        println(ff, best_solution.fitness)
+
+        if FIT_NOISE
+            println(ff, best_solution.fitness[1])
+        else
+            println(ff
+            , best_solution.fitness[1])
+            println("Now corrected best fitness: ", best_solution.fitness[2])
+        end
         println(fb, best_solution.behavior)
         
         # 終了条件の確認

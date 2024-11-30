@@ -3,9 +3,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 mutable struct Individual
-    genes::Vector{Float64}    # N次元の遺伝子
-    fitness::Float64          # 評価値
-    behavior::Vector{Float64} # 行動識別子
+    genes::Vector{Float64}      # N次元の遺伝子
+    fitness::(Float64, Float64) # 評価値　(1: (評価値, nothing) 2: (ノイズを含む評価値, 正確な評価値))
+    behavior::Vector{Float64}   # 行動識別子
 end
 
 #----------------------------------------------------------------------------------------------------#
@@ -17,7 +17,8 @@ end
 #----------------------------------------------------------------------------------------------------#
 
 mutable struct Archive
-    grid::Matrix{Int64}                  # グリッドマップ　各セルに個体の要素番号を保存
+    grid::Matrix{Int64}                  # グリッドマップ
+    grid_update_counts::Vector{Int64}    # グリッドマップの更新回数
     individuals::Dict{Int64, Individual} # 個体を保存
 end
 

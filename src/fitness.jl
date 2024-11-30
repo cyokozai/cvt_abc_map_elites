@@ -9,13 +9,13 @@ include("benchmark.jl")
 fitness = FIT_NOISE ?
     (x::Vector{Float64}) -> begin
         sum_val = objective_function(x)
-
-        sum_val >= 0 ? clamp(1.0 / (1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), 0.0, 1.0) : clamp(abs(1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), 0.0, 1.0)
+        
+        sum_val >= 0 ? [1.0 / (1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), 1.0 / (1.0 + sum_val)] : [abs(1.0 + sum_val + rand(RNG, -NOIZE_R:NOIZE_R)), abs(1.0 + sum_val)]
     end : 
     (x::Vector{Float64}) -> begin
         sum_val = objective_function(x)
         
-        sum_val >= 0 ? 1.0 / (1.0 + sum_val) : abs(1.0 + sum_val)
+        sum_val >= 0 ? [1.0 / (1.0 + sum_val), nothing] : [abs(1.0 + sum_val), nothing]
     end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
