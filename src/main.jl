@@ -38,6 +38,7 @@ function main()
         logger("INFO", "Convergence flag is false")
     end
     
+    # Method check
     println("Method   : ", METHOD)
     if METHOD == "de"
         println("F : ", F)
@@ -51,6 +52,8 @@ function main()
     elseif MAP_METHOD == "cvt"
         println("Voronoi point: ", k_max)
     end
+
+    # Print parameters
     println("Benchmark: ", OBJ_F)
     println("Dimension: ", D)
     println("Population size: ", N)
@@ -73,6 +76,8 @@ function main()
     println("Time of iteration: ", iter_time, " [sec]")
     println("Time:              ", elapsed_time, " [sec]")
     println("===================================================================================")
+
+    # Save result
     SaveResult(arch, iter_time, elapsed_time)
 end
 
