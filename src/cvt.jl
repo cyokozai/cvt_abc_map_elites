@@ -28,7 +28,7 @@ function init_CVT(population::Population)
     
     save("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_update.jld2", "voronoi", vorn)
     
-    cvt_vorn_data_update+= 1
+    cvt_vorn_data_update += 1
     
     logger("INFO", "CVT is initialized")
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}
