@@ -3,17 +3,21 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Statistics
+
 using Random
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("struct.jl")
+
 include("fitness.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Greedy selection
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
     
@@ -29,7 +33,7 @@ function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Roulette selection
 function roulleteSelection(q::Float64)
     index = 1
 
@@ -45,7 +49,7 @@ function roulleteSelection(q::Float64)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Employed bee phase
 function employed_bee(population::Population)
     I = population.individuals
     k = 0
@@ -69,7 +73,7 @@ function employed_bee(population::Population)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Onlooker bee phase
 function onlooker_bee(population::Population)
     global trial
 
@@ -102,7 +106,7 @@ function onlooker_bee(population::Population)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Scout bee phase
 function scout_bee(population::Population, archive::Archive)
     global trial
     
@@ -133,7 +137,7 @@ function scout_bee(population::Population, archive::Archive)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                                                                                     
-
+# ABC algorithm
 function ABC(population::Population, archive::Archive)
     # Employee bee phase
     population = employed_bee(population)

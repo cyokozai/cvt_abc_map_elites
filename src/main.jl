@@ -3,24 +3,28 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Printf
+
 using Dates
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("savedata.jl")
+
 include("me.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Main
 function main()
     # Make result directory and log file
     MakeFiles()
     
-    # Dimension check
+    # Check dimension
     if D == 2
         logger("WARN", "Dimension is default value \"2\"")
     elseif D <= 0
@@ -38,7 +42,7 @@ function main()
         logger("INFO", "Convergence flag is false")
     end
     
-    # Method check
+    # Check method
     println("Method   : ", METHOD)
     if METHOD == "de"
         println("F : ", F)
@@ -59,7 +63,7 @@ function main()
     println("Population size: ", N)
     println("===================================================================================")
 
-    #------MAP ELITES ALGORITHM------------------------------#
+    #------ MAP ELITES ALGORITHM ------------------------------#
 
     begin_time = time()
 
@@ -67,7 +71,7 @@ function main()
     
     finish_time = time()
 
-    #------MAP ELITES ALGORITHM------------------------------#
+    #------ MAP ELITES ALGORITHM ------------------------------#
 
     elapsed_time = finish_time - begin_time
     

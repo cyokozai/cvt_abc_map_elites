@@ -3,14 +3,19 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Statistics
+
 using Random
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("struct.jl")
+
 include("benchmark.jl")
+
 include("fitness.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -22,7 +27,7 @@ function crossover(x::Vector{Float64}, v::Vector{Float64})
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Differential Evolution algorithm
 function DE(population::Population)
     I = population.individuals
     r1, r2, r3 = 1, 1, 1

@@ -3,21 +3,29 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using StableRNGs
+
 using Random
 
 #----------------------------------------------------------------------------------------------------#
 
 include("struct.jl")
+
 include("config.jl")
+
 include("benchmark.jl")
+
 include("fitness.jl")
+
 include("cvt.jl")
+
 include("abc.jl")
+
 include("de.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# 行動識別子の生成
+# Devide gene
 function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
     segment_length = div(g_len, BD)
@@ -46,7 +54,7 @@ end
 best_solution = init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Evaluator: 評価関数と行動識別子の生成
+# Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
     # 評価関数を定義
     individual.fitness = fitness(individual.genes)
@@ -63,7 +71,7 @@ function evaluator(individual::Individual)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Mapping: 個体を行動空間にプロット
+# Mapping: Mapping the individual to the archive
 Mapping = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
         # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
@@ -111,7 +119,7 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Reproduction: 突然変異を伴う個体生成
+# Mutate: Mutation of the individual
 mutate(individual::Individual) = rand() > MUTANT_R ? individual : init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -139,7 +147,7 @@ elseif MAP_METHOD == "cvt"
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Reproduction: Generate new individuals
 Reproduction = if METHOD == "default"
     (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
 elseif METHOD == "abc"
@@ -155,7 +163,7 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Main loop: アルゴリズムのメインループ
+# Map Elites algorithm
 function map_elites()
     global best_solution, vorn
     
