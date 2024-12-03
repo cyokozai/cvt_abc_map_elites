@@ -18,10 +18,16 @@ jobs:
           version: '1.10.5'
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
+      # - uses: julia-actions/julia-runtest@v1
 
       - name: Install dependencies
-        run: apt -y update && apt -y upgrade && julia pkginstall.jl run && rm -rf ./pkginstall.jl
+        run: |
+          apt -y update
+          apt -y upgrade
+          julia pkginstall.jl run
+          rm -rf ./pkginstall.jl
       
       - name: Run tests
-        run: cd ./src && julia main.jl test
+        run: |
+          cd ./src
+          julia main.jl test
