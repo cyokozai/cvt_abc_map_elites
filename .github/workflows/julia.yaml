@@ -1,0 +1,24 @@
+name: MAP-Elites test
+
+on:
+  push:
+    branches: [ "run" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10.5'
+      - uses: julia-actions/cache@v1
+      - uses: julia-actions/julia-buildpkg@v1
+      - uses: julia-actions/julia-runtest@v1
+
+      - name: Install dependencies
+        run: julia --project=run -e 'using Pkg; Pkg.instantiate()'

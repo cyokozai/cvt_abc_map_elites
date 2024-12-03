@@ -46,7 +46,7 @@ elseif OBJ_F == "michalewicz" # Michalewicz
     [zeros(D), pi, 0.0]
 else
     logger("ERROR", "Objective parameter is invalid")
-
+    
     exit(1)
 end
 

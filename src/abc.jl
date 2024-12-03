@@ -52,8 +52,7 @@ end
 # Employed bee phase
 function employed_bee(population::Population)
     I = population.individuals
-    k = 0
-    v = zeros(Float64, N, D)
+    k, v = 0, zeros(Float64, N, D)
 
     for i in 1:N
         for j in 1:D
@@ -78,12 +77,9 @@ function onlooker_bee(population::Population)
     global trial
 
     I = population.individuals
-    cum_p = 0.0
-    p = [I[i].fitness / sum(I[i].fitness for i = 1 : N) for i = 1 : N]
-    k = 0
-    
     new_archive = zeros(Float64, N, D)
-    v = zeros(Float64, N, D)
+    k, v = 0, zeros(Float64, N, D)
+    p, cum_p = [I[i].fitness / sum(I[i].fitness for i = 1 : N) for i = 1 : N], 0.0
     
     for i in 1:N
         cum_p += p[i]
@@ -151,4 +147,6 @@ function ABC(population::Population, archive::Archive)
     return population
 end
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
