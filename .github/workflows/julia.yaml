@@ -21,4 +21,7 @@ jobs:
       - uses: julia-actions/julia-runtest@v1
 
       - name: Install dependencies
-        run: julia --project=run -e 'using Pkg; Pkg.instantiate()'
+        run: apt -y update && apt -y upgrade && julia pkginstall.jl run && rm -rf ./pkginstall.jl
+      
+      - name: Run tests
+        run: cd ./src && julia main.jl test

@@ -21,7 +21,7 @@ services:{% for m in method %}
         limits:
           cpus: 1.0
           memory: 8G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia /root/src/main.jl $$d {{ m }} {{ map }} $$f; done; done; done"]{% endfor %}{% endfor %}
+    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d {{ m }} {{ map }} $$f; done; done; done"]{% endfor %}{% endfor %}
 
 networks:
   default:
