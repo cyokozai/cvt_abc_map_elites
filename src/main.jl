@@ -3,24 +3,28 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Printf
+
 using Dates
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("savedata.jl")
+
 include("me.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Main
 function main()
     # Make result directory and log file
     MakeFiles()
     
-    # Dimension check
+    # Check dimension
     if D == 2
         logger("WARN", "Dimension is default value \"2\"")
     elseif D <= 0
@@ -38,6 +42,7 @@ function main()
         logger("INFO", "Convergence flag is false")
     end
     
+    # Check method
     println("Method   : ", METHOD)
     if METHOD == "de"
         println("F : ", F)
@@ -51,12 +56,14 @@ function main()
     elseif MAP_METHOD == "cvt"
         println("Voronoi point: ", k_max)
     end
+
+    # Print parameters
     println("Benchmark: ", OBJ_F)
     println("Dimension: ", D)
     println("Population size: ", N)
     println("===================================================================================")
 
-    #------MAP ELITES ALGORITHM------------------------------#
+    #------ MAP ELITES ALGORITHM ------------------------------#
 
     begin_time = time()
 
@@ -64,7 +71,7 @@ function main()
     
     finish_time = time()
 
-    #------MAP ELITES ALGORITHM------------------------------#
+    #------ MAP ELITES ALGORITHM ------------------------------#
 
     elapsed_time = finish_time - begin_time
     
@@ -73,6 +80,8 @@ function main()
     println("Time of iteration: ", iter_time, " [sec]")
     println("Time:              ", elapsed_time, " [sec]")
     println("===================================================================================")
+
+    # Save result
     SaveResult(arch, iter_time, elapsed_time)
 end
 

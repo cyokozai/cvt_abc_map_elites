@@ -3,21 +3,29 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using StableRNGs
+
 using Random
 
 #----------------------------------------------------------------------------------------------------#
 
 include("struct.jl")
+
 include("config.jl")
+
 include("benchmark.jl")
+
 include("fitness.jl")
+
 include("cvt.jl")
+
 include("abc.jl")
+
 include("de.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# 行動識別子の生成
+# Devide gene
 function devide_gene(gene::Vector{Float64})
     g_len = length(gene)
     segment_length = div(g_len, BD)
@@ -26,7 +34,7 @@ function devide_gene(gene::Vector{Float64})
     for i in 1:BD
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
-
+        
         push!(behavior, 2.0*sum(gene[start_idx:end_idx])/Float64(g_len))
     end
     
@@ -46,16 +54,16 @@ end
 best_solution = init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Evaluator: 評価関数と行動識別子の生成
+# Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
-    # 評価関数を定義
+    # Evaluate the fitness
     individual.fitness = fitness(individual.genes)
     
-    # 行動識別子を個体に保存
+    # Evaluate the behavior
     individual.behavior = deepcopy(devide_gene(individual.genes))
 
-    # 最良解の更新
-    if individual.fitness >= best_solution.fitness
+    # Update the best solution
+    if individual.fitness[fit_index] >= best_solution.fitness[fit_index]
         global best_solution = Individual(deepcopy(individual.genes), individual.fitness, deepcopy(individual.behavior))
     end
     
@@ -63,33 +71,32 @@ function evaluator(individual::Individual)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Mapping: 個体を行動空間にプロット
+# Mapping: Mapping the individual to the archive
 Mapping = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
-        # 行動識別子(b1, b2)をもとにグリッドのインデックスを計算
+        # The length of the grid
         len = (UPP - LOW) / GRID_SIZE
         
-        # グリッドに現在の個体を保存
+        # Mapping the individual to the archive
         for (index, ind) in enumerate(population.individuals)
             idx = clamp.(ind.behavior, LOW, UPP)
             
             for i in 1:GRID_SIZE
                 for j in 1:GRID_SIZE
-                    # グリッドのインデックスを計算
-                    if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j
-                        # グリッドに個体を保存
+                    if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j # Save the individual to the grid
+                        # Check the grid
                         if archive.grid[i, j] > 0
-                            # すでに個体が存在する場合、評価関数の値が高い方をグリッドに保存 | >= と > で性能に変化がある
-                            if ind.fitness > archive.individuals[archive.grid[i, j]].fitness
+                            if ind.fitness[fit_index] > archive.individuals[archive.grid[i, j]].fitness[fit_index]
                                 archive.grid[i, j] = index
                                 archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                                archive.grid_update_counts[index] += 1
                             end
                         else
-                            # 個体が存在しない場合、個体をグリッドに保存
                             archive.grid[i, j] = index
                             archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                            archive.grid_update_counts[index] += 1
                         end
-
+                        
                         break
                     end
                 end
@@ -109,7 +116,7 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Reproduction: 突然変異を伴う個体生成
+# Mutate: Mutation of the individual
 mutate(individual::Individual) = rand() > MUTANT_R ? individual : init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -137,7 +144,7 @@ elseif MAP_METHOD == "cvt"
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Reproduction: Generate new individuals
 Reproduction = if METHOD == "default"
     (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
 elseif METHOD == "abc"
@@ -153,26 +160,56 @@ else
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# Main loop: アルゴリズムのメインループ
+# Map Elites algorithm
 function map_elites()
     global best_solution, vorn
+
+    # Print the solutions
+    indPrint = if FIT_NOISE
+        (ffn, ff, fb) -> begin
+            println("Now best: ", best_solution.genes)
+            println("Now noised best fitness: ", best_solution.fitness[1])
+            println("Now corrected best fitness: ", best_solution.fitness[2])
+            println("Now best behavior: ", best_solution.behavior)
+
+            println(ffn, best_solution.fitness[1])
+            println(ff, best_solution.fitness[2])
+            println(fb, best_solution.behavior)
+        end
+    else
+        (ff, fb) -> begin
+            println("Now best: ", best_solution.genes)
+            println("Now best fitness: ", best_solution.fitness[2])
+            println("Now best behavior: ", best_solution.behavior)
+            
+            println(ff, best_solution.fitness[2])
+            println(fb, best_solution.behavior)
+        end
+    end
     
     # Initialize
     logger("INFO", "Initialize")
     
     population::Population = Population([evaluator(init_solution()) for _ in 1:N])
     archive::Archive = if MAP_METHOD == "grid"
-        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Individual}())
+        Archive(zeros(Int64, GRID_SIZE, GRID_SIZE), zeros(Int64, GRID_SIZE, GRID_SIZE), Dict{Int64, Individual}())
     elseif MAP_METHOD == "cvt"
         init_CVT(population)
-        Archive(zeros(Int64, 0, 0), Dict{Int64, Individual}())
+        Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
     end
     
     # Open file
-    ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-    fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
-    
-    # Main loop
+    if FIT_NOISE
+        ffn = open("result/$METHOD/$OBJ_F/$F_FIT_N", "a")
+        ff  = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb  = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    else
+        ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    end
+
+    #------ Main loop ------------------------------#
+
     logger("INFO", "Start Iteration")
 
     begin_time = time()
@@ -188,38 +225,40 @@ function map_elites()
         
         # Reproduction
         population = Reproduction(population, archive)
+
+        # Print the solutions
+        indPrint(ffn, ff, fb)
         
-        println("Now best: ", best_solution.genes)
-        println("Now best fitness: ", best_solution.fitness)
-        println("Now best behavior: ", best_solution.behavior)
-        
-        println(ff, best_solution.fitness)
-        println(fb, best_solution.behavior)
-        
-        # 終了条件の確認
-        if best_solution.fitness >= 1.0
+        # Confirm the convergence
+        if best_solution.fitness[fit_index] >= 1.0
             if CONV_FLAG == true
                 logger("INFO", "Convergence")
 
                 global CONV_FLAG = false
+                # break
             end
-
-            # break
-        elseif iter == MAXTIME
+        elseif iter >= MAXTIME
             logger("INFO", "Time out")
             
             break
-        elseif best_solution.fitness < 0.0
+        elseif best_solution.fitness[fit_index] < 0.0
             logger("ERROR", "Invalid fitness value")
-            
-            exit(1)
         end
     end
 
     finish_time = time()
 
-    close(ff)
-    close(fb)
+    #------ Main loop ------------------------------#
+
+    # Close file
+    if FIT_NOISE
+        close(ffn)
+        close(ff)
+        close(fb)
+    else
+        close(ff)
+        close(fb)
+    end
 
     return population, archive, (finish_time - begin_time)
 end

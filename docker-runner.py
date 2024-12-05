@@ -1,43 +1,92 @@
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Import library                                                                               #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 from jinja2 import Environment, FileSystemLoader
+
 import subprocess
+
 import sys
 
-args = sys.argv
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Config                                                                                       #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+#------ Edit config ------------------------------#
+# docker-compose file name
 COMPOSEFILE = "docker-compose-run.yaml"
-FUNCTION = "sphere rosenbrock rastrigin griewank schwefel ackley michalewicz"
-MAP_METHOD = "cvt" # "grep", "cvt"
-METHOD = ["default", "de", "abc"]
-DIMENSION = ""
 
-def generate_yaml(function, method, map, dimention):
-    # Jinja2環境を設定
+# sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
+
+# grep or cvt
+MAP_METHOD  = "cvt"
+
+# default de abc
+METHOD      = ["default", "de", "abc"]
+
+# 2 10 50 100 500 1000
+DIMENSION   = "10 50 100 500 1000"
+
+# Loop count
+LOOP        = 5
+
+#------ Edit config ------------------------------#
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Main                                                                                         #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+def generate_yaml(function, method, map, dimention, loop):
+    # Setting Jinja2
     env = Environment(loader=FileSystemLoader('.'))
     
-    # テンプレートファイルをロード
+    # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
     
-    # テンプレートに値を埋め込み
-    output = template.render(function=function, method=method, map=map, dimention=dimention)
+    loopstr = " ".join(str(i) for i in range(1, loop + 1))
     
-    # 結果をファイルに保存
+    # Render template
+    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention)
+    
+    # Write to file
     with open(COMPOSEFILE, 'w') as file:
         file.write(output)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#       Run                                                                                          #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 if __name__ == '__main__':
     try:
-        if len(args) == 1:
-            DIMENSION = "10 20 50 100 200 500 1000"
-        elif len(args) > 1 and args[1] == "test":
-            DIMENSION = "2"
-        else:
-            print("Invalid arguments")
+        args = sys.argv
+        
+        if len(args) > 1 and args[1] == "test":
+            DIMENSION = "test"
+            FUNCTION = ""
+            METHOD = ""
+            MAP_METHOD = ""
+            LOOP = 1
             
-            exit(1)
+            print(f"COMPOSEFILE: {COMPOSEFILE}")
+            print("==================== TEST MODE ====================")
+        else:
+            print(f"COMPOSEFILE: {COMPOSEFILE}")
+            print(f"FUNCTION: {FUNCTION}")
+            print(f"METHOD: {METHOD}")
+            print(f"MAP_METHOD: {MAP_METHOD}")
+            print(f"LOOP: {LOOP}")
 
-        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION)
+        # generate yaml
+        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP)
+        
+        # docker compose up
         subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
     except Exception as e:
         print(e)
         
         exit(1)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

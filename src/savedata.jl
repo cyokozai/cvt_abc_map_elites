@@ -1,15 +1,21 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#       Import library                                                                               #
+#       Save data to the result directory                                                            #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Printf
+
 using Dates
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("struct.jl")
+
 include("fitness.jl")
+
+include("cvt.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -30,10 +36,35 @@ function MakeFiles()
         elseif MAP_METHOD == "cvt"
             println(fr, "Voronoi point: ", k_max)
         end
+        println(fr, "Noise: ", FIT_NOISE)
         println(fr, "Benchmark: ", OBJ_F)
         println(fr, "Dimension: ", D)
         println(fr, "Population size: ", N)
         println(fr, "===================================================================================")
+    end
+
+    if FIT_NOISE
+        open("result/$METHOD/$OBJ_F/$F_FIT_N", "w") do ffn
+            println(ffn, "Date: ", DATE)
+            println(ffn, "Method: ", METHOD)
+            if METHOD == "de"
+                println(ffn, "F: ", F)
+                println(ffn, "CR: ", CR)
+            elseif METHOD == "abc"
+                println(ffn, "Trial count limit: ", TC_LIMIT)
+            end
+            println(ffn, "Map: ", MAP_METHOD)
+            if MAP_METHOD == "grid"
+                println(ffn, "Grid size: ", GRID_SIZE)
+            elseif MAP_METHOD == "cvt"
+                println(ffn, "Voronoi point: ", k_max)
+            end
+            println(ffn, "Noise: ", FIT_NOISE)
+            println(ffn, "Benchmark: ", OBJ_F)
+            println(ffn, "Dimension: ", D)
+            println(ffn, "Population size: ", N)
+            println(ffn, "===================================================================================")
+        end
     end
 
     open("result/$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
@@ -51,6 +82,7 @@ function MakeFiles()
         elseif MAP_METHOD == "cvt"
             println(ff, "Voronoi point: ", k_max)
         end
+        println(ff, "Noise: ", FIT_NOISE)
         println(ff, "Benchmark: ", OBJ_F)
         println(ff, "Dimension: ", D)
         println(ff, "Population size: ", N)
@@ -72,6 +104,7 @@ function MakeFiles()
         elseif MAP_METHOD == "cvt"
             println(fb, "Voronoi point: ", k_max)
         end
+        println(fb, "Noise: ", FIT_NOISE)
         println(fb, "Benchmark: ", OBJ_F)
         println(fb, "Dimension: ", D)
         println(fb, "Population size: ", N)
@@ -87,30 +120,58 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     logger("INFO", "Time: $run_time [sec]")
 
     # Open file
-    fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
-    ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-    fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    if FIT_NOISE
+        ffn = open("result/$METHOD/$OBJ_F/$F_FIT_N", "a")
+        fr  = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
+        ff  = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb  = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    else
+        fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
+        ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+    end
 
     # Write result
-    println(ff, "===================================================================================")
-    println(ff, "End of Iteration.\n")
-    println(fb, "===================================================================================")
-    println(fb, "End of Iteration.\n")
+    if FIT_NOISE
+        println(ffn, "===================================================================================")
+        println(ffn, "End of Iteration.\n")
+        println(ff, "===================================================================================")
+        println(ff, "End of Iteration.\n")
+        println(fb, "===================================================================================")
+        println(fb, "End of Iteration.\n")
+    else
+        println(ff, "===================================================================================")
+        println(ff, "End of Iteration.\n")
+        println(fb, "===================================================================================")
+        println(fb, "End of Iteration.\n")
+    end
 
     if MAP_METHOD == "grid"
         for i in 1:GRID_SIZE
             for j in 1:GRID_SIZE
                 if archive.grid[i, j] > 0
-                    println(ff, archive.individuals[archive.grid[i, j]].fitness)
-                    println(fb, archive.individuals[archive.grid[i, j]].behavior)
+                    if FIT_NOISE
+                        println(ffn, archive.individuals[archive.grid[i, j]].fitness[1])
+                        println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
+                        println(fb, archive.individuals[archive.grid[i, j]].behavior)
+                    else
+                        println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
+                        println(fb, archive.individuals[archive.grid[i, j]].behavior)
+                    end
                 end
             end
         end
     elseif MAP_METHOD == "cvt"
         for k in keys(archive.individuals)
             if k > 0
-                println(ff, archive.individuals[k].fitness)
-                println(fb, archive.individuals[k].behavior)
+                if FIT_NOISE
+                    println(ffn, archive.individuals[k].fitness[1])
+                    println(ff, archive.individuals[k].fitness[2])
+                    println(fb, archive.individuals[k].behavior)
+                else
+                    println(ff, archive.individuals[k].fitness[2])
+                    println(fb, archive.individuals[k].behavior)
+                end
             end
         end
     else
@@ -120,9 +181,16 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     end
 
     # Close file
-    close(fr)
-    close(ff)
-    close(fb)
+    if FIT_NOISE
+        close(ffn)
+        close(fr)
+        close(ff)
+        close(fb)
+    else
+        close(fr)
+        close(ff)
+        close(fb)
+    end
     
     logger("INFO", "End of Iteration")
 
@@ -149,40 +217,54 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         exit(1)
     end
 
-    sort!(arch_list, by = x -> x.fitness, rev = true)
+    sort!(arch_list, by = x -> x.fitness[fit_index], rev = true)
 
     open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
         println(fr, "End of Iteration.\n")
         println(fr, "Time of iteration: ", iter_time, " [sec]")
         println(fr, "Time:              ", run_time, " [sec]")
         println(fr, "The number of solutions: ", length(arch_list))
-        println(fr, "The number of regenerated CVT Map: ", cvt_vorn_data_index)
+        println(fr, "The number of regenerated CVT Map: ", cvt_vorn_data_update)
         println(fr, "===================================================================================")
         println(fr, "Top 10 suboptimal solutions:")
 
         for i in 1:10
             println(fr, "-----------------------------------------------------------------------------------")
             println(fr, "Rank ", i, ": ")
-            println(fr, "├── Solution:     ", arch_list[i].genes)
-            println(fr, "├── Fitness:      ", arch_list[i].fitness)
-            println(fr, "├── True fitness: ", fitness(arch_list[i].genes))
-            println(fr, "└── Behavior:     ", arch_list[i].behavior)
+            println(fr, "├── Solution:      ", arch_list[i].genes)
+            if FIT_NOISE
+                println(fr, "├── Noisy Fitness: ", arch_list[i].fitness[1])
+                println(fr, "├── True Fitness:  ", arch_list[i].fitness[2])
+            else
+                println(fr, "├── Fitness:       ", arch_list[i].fitness[2])
+            end
+            println(fr, "└── Behavior:      ", arch_list[i].behavior)
         end
 
         println(fr, "===================================================================================")
-        println(fr, "Best solution:     ", best_solution.genes)
-        println(fr, "Best fitness:      ", best_solution.fitness)
-        println(fr, "True best fitness: ", fitness(best_solution.genes))
-        println(fr, "Best behavior:     ", best_solution.behavior)
+        println(fr, "Best solution:      ", best_solution.genes)
+        if FIT_NOISE
+            println(fr, "Best noisy fitness: ", best_solution.fitness[1])
+            println(fr, "Best true fitness:  ", best_solution.fitness[2])
+        else
+            println(fr, "Best fitness:       ", best_solution.fitness[2])
+        end
+        println(fr, "Best behavior:      ", best_solution.behavior)
         println(fr, "===================================================================================")
     end
 
     println("===================================================================================")
-    println("Best solution:     ", best_solution.genes)
-    println("Best fitness:      ", best_solution.fitness)
-    println("True best fitness: ", fitness(best_solution.genes))
-    println("Best behavior:     ", best_solution.behavior)
+    println("Best solution:      ", best_solution.genes)
+    if FIT_NOISE
+        println("Best noisy fitness: ", best_solution.fitness[1])
+        println("Best true fitness:  ", best_solution.fitness[2])
+    else
+        println("Best fitness:       ", best_solution.fitness[2])
+    end
+    println("Best behavior:      ", best_solution.behavior)
     println("===================================================================================")
 end
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

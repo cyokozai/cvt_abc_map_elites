@@ -1,4 +1,4 @@
-services:{% for m in method %}
+services:{% for m in method %}{% for f in function %}
   julia-run-{{ m }}-{{ f }}:
     container_name: "julia-run-{{ m }}-{{ f }}"
     tty: true
@@ -12,16 +12,16 @@ services:{% for m in method %}
       - default
     environment:
       - TZ=Asia/Tokyo
-      - FUNCTION={{ function }}
+      - FUNCTION={{ f }}
       - METHOD={{ m }}
       - D={{ dimention }}
-      - LOOP=1 2 3 4 5 6 7 8 9 10
+      - LOOP={{ looprange }}
     deploy:
       resources:
         limits:
           cpus: 1.0
-          memory: 8G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia /root/src/main.jl $$d {{ m }} {{ map }} $$f; done; done; done"]{% endfor %}{% endfor %}
+          memory: 6G
+    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d {{ m }} {{ map }} $$f; done; done; done"]{% endfor %}{% endfor %}
 
 networks:
   default:

@@ -24,8 +24,15 @@ docs/site/
 Manifest.toml
 
 *.jld2
-*.dat
-log
+*0.dat
 *.log
+*.pdf
+src/result/default/
+src/result/default/*
+src/result/de/
+src/result/de/*
+src/result/abc/
+src/result/abc/*
 
-!*.pdf
+!src/result/.testdata/
+!src/result/.testdata/*

@@ -3,14 +3,19 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 using Statistics
+
 using Random
 
 #----------------------------------------------------------------------------------------------------#
 
 include("config.jl")
+
 include("struct.jl")
+
 include("benchmark.jl")
+
 include("fitness.jl")
+
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -18,11 +23,11 @@ include("logger.jl")
 function crossover(x::Vector{Float64}, v::Vector{Float64})
     j_rand = rand(RNG, 1:D)
     
-    return [rand(RNG) <= CR || j == j_rand ? v[j] : x[j] for j in 1:D]
+    return [rand(RNG) < CR || j == j_rand ? v[j] : x[j] for j in 1:D]
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
+# Differential Evolution algorithm
 function DE(population::Population)
     I = population.individuals
     r1, r2, r3 = 1, 1, 1
@@ -36,7 +41,7 @@ function DE(population::Population)
         v  = clamp.(I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes), LOW, UPP)
         tv = crossover(I[i].genes, v)
         
-        if fitness(tv) > I[i].fitness
+        if fitness(tv)[fit_index] > I[i].fitness[fit_index]
             population.individuals[i] = Individual(deepcopy(tv), fitness(tv), devide_gene(tv))
         end
     end
@@ -44,4 +49,6 @@ function DE(population::Population)
     return population
 end
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
