@@ -22,6 +22,7 @@ install-docker:
 install-julia:
     curl -fsSL https://install.julialang.org | sh
     . ~/.bashrc
+    julia pkginstall.jl
 
 install-python:
     sudo apt -y install python3-pip

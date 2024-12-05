@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          make local-run
+          julia pkginstall.jl
       
       - name: Run tests
         run: |
