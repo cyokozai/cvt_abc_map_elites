@@ -29,7 +29,7 @@ METHOD      = ["default", "de", "abc"]
 DIMENSION   = "10 50 100 500 1000"
 
 # Loop count
-LOOP       = 20
+LOOP        = 5
 
 #------ Edit config ------------------------------#
 
@@ -44,12 +44,10 @@ def generate_yaml(function, method, map, dimention, loop):
     # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
     
-    loopstr = ""
-    for i in range(1, loop + 1):
-        loopstr += f"{i} "
+    loopstr = " ".join(str(i) for i in range(1, loop + 1))
     
     # Render template
-    output = template.render(function=function, method=method, map=map, dimention=dimention, loop=loopstr)
+    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention)
     
     # Write to file
     with open(COMPOSEFILE, 'w') as file:

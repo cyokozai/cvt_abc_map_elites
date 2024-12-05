@@ -43,3 +43,7 @@ for (i, f) in enumerate((filepath[end:-1:1]))
         end
     end
 end
+
+for d in data
+    scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
+end

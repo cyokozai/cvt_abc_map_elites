@@ -27,7 +27,7 @@ include("logger.jl")
 function MakeFigure()
     fig = CairoMakie.Figure()
     
-    if ARGS[5] == "fitness"
+    if ARGS[5] == "fitness" || ARGS[1] == "test"
         ax = Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
@@ -47,6 +47,10 @@ function MakeFigure()
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
             yminorticks = IntervalsBetween(1*10^4),
         )
+    else
+        error("No such data type: $(ARGS[5])")
+
+        exit(1)
     end
     
     resize_to_layout!(fig)
@@ -102,7 +106,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function PlotData(data, fig, axis)
-    if ARGS[5] == "fitness"
+    if ARGS[5] == "fitness" || ARGS[5] == "fitness-noise" || ARGS[1] == "test"
         sum_data = zeros(length(data[1, :]))
 
         for i in 1:length(data[:, 1])
@@ -116,10 +120,10 @@ function PlotData(data, fig, axis)
         average_data = sum_data ./ Float64(length(data[1, :])) # Calculate average data
         
         lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.0, color=:red)
-    elseif ARGS[5] == "cvt"
-        for d in data
-            scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
-        end
+    else
+        error("No such data type: $(ARGS[5])")
+
+        exit(1)
     end
 
     resize_to_layout!(fig)
@@ -135,7 +139,11 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    data = ReadData("./result/$(ARGS[2])/$(ARGS[4])/")
+    data = if ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
+        ReadData("./result/$(ARGS[2])/$(ARGS[4])/")
+    elseif ARGS[1] == "test"
+        ReadData("./result/.testdata/")x
+    end
     
     figure, axis = MakeFigure()
 
