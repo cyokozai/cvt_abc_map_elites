@@ -67,13 +67,13 @@ cvt_vorn_data_update_limit = 3
 # The crossover probability (default: 0.8).
 # The differentiation (mutation) scaling factor (default: 0.9).
 CR, F = if OBJ_F == "sphere"
-    [0.10, 0.30]
+    [0.20, 0.40]
 elseif OBJ_F == "rosenbrock"
-    [0.75, 0.70]
+    [0.70, 0.80]
 elseif OBJ_F == "rastrigin"
-    [0.01, 0.50]
+    [0.50, 0.60]
 elseif OBJ_F == "griewank"
-    [0.20, 0.50]
+    [0.40, 0.50]
 elseif OBJ_F == "ackley"
     [0.20, 0.50]
 elseif OBJ_F == "schwefel"
@@ -81,7 +81,7 @@ elseif OBJ_F == "schwefel"
 elseif OBJ_F == "michalewicz"
     [0.20, 0.50]
 else
-    [0.8, 0.9]
+    [0.80, 0.90]
 end
 
 #----------------------------------------------------------------------------------------------------#
@@ -104,7 +104,9 @@ F_FIT_N    = "fitness-noise-$FILENAME.dat"
 F_BEHAVIOR = "behavior-$FILENAME.dat"
 F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
 
-# EXIT CODE: 0 = Success, 1 = Failure
+# EXIT CODE: 0: Success, 1: Failure
 exit_code = 0
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

@@ -108,7 +108,7 @@ function PlotData(data, fig, axis)
         for i in 1:length(data[:, 1])
             d = data[i, :]
             
-            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=0.8, color=:blue)
+            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=1.0, color=:blue)
             
             sum_data[i] .+= d # Sum data
         end
@@ -121,7 +121,7 @@ function PlotData(data, fig, axis)
             scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
         end
     end
-    
+
     resize_to_layout!(fig)
 end
 

@@ -44,12 +44,12 @@ def generate_yaml(function, method, map, dimention, loop):
     # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
     
-    LOOP = ""
+    loopstr = ""
     for i in range(1, loop + 1):
-        LOOP += f"{i} "
+        loopstr += f"{i} "
     
     # Render template
-    output = template.render(function=function, method=method, map=map, dimention=dimention, loop=LOOP)
+    output = template.render(function=function, method=method, map=map, dimention=dimention, loop=loopstr)
     
     # Write to file
     with open(COMPOSEFILE, 'w') as file:
@@ -88,3 +88,7 @@ if __name__ == '__main__':
         print(e)
         
         exit(1)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

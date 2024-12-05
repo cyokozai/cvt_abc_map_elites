@@ -23,7 +23,7 @@ include("logger.jl")
 function crossover(x::Vector{Float64}, v::Vector{Float64})
     j_rand = rand(RNG, 1:D)
     
-    return [rand(RNG) <= CR || j == j_rand ? v[j] : x[j] for j in 1:D]
+    return [rand(RNG) < CR || j == j_rand ? v[j] : x[j] for j in 1:D]
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
