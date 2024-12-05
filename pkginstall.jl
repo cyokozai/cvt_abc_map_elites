@@ -7,7 +7,7 @@ Pkg.add("StableRNGs")
 Pkg.add("DelaunayTriangulation")
 Pkg.add("CairoMakie")
 
-if ARGS[1] == "figure"
+if !isempty(ARGS) && ARGS[1] == "figure"
     Pkg.add("LaTeXStrings")
     Pkg.add("PyCall")
     Pkg.add("PyPlot")
