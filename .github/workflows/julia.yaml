@@ -2,7 +2,7 @@ name: MAP-Elites test
 
 on:
   push:
-    branches: [ "run" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
