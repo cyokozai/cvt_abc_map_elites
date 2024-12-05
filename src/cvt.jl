@@ -22,6 +22,13 @@ include("struct.jl")
 
 include("logger.jl")
 
+#----------------------------------------------------------------------------------------------------#
+# Voronoi diagram
+vorn = nothing
+
+# Voronoi data update
+cvt_vorn_data_update = 0
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Initialize the CVT
 function init_CVT(population::Population)
@@ -38,6 +45,7 @@ function init_CVT(population::Population)
     cvt_vorn_data_update += 1
     
     logger("INFO", "CVT is initialized")
+    
     return DelaunayTriangulation.get_generators(vorn)::Dict{Int64, Tuple{Float64, Float64}}
 end
 
@@ -53,7 +61,7 @@ function cvt_mapping(population::Population, archive::Archive)
         closest_centroid_index = argmin(distances)
 
         if haskey(archive.individuals, closest_centroid_index)
-            if ind.fitness > archive.individuals[closest_centroid_index].fitness
+            if ind.fitness[fit_index] > archive.individuals[closest_centroid_index].fitness[fit_index]
                 archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
                 archive.grid_update_counts[closest_centroid_index] += 1
             end

@@ -3,23 +3,23 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Individual
 mutable struct Individual
-    genes::Vector{Float64}      # N次元の遺伝子
-    fitness::(Float64, Float64) # 評価値　(1: (評価値, nothing) 2: (ノイズを含む評価値, 正確な評価値))
-    behavior::Vector{Float64}   # 行動識別子
+    genes::Vector{Float64}           # N dimension vector
+    fitness::Tuple{Float64, Float64} # Fitness value (1: with noise, 2: without noise)
+    behavior::Vector{Float64}        # Behavior space
 end
 
 #----------------------------------------------------------------------------------------------------#
 # Population
 mutable struct Population
-    individuals::Vector{Individual} # 個体群
+    individuals::Vector{Individual} # Group of individuals
 end
 
 #----------------------------------------------------------------------------------------------------#
 # Archive
 mutable struct Archive
-    grid::Matrix{Int64}                  # グリッドマップ
-    grid_update_counts::Vector{Int64}    # グリッドマップの更新回数
-    individuals::Dict{Int64, Individual} # 個体を保存
+    grid::Matrix{Int64}                  # Grid map
+    grid_update_counts::Vector{Int64}    # Grid update counts
+    individuals::Dict{Int64, Individual} # Individuals
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

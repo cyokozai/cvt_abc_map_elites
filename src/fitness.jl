@@ -4,20 +4,18 @@
 
 include("benchmark.jl")
 
+#----------------------------------------------------------------------------------------------------#
+# The index of the fitness value
+fit_index = FIT_NOISE ? 1 : 2
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Fitness function
-fitness = FIT_NOISE ?
-    (x::Vector{Float64}) -> begin # With noise
-        sum_val = objective_function(x)
-        ε = rand(RNG, -NOIZE_R:NOIZE_R)
-        
-        sum_val >= 0 ? [1.0 / (1.0 + sum_val + ε), 1.0 / (1.0 + sum_val)] : [abs(1.0 + sum_val + ε), abs(1.0 + sum_val)]
-    end : 
-    (x::Vector{Float64}) -> begin # Without noise
-        sum_val = objective_function(x)
-        
-        sum_val >= 0 ? [1.0 / (1.0 + sum_val), nothing] : [abs(1.0 + sum_val), nothing]
-    end
+function fitness(x::Vector{Float64})
+    sum_val = objective_function(x)
+    ε = rand(RNG, -NOIZE_R:NOIZE_R)
+    
+    return sum_val >= 0 ? (1.0 / (1.0 + sum_val + ε), 1.0 / (1.0 + sum_val)) : (abs(1.0 + sum_val + ε), abs(1.0 + sum_val))
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #

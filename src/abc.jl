@@ -16,18 +16,22 @@ include("fitness.jl")
 
 include("logger.jl")
 
+#----------------------------------------------------------------------------------------------------#
+# ABC Trial
+trial = zeros(Int, N)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Greedy selection
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
     
-    if fitness(v)[1] > fitness(f)[1]
+    if fitness(v)[fit_index] > fitness(f)[fit_index]
         trial[i] = 0
         
         return v
     else
         trial[i] += 1
-
+        
         return f
     end
 end
@@ -77,13 +81,13 @@ function onlooker_bee(population::Population)
     global trial
 
     I = population.individuals
-    new_archive = zeros(Float64, N, D)
+    new_gene_archive = zeros(Float64, N, D)
     k, v = 0, zeros(Float64, N, D)
-    p, cum_p = [I[i].fitness / sum(I[i].fitness for i = 1 : N) for i = 1 : N], 0.0
+    p, cum_p = [I[i].fitness[fit_index] / sum(I[i].fitness[fit_index] for i = 1 : N) for i = 1 : N], 0.0
     
     for i in 1:N
         cum_p += p[i]
-        new_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
+        new_gene_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
         
         for j = 1 : D
             while true
@@ -92,7 +96,7 @@ function onlooker_bee(population::Population)
                 if k != i break end
             end
             
-            v[i, j] = new_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_archive[i, j] - new_archive[k, j])
+            v[i, j] = new_gene_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene_archive[i, j] - new_gene_archive[k, j])
         end
         
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
@@ -110,14 +114,14 @@ function scout_bee(population::Population, archive::Archive)
         for (i, I) in enumerate(population.individuals)
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
-                population.individuals[i] = Individual(deepcopy(gene), fitness(gene)[1], devide_gene(gene))
+                population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
                 trial[i] = 0
                 
                 if MAP_METHOD == "cvt"
                     if cvt_vorn_data_update < cvt_vorn_data_update_limit
                         init_CVT(population)
                         
-                        new_archive = Archive(zeros(Int64, 0, 0), grid_update_counts = zeros(Int64, k_max), Dict{Int64, Individual}())
+                        new_archive = Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
                         archive = deepcopy(cvt_mapping(population, new_archive))
                         
                         logger("INFO", "Recreate Voronoi diagram")

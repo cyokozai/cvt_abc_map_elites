@@ -41,8 +41,8 @@ function DE(population::Population)
         v  = clamp.(I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes), LOW, UPP)
         tv = crossover(I[i].genes, v)
         
-        if fitness(tv)[1] > I[i].fitness
-            population.individuals[i] = Individual(deepcopy(tv), fitness(tv)[1], devide_gene(tv))
+        if fitness(tv)[fit_index] > I[i].fitness[fit_index]
+            population.individuals[i] = Individual(deepcopy(tv), fitness(tv), devide_gene(tv))
         end
     end
     
