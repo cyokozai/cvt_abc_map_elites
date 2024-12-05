@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          make all
+          make local-run
       
       - name: Run tests
         run: |
