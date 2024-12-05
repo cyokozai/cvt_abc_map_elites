@@ -17,7 +17,7 @@ import sys
 COMPOSEFILE = "docker-compose-run.yaml"
 
 # sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
-FUNCTION    = "sphere rosenbrock rastrigin"
+FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 
 # grep or cvt
 MAP_METHOD  = "cvt"
@@ -48,8 +48,6 @@ def generate_yaml(function, method, map, dimention, loop):
     for i in range(1, loop + 1):
         LOOP += f"{i} "
     
-    print(f"LOOP: {LOOP}")
-    
     # Render template
     output = template.render(function=function, method=method, map=map, dimention=dimention, loop=LOOP)
     
@@ -70,17 +68,22 @@ if __name__ == '__main__':
             FUNCTION = ""
             METHOD = ""
             MAP_METHOD = ""
-            LOOP = 1            
-        else:
-            print("Invalid arguments")
+            LOOP = 1
             
-            exit(1)
+            print(f"COMPOSEFILE: {COMPOSEFILE}")
+            print("==================== TEST MODE ====================")
+        else:
+            print(f"COMPOSEFILE: {COMPOSEFILE}")
+            print(f"FUNCTION: {FUNCTION}")
+            print(f"METHOD: {METHOD}")
+            print(f"MAP_METHOD: {MAP_METHOD}")
+            print(f"LOOP: {LOOP}")
 
         # generate yaml
         generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP)
         
         # docker compose up
-        subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
+        # subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
     except Exception as e:
         print(e)
         

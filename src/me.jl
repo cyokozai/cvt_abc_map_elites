@@ -181,7 +181,7 @@ function map_elites()
             println("Now best: ", best_solution.genes)
             println("Now best fitness: ", best_solution.fitness[2])
             println("Now best behavior: ", best_solution.behavior)
-
+            
             println(ff, best_solution.fitness[2])
             println(fb, best_solution.behavior)
         end

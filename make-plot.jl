@@ -35,25 +35,18 @@ function MakeFigure()
             ylabel=L"\mathrm{Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            yminorticks = IntervalsBetween(5),
-            width = 500
+            yminorticks = IntervalsBetween(1*10^4),
         )
-    elseif ARGS[5] == "cvt"
-        load_path = [path for path in readdir("result/$(ARGS[2])/$(ARGS[4])/") if occursin("CVT-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
-        println("$dir$load_path[end]")
-        load_vorn = load("$dir$load_path[end]", "voronoi")
-        
+    elseif ARGS[5] == "fitness-noise"
         ax = Axis(
             fig[1, 1],
-            limits = ((LOW, UPP), (LOW, UPP)),
-            xlabel = L"b_1",
-            ylabel = L"b_2",
-            title="CVT Map and plotted behavior: $METHOD",
-            width = 500,
-            height = 500
+            limits = ((0, MAXTIME), (0.0, 1.0)),
+            xlabel=L"\mathrm{Generation\,} (\times 10^4)",
+            ylabel=L"\mathrm{Noised Fitness\,}",
+            title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
+            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
+            yminorticks = IntervalsBetween(1*10^4),
         )
-        
-        voronoiplot!(ax, load_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
     end
     
     resize_to_layout!(fig)
@@ -64,7 +57,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function ReadData(dir::String)
-    filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-", path)]
+    filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-2", path)]
 
     if length(filepath) == 0
         println("No such file: $ARGS[5]")
@@ -76,7 +69,7 @@ function ReadData(dir::String)
             
             for (i, f) in enumerate(filepath)
                 if occursin(".dat", f)
-                    j, reading_data = 1, false # ボーダーライン検出用フラグ
+                    j, reading_data = 1, false
                     
                     open("$dir$f", "r") do io # ファイルを開く
                         for line in eachline(io) # ファイルを1行ずつ読み込む
@@ -92,42 +85,14 @@ function ReadData(dir::String)
                             
                             if reading_data
                                 Data[i, j] = tryparse(Float64, line)
+
                                 j += 1
                             end
                         end
                     end
                 end
             end
-        elseif ARGS[5] == "cvt"
-            Data = Vector{Tuple{Float64, Float64}}[]
-
-            for (i, f) in enumerate((filepath[end:-1:1]))
-                if occursin(".jld2", f)
-                    open("$dir$f", "r") do io
-                        reading_data = false # ボーダーライン検出用フラグ
-                        
-                        for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
-                            if occursin("=", line) # ボーダーラインを検出
-                                if !reading_data # データ読み取り開始
-                                    reading_data = true
-                                    
-                                    continue
-                                else # 2つ目のボーダーラインに到達したら終了
-                                    break
-                                end
-                            end
-                            
-                            if reading_data
-                                line_value = tryparse(Float64, line) # 行をFloat64としてパースして格納
-                                
-                                if line_value !== nothing
-                                    push!(Data[k], line_value)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
+        elseif ARGS[5] == "fitness-noise"
         end
 
         return Data
@@ -136,7 +101,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-function PlotData(data, axis)
+function PlotData(data, fig, axis)
     if ARGS[5] == "fitness"
         sum_data = zeros(length(data[1, :]))
 
@@ -156,13 +121,13 @@ function PlotData(data, axis)
             scatter!(axis, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
         end
     end
+    
+    resize_to_layout!(fig)
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function SavePDF(fig)
-    resize_to_layout!(fig)
-
     println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
     save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
 end
@@ -174,7 +139,7 @@ function main()
     
     figure, axis = MakeFigure()
 
-    PlotData(data, axis)
+    PlotData(data, figure, axis)
 
     SavePDF(figure)
 end

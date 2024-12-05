@@ -1,4 +1,4 @@
-services:{% for m in method %}
+services:{% for m in method %}{% for f in function %}
   julia-run-{{ m }}-{{ f }}:
     container_name: "julia-run-{{ m }}-{{ f }}"
     tty: true
@@ -12,7 +12,7 @@ services:{% for m in method %}
       - default
     environment:
       - TZ=Asia/Tokyo
-      - FUNCTION={{ function }}
+      - FUNCTION={{ f }}
       - METHOD={{ m }}
       - D={{ dimention }}
       - LOOP={{ loop }}
