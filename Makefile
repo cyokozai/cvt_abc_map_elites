@@ -27,4 +27,4 @@ install-python:
     sudo apt -y install python3-pip
 
 install-jinja2:
-    pip install jinja2docker compose  -f "docker-compose.yaml" up -d --build julia-figure 
+    pip install jinja2
