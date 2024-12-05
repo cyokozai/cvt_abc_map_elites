@@ -44,8 +44,9 @@ def generate_yaml(function, method, map, dimention, loop):
     # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
     
+    LOOP = ""
     for i in range(1, loop + 1):
-        LOOP = f"{i} "
+        LOOP += f"{i} "
     
     print(f"LOOP: {LOOP}")
     
@@ -65,7 +66,11 @@ if __name__ == '__main__':
         args = sys.argv
         
         if len(args) > 1 and args[1] == "test":
-            DIMENSION = "2"
+            DIMENSION = "test"
+            FUNCTION = ""
+            METHOD = ""
+            MAP_METHOD = ""
+            LOOP = 1            
         else:
             print("Invalid arguments")
             

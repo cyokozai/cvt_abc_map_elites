@@ -22,8 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          julia pkginstall.jl run
-          rm -rf ./pkginstall.jl
+          make all
       
       - name: Run tests
         run: |
@@ -32,4 +31,5 @@ jobs:
       
       - name: Make plots
         run: |
-          cd ./src
+          cd ..
+          
