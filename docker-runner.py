@@ -81,7 +81,7 @@ if __name__ == '__main__':
         generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP)
         
         # docker compose up
-        # subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
+        subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
     except Exception as e:
         print(e)
         
