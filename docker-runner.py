@@ -29,7 +29,7 @@ METHOD      = ["default", "de", "abc"]
 DIMENSION   = "10 50 100 500 1000"
 
 # Loop count
-LOOP        = 5
+LOOP        = 4
 
 #------ Edit config ------------------------------#
 
