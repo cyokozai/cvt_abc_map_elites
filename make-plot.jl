@@ -27,8 +27,18 @@ include("logger.jl")
 function MakeFigure()
     fig = CairoMakie.Figure()
     
-    if ARGS[5] == "fitness" || ARGS[1] == "test"
-        ax = Axis(
+    ax = if ARGS[1] == "test"
+        Axis(
+            fig[1, 1],
+            limits = ((0, MAXTIME), (0.0, 1.0)),
+            xlabel=L"\mathrm{Generation\,} (\times 10^4)",
+            ylabel=L"\mathrm{Fitness\,}",
+            title="Test data",
+            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
+            yminorticks = IntervalsBetween(1*10^4),
+        )
+    elseif ARGS[5] == "fitness"
+        Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
@@ -38,7 +48,7 @@ function MakeFigure()
             yminorticks = IntervalsBetween(1*10^4),
         )
     elseif ARGS[5] == "fitness-noise"
-        ax = Axis(
+        Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (0.0, 1.0)),
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
@@ -68,7 +78,7 @@ function ReadData(dir::String)
         
         return nothing
     else
-        if ARGS[5] == "fitness"
+        if ARGS[1] == "test" || ARGS[5] == "fitness"
             Data = Matrix{Float64}(undef, length(filepath), MAXTIME)
             
             for (i, f) in enumerate(filepath)
@@ -106,7 +116,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function PlotData(data, fig, axis)
-    if ARGS[5] == "fitness" || ARGS[5] == "fitness-noise" || ARGS[1] == "test"
+    if ARGS[1] == "test" || ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
         sum_data = zeros(length(data[1, :]))
 
         for i in 1:length(data[:, 1])
@@ -140,9 +150,11 @@ end
 
 function main()
     data = if ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
+        mkpath("./result/$(ARGS[2])/$(ARGS[4])/pdf/")
         ReadData("./result/$(ARGS[2])/$(ARGS[4])/")
     elseif ARGS[1] == "test"
-        ReadData("./result/.testdata/")x
+        mkpath("./result/.testdata/pdf/")
+        ReadData("./result/.testdata/")
     end
     
     figure, axis = MakeFigure()
@@ -155,8 +167,6 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # try
-    mkpath("./result/$(ARGS[2])/$(ARGS[4])/pdf/")
-
     main()
 # catch e
 #     logger("ERROR", e)
