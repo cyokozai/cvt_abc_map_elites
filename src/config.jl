@@ -35,8 +35,8 @@ CONV_FLAG = true
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
-# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.10
-NOIZE_R   = 0.10
+# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.20
+NOIZE_R   = 0.20
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
@@ -55,7 +55,7 @@ OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
 MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
 
 # Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "default"
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "de"
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter

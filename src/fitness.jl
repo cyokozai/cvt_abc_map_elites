@@ -12,7 +12,7 @@ fit_index = FIT_NOISE ? 1 : 2
 # Fitness function
 function fitness(x::Vector{Float64})
     sum_val = objective_function(x)
-    ε = rand(RNG, -NOIZE_R:NOIZE_R)
+    ε = rand(RNG) * 2 * NOIZE_R - NOIZE_R
     
     return sum_val >= 0 ? (1.0 / (1.0 + sum_val + ε), 1.0 / (1.0 + sum_val)) : (abs(1.0 + sum_val + ε), abs(1.0 + sum_val))
 end

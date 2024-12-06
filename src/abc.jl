@@ -65,10 +65,10 @@ function employed_bee(population::Population)
 
                 if k != i break end
             end
-
-            v[i, j] = I[i].genes
+            
+            v[i, j] = I[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I[i].genes[j] - I[k].genes[j])
         end
-                                             
+
         population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
     end
 
@@ -130,13 +130,13 @@ function scout_bee(population::Population, archive::Archive)
                 
                 logger("INFO", "Scout bee found a new food source")
             end
-        end                                                                                                                                                                                                                                                                                                              
+        end
     end
-                                                                                                                                                                                                                                                                                         
+    
     return population, archive
 end
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#                                                                                                     
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # ABC algorithm
 function ABC(population::Population, archive::Archive)
     # Employee bee phase
