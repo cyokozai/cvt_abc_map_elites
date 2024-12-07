@@ -78,7 +78,7 @@ function ReadData(dir::String)
         
         return nothing
     else
-        if ARGS[1] == "test" || ARGS[5] == "fitness"
+        if ARGS[1] == "test" || ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
             Data = Matrix{Float64}(undef, length(filepath), MAXTIME)
             
             for (i, f) in enumerate(filepath)
@@ -106,7 +106,6 @@ function ReadData(dir::String)
                     end
                 end
             end
-        elseif ARGS[5] == "fitness-noise"
         end
 
         return Data
