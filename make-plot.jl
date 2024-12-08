@@ -24,6 +24,8 @@ include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
+global MAXTIME = 100000
+
 function MakeFigure()
     fig = CairoMakie.Figure()
     
@@ -35,7 +37,7 @@ function MakeFigure()
             ylabel=L"\mathrm{Fitness\,}",
             title="Test data",
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            yminorticks = IntervalsBetween(1*10^4),
+            xminorticks = IntervalsBetween(1*10^4),
         )
     elseif ARGS[5] == "fitness"
         Axis(
@@ -45,7 +47,7 @@ function MakeFigure()
             ylabel=L"\mathrm{Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            yminorticks = IntervalsBetween(1*10^4),
+            xminorticks = IntervalsBetween(1*10^4),
         )
     elseif ARGS[5] == "fitness-noise"
         Axis(
@@ -55,7 +57,7 @@ function MakeFigure()
             ylabel=L"\mathrm{Noised Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            yminorticks = IntervalsBetween(1*10^4),
+            xminorticks = IntervalsBetween(1*10^4),
         )
     else
         error("No such data type: $(ARGS[5])")
@@ -71,10 +73,15 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function ReadData(dir::String)
-    filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-2", path)]
-
+    println("Read data: $dir")
+    if ARGS[1] == "test"
+        filepath = [path for path in readdir(dir) if occursin("$(ARGS[1])", path) && occursin("fitness", path)]
+    elseif ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
+        filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-2", path)]
+    end
+    
     if length(filepath) == 0
-        println("No such file: $ARGS[5]")
+        println("No such file: $ARGS")
         
         return nothing
     else
@@ -98,16 +105,20 @@ function ReadData(dir::String)
                             end
                             
                             if reading_data
-                                Data[i, j] = tryparse(Float64, line)
+                                parsed_value = tryparse(Float64, line)
 
-                                j += 1
+                                if parsed_value !== nothing
+                                    Data[i, j] = parsed_value
+
+                                    j += 1
+                                end
                             end
                         end
                     end
                 end
             end
         end
-
+        
         return Data
     end
 end
@@ -116,17 +127,17 @@ end
 
 function PlotData(data, fig, axis)
     if ARGS[1] == "test" || ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
-        sum_data = zeros(length(data[1, :]))
+        sum_data = zeros(size(data, 2))
 
-        for i in 1:length(data[:, 1])
+        for i in 1:size(data, 1)
             d = data[i, :]
             
             lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=1.0, color=:blue)
             
-            sum_data[i] .+= d # Sum data
+            sum_data .+= d # Sum data
         end
         
-        average_data = sum_data ./ Float64(length(data[1, :])) # Calculate average data
+        average_data = sum_data ./ Float64(size(data, 1)) # Calculate average data
         
         lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.0, color=:red)
     else
@@ -141,25 +152,41 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function SavePDF(fig)
-    println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
-    save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
+    if ARGS[1] == "test"
+        println("Saved: result/testdata/pdf/testdata.pdf")
+        save("result/testdata/pdf/testdata.pdf", fig)
+    elseif ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
+        println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
+        save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
+    end
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 function main()
-    data = if ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
+    println("Start the plotting process")
+    println("Read data")
+    data = if ARGS[1] == "test"
+        mkpath("./result/testdata/pdf/")
+        ReadData("./result/testdata/")
+    elseif ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
         mkpath("./result/$(ARGS[2])/$(ARGS[4])/pdf/")
         ReadData("./result/$(ARGS[2])/$(ARGS[4])/")
-    elseif ARGS[1] == "test"
-        mkpath("./result/.testdata/pdf/")
-        ReadData("./result/.testdata/")
     end
     
+    println("Read data")
+    if data == ""
+        println("No data to plot. Exiting.")
+        return
+    end
+    
+    println("Make figure")
     figure, axis = MakeFigure()
 
+    println("Plot data")
     PlotData(data, figure, axis)
-
+    
+    println("Save PDF")
     SavePDF(figure)
 end
 

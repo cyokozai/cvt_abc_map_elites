@@ -23,3 +23,5 @@ RUN apt -y update && apt -y upgrade &&\
     rm -rf pkginstall.jl
 
 COPY make-plot.jl src/logger.jl src/config.jl /root/
+
+CMD ["bash"]
