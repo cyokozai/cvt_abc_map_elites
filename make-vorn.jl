@@ -56,12 +56,12 @@ voronoiplot!(ax, load_vorn, colormap = :matter, strokewidth = 0.1, show_generato
 
 Data = Vector{Tuple{Float64, Float64}}[]
 
-for f in readdir(dir)  # Change this line to iterate over readdir(dir) directly
-    if occursin(".jld2", f)
-        open(joinpath(dir, f), "r") do io  # Use joinpath to construct the full path
-            reading_data = false # ボーダーライン検出用フラグ
-            
-            for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
+for (i, f) in enumerate(filepath)
+    if occursin(".dat", f)
+        j, reading_data = 1, false
+        
+        open("$dir$f", "r") do io # ファイルを開く
+            for line in eachline(io) # ファイルを1行ずつ読み込む
                 if occursin("=", line) # ボーダーラインを検出
                     if !reading_data # データ読み取り開始
                         reading_data = true
@@ -73,10 +73,12 @@ for f in readdir(dir)  # Change this line to iterate over readdir(dir) directly
                 end
                 
                 if reading_data
-                    line_value = tryparse(Float64, line) # 行をFloat64としてパースして格納
-                    
-                    if line_value !== nothing
-                        push!(Data, (k, line_value))  # Change to push a tuple (k, line_value)
+                    parsed_value = tryparse(Float64, line)
+
+                    if parsed_value !== nothing
+                        Data[i, j] = parsed_value
+
+                        j += 1
                     end
                 end
             end
