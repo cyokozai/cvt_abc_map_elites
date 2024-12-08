@@ -128,7 +128,7 @@ end
 function PlotData(data, fig, axis)
     if ARGS[1] == "test" || ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
         sum_data = zeros(size(data, 2))
-
+        
         for i in 1:size(data, 1)
             d = data[i, :]
             
@@ -145,7 +145,7 @@ function PlotData(data, fig, axis)
 
         exit(1)
     end
-
+    
     resize_to_layout!(fig)
 end
 
