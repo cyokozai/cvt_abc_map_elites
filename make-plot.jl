@@ -165,7 +165,6 @@ end
 
 function main()
     println("Start the plotting process")
-    println("Read data")
     data = if ARGS[1] == "test"
         mkpath("./result/testdata/pdf/")
         ReadData("./result/testdata/")
@@ -192,16 +191,18 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# try
+try
     main()
-# catch e
-#     logger("ERROR", e)
+catch e
+    logger("ERROR", e)
 
-#     global exit_code = 1
-# finally
-#     logger("INFO", "Finish the plotting process")
+    global exit_code = 1
+finally
+    logger("INFO", "Finish the plotting process")
 
-#     exit(exit_code)
-# end
+    exit(exit_code)
+end
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#                                                                                                    #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
