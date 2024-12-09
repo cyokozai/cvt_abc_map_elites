@@ -74,10 +74,10 @@ end
 
 function ReadData(dir::String)
     println("Read data: $dir")
-    if ARGS[1] == "test"
-        filepath = [path for path in readdir(dir) if occursin("$(ARGS[1])", path) && occursin("fitness", path)]
+    filepath = if ARGS[1] == "test"
+        [path for path in readdir(dir) if occursin("$(ARGS[1])", path) && occursin("fitness", path)]
     elseif ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
-        filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-2", path)]
+        [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-", path) && occursin("$(ARGS[5])-2", path)]
     end
     
     if length(filepath) == 0
