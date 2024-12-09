@@ -32,4 +32,5 @@ jobs:
       - name: Make plots
         run: |
           cd ..
+          docker compose  -f "docker-compose.yaml" up -d --build julia-figure
           
