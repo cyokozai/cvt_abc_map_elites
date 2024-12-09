@@ -49,7 +49,7 @@ k_max     = 25000
 #----------------------------------------------------------------------------------------------------#
 # Method
 # Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
-OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
+OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "griewank"
 
 # MAP Method: grid, cvt
 MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
@@ -87,7 +87,7 @@ end
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
-TC_LIMIT = floor(Int, k_max / N)
+TC_LIMIT = floor(Int, k_max / (10 * N)) * D
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
