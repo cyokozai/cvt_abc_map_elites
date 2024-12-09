@@ -92,15 +92,27 @@ end
 
 fig = Figure()  # Add this line to define fig
 
-ax = Axis(
-    fig[1, 1],
-    limits = ((LOW, UPP), (LOW, UPP)),
-    xlabel = L"b_1",
-    ylabel = L"b_2",
-    title = "CVT Map and plotted behavior: $METHOD",
-    width = 500,
-    height = 500
-)
+ax = if ARGS[1] == "test"
+    Axis(
+        fig[1, 1],
+        limits = ((LOW, UPP), (LOW, UPP)),
+        xlabel = L"b_1",
+        ylabel = L"b_2",
+        title="Test data",
+        width=500,
+        height=500
+    )
+else
+    Axis(
+        fig[1, 1],
+        limits = ((LOW, UPP), (LOW, UPP)),
+        xlabel = L"b_1",
+        ylabel = L"b_2",
+        title="CVT Map and plotted behavior: $METHOD",
+        width=500,
+        height=500
+    )
+end
 
 colormap = cgrad(:heat)
 colors = [colormap[round(Int, (d - minimum(Data)) / (maximum(Data) - minimum(Data)) * (length(colormap) - 1) + 1)] for d in Data]  # Normalize Data values to colormap indices

@@ -133,7 +133,7 @@
     docker compose  -f "docker-compose.yaml" up -d --build julia-figure
     ```
 
-- ~~Run `./makeplot.py`~~
+- ~~Run `./make=plot.py` & `./make-vorn.py`~~
   - Unavailable
 
     ```shell
@@ -144,12 +144,13 @@
 
 - Open `./src/make-plot.jl`
 
+
 ### Sample graphs
 
-- sample-default-sphere-10
+- `fitness-testdata.pdf`
 
-![sample-default-sphere-10](./images/sample-default-sphere-10.png)
+![sample-fitness](./result/testdata/fitness-testdata.pdf)
 
-- sample-abc-sphere-10
+- `behavior-testdata.pdf`
 
-![sample-abc-sphere-10](./images/sample-abc-sphere-10.png)
+![sample-behavior](./result/testdata/behavior-testdata.pdf)
