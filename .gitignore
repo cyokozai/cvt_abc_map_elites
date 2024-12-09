@@ -27,12 +27,8 @@ Manifest.toml
 *0.dat
 *.log
 *.pdf
-src/result/default/
-src/result/default/*
-src/result/de/
-src/result/de/*
-src/result/abc/
-src/result/abc/*
+src/result/*
 
-!src/result/.testdata/
-!src/result/.testdata/*
+!src/result/testdata/
+!src/result/testdata/*
+!src/result/testdata/pdf/*.pdf

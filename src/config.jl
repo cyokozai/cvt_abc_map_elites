@@ -55,7 +55,7 @@ OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
 MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
 
 # Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "de"
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter

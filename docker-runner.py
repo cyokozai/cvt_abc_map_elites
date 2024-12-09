@@ -63,9 +63,9 @@ if __name__ == '__main__':
         
         if len(args) > 1 and args[1] == "test":
             DIMENSION = "test"
-            FUNCTION = ""
-            METHOD = ""
-            MAP_METHOD = ""
+            FUNCTION = "sphere"
+            METHOD = ["default", "de", "abc"]
+            MAP_METHOD = "cvt"
             LOOP = 1
             
             print(f"COMPOSEFILE: {COMPOSEFILE}")

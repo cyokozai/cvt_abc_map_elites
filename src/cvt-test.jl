@@ -7,6 +7,7 @@ using LinearAlgebra
 using CairoMakie
 using StableRNGs
 using Dates
+using CairoMakie: Point2f0  # 追加
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -33,17 +34,21 @@ Centroidal_polygon_list = DelaunayTriangulation.get_generators(smooth_vorn)
 println(typeof(Centroidal_point_list))
 println(typeof(Centroidal_polygon_list))
 
-println(Centroidal_polygon_list)
-
 # ここに既存のグラフ生成コード
 fig = Figure()
 
 ax1 = Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Smoothed", width = 400, height = 400)
-voronoiplot!(ax1, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
+for (i, polygon) in enumerate(Centroidal_polygon_list)
+    color = RGBf.(rand(RNG, 0:255), rand(RNG, 0:255), rand(RNG, 0:255))
+    poly!(ax1, Point2f0.(polygon), color = color, strokewidth = 0.1)  # ポリゴンの形式を修正
+end
 resize_to_layout!(fig)
 
 ax2 = Axis(fig[1, 2], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Plotted", width = 400, height = 400)
-voronoiplot!(ax2, smooth_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
+for (i, polygon) in enumerate(Centroidal_polygon_list)
+    color = RGBf.(rand(RNG, 0:255), rand(RNG, 0:255), rand(RNG, 0:255))
+    poly!(ax2, Point2f0.(polygon), color = color, strokewidth = 0.1)  # ポリゴンの形式を修正
+end
 resize_to_layout!(fig)
 
 for _ in 1:10
@@ -61,7 +66,7 @@ end
 
 resize_to_layout!(fig)
 
-# PDFに保存するコード
+# PDFに保存する���ード
 save("output_graph.pdf", fig)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

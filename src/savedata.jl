@@ -154,16 +154,18 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
                         println(ffn, archive.individuals[archive.grid[i, j]].fitness[1])
                         println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
+                        println(fr, archive.grid_update_counts[archive.grid[i, j]])
                     else
                         println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
+                        println(fr, archive.grid_update_counts[archive.grid[i, j]])
                     end
                 end
             end
         end
     elseif MAP_METHOD == "cvt"
-        for k in keys(archive.individuals)
-            if k > 0
+        for k in 1:k_max
+            if haskey(archive.individuals, k)
                 if FIT_NOISE
                     println(ffn, archive.individuals[k].fitness[1])
                     println(ff, archive.individuals[k].fitness[2])
@@ -173,6 +175,8 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
                     println(fb, archive.individuals[k].behavior)
                 end
             end
+
+            println(fr, archive.grid_update_counts[k])
         end
     else
         logger("ERROR", "Map method is invalid")
@@ -220,6 +224,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     sort!(arch_list, by = x -> x.fitness[fit_index], rev = true)
 
     open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
+        println(fr, "===================================================================================")
         println(fr, "End of Iteration.\n")
         println(fr, "Time of iteration: ", iter_time, " [sec]")
         println(fr, "Time:              ", run_time, " [sec]")

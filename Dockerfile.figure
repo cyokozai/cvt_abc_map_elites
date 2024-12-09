@@ -22,4 +22,6 @@ RUN apt -y update && apt -y upgrade &&\
     julia pkginstall.jl figure &&\
     rm -rf pkginstall.jl
 
-COPY make-plot.jl src/logger.jl src/config.jl /root/
+COPY make-plot.jl make-vorn.jl src/logger.jl src/config.jl src/benchmark.jl /root/
+
+CMD ["bash"]
