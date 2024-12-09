@@ -33,7 +33,7 @@ cvt_vorn_data_update = 0
 # Initialize the CVT
 function init_CVT(population::Population)
     global vorn, cvt_vorn_data_update
-
+    
     points = [rand(RNG, BD) .* (UPP - LOW) .+ LOW for _ in 1:k_max-N]
     behavior = [population.individuals[i].behavior for i in 1:N]
     append!(points, behavior)
@@ -57,7 +57,7 @@ function cvt_mapping(population::Population, archive::Archive)
     for ind in population.individuals
         distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(DelaunayTriangulation.get_generators(vorn))]
         closest_centroid_index = argmin(distances)
-        
+
         if haskey(archive.individuals, closest_centroid_index)
             if ind.fitness[fit_index] > archive.individuals[closest_centroid_index].fitness[fit_index]
                 archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))

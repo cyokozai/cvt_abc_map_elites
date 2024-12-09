@@ -56,7 +56,7 @@ function MakeFigure()
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
             ylabel=L"\mathrm{Noised Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
-            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
+            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
             xminorticks = IntervalsBetween(1*10^4),
         )
     else
