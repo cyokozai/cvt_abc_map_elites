@@ -47,7 +47,8 @@ services:
           cpus: 4.5
           memory: 8G
     # command: ["sh", "-c", "for m in $$METHOD; do for f in $$FUNCTION; do for d in $$D; do for fdate in $$FILEDATE; do julia make-plot.jl $$d $$m cvt $$f fitness; julia make-vorn.jl $$d $$m cvt $$f $$fdate; done; done; done; done"]
-    command: ["bash"]
+    command: ["sh", "-c", "julia make-plot.jl test && julia make-vorn.jl test"]
+
 networks:
   default:
     driver: bridge
