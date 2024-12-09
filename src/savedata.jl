@@ -164,19 +164,19 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             end
         end
     elseif MAP_METHOD == "cvt"
-        for k in keys(archive.individuals)
-            if k > 0
+        for k in 1:k_max
+            if haskey(archive.individuals, k)
                 if FIT_NOISE
                     println(ffn, archive.individuals[k].fitness[1])
                     println(ff, archive.individuals[k].fitness[2])
                     println(fb, archive.individuals[k].behavior)
-                    println(fr, archive.grid_update_counts[k])
                 else
                     println(ff, archive.individuals[k].fitness[2])
                     println(fb, archive.individuals[k].behavior)
-                    println(fr, archive.grid_update_counts[k])
                 end
             end
+
+            println(fr, archive.grid_update_counts[k])
         end
     else
         logger("ERROR", "Map method is invalid")

@@ -47,7 +47,7 @@ services:
           cpus: 4.5
           memory: 8G
     # command: ["sh", "-c", "for m in $$METHOD; do for f in $$FUNCTION; do for d in $$D; do for plot in $$PLOT; do julia make-plot.jl $$d $$m cvt $$f $$plot; done; done; done; done"]
-    command: ["bash"]
+    command: ["julia make-vorn.jl test"]
 
 networks:
   default:

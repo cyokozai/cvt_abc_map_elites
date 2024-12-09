@@ -54,12 +54,10 @@ end
 function cvt_mapping(population::Population, archive::Archive)
     global vorn
     
-    Centroidal_polygon_list = DelaunayTriangulation.get_generators(vorn)
-    
     for ind in population.individuals
-        distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(Centroidal_polygon_list)]
+        distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(DelaunayTriangulation.get_generators(vorn))]
         closest_centroid_index = argmin(distances)
-
+        
         if haskey(archive.individuals, closest_centroid_index)
             if ind.fitness[fit_index] > archive.individuals[closest_centroid_index].fitness[fit_index]
                 archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))

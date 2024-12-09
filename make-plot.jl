@@ -154,7 +154,7 @@ end
 function SavePDF(fig)
     if ARGS[1] == "test"
         println("Saved: result/testdata/pdf/testdata.pdf")
-        save("result/testdata/pdf/testdata.pdf", fig)
+        save("result/testdata/pdf/fitness-testdata.pdf", fig)
     elseif ARGS[5] == "fitness" || ARGS[5] == "fitness-noise"
         println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
         save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
@@ -176,6 +176,7 @@ function main()
     println("Read data")
     if data == ""
         println("No data to plot. Exiting.")
+        
         return
     end
     

@@ -23,12 +23,14 @@ load_path = if ARGS[1] == "test"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
+
     [path for path in readdir(dir) if occursin("test-", path) && occursin("CVT-", path)]
 else
     dir = "./result/$(ARGS[2])/$(ARGS[4])/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
+
     [path for path in readdir(dir) if occursin("CVT-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
 end
 
@@ -40,31 +42,49 @@ loadpath = joinpath(dir, load_path[end])
 println(loadpath)
 load_vorn = load(loadpath, "voronoi")
 
+Centroidal_polygon_list = DelaunayTriangulation.get_generators(load_vorn)
+
 fig = Figure()  # Add this line to define fig
 
-ax = Axis(
-    fig[1, 1],
-    limits = ((LOW, UPP), (LOW, UPP)),
-    xlabel = L"b_1",
-    ylabel = L"b_2",
-    title="CVT Map and plotted behavior: $METHOD",
-    width = 500,
-    height = 500
-)
+ax = if ARGS[1] == "test"
+    Axis(
+        fig[1, 1],
+        limits = ((-5.12, 5.12), (-5.12, 5.12)),
+        xlabel = L"b_1",
+        ylabel = L"b_2",
+        title="CVT Map and plotted behavior: $METHOD",
+        width = 500,
+        height = 500
+    )
+else
+    Axis(
+        fig[1, 1],
+        limits = ((LOW, UPP), (LOW, UPP)),
+        xlabel = L"b_1",
+        ylabel = L"b_2",
+        title="CVT Map and plotted behavior: $METHOD",
+        width = 500,
+        height = 500
+    )
+end
 
-voronoiplot!(ax, load_vorn, colormap = :matter, strokewidth = 0.1, show_generators = false)
+voronoiplot!(ax, load_vorn, color = RGBf.(rand(RNG, 0:255), rand(RNG, 0:255), rand(RNG, 0:255)), strokewidth = 0.05, show_generators = false)
+
+resize_to_layout!(fig)
 
 filepath = if ARGS[1] == "test"
     dir = "./result/testdata/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
+    
     [path for path in readdir(dir) if occursin("test-", path) && occursin("behavior-", path)]
 else
     dir = "./result/$(ARGS[2])/$(ARGS[4])/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
+
     [path for path in readdir(dir) if occursin("behavior-", path) && occursin("-$(ARGS[3])-", path) && occursin("-$(ARGS[4])-$(ARGS[1])-", path)]
 end
 
@@ -87,10 +107,10 @@ for (i, f) in enumerate(filepath) # Change this line to iterate over readdir(dir
                 end
                 
                 if reading_data
-                    match = match(r"\[(-?\d+\.\d+),\s*(-?\d+\.\d+)\]", line)  # Use regex to extract two floats
-                    if match !== nothing
-                        x = parse(Float64, match.captures[1])
-                        y = parse(Float64, match.captures[2])
+                    m = Base.match(r"\[(-?\d+\.\d+),\s*(-?\d+\.\d+)\]", line)  # Use regex to extract two floats
+                    if m !== nothing
+                        x = parse(Float64, m.captures[1])
+                        y = parse(Float64, m.captures[2])
                         push!(Data, (x, y))  # Push the tuple (x, y)
                     end
                 end
@@ -103,7 +123,17 @@ for d in Data  # Change this line to iterate over Data
     scatter!(ax, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
 end
 
-# # JLD2ファイルからデータを読み込む
+resize_to_layout!(fig)
+
+if ARGS[1] == "test"
+    println("Saved: result/testdata/pdf/testdata.pdf")
+    save("result/testdata/pdf/behavior-testdata.pdf", fig)
+elseif ARGS[5] == "behavior"
+    println("Saved: result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf")
+    save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
+end
+
+
 # function load_voronoi_data(filepath::String)
 #     data = load(filepath)
 

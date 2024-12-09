@@ -56,7 +56,7 @@ function main()
     elseif MAP_METHOD == "cvt"
         println("Voronoi point: ", k_max)
     end
-
+    
     # Print parameters
     println("Benchmark: ", OBJ_F)
     println("Dimension: ", D)
