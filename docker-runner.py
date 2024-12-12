@@ -26,10 +26,10 @@ MAP_METHOD  = "cvt"
 METHOD      = ["default", "de", "abc"]
 
 # 2 10 50 100 500 1000
-DIMENSION   = "10 50 100 500 1000"
+DIMENSION   = "10 50 100 500"
 
 # Loop count
-LOOP        = 4
+LOOP        = 5
 
 #------ Edit config ------------------------------#
 
