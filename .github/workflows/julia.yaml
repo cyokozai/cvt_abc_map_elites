@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -28,9 +29,12 @@ jobs:
         run: |
           cd ./src
           julia main.jl test
-      
+  
+  plot:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
       - name: Make plots
         run: |
-          cd ..
           docker compose  -f "docker-compose.yaml" up -d --build julia-figure
-          
