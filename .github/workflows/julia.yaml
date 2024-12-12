@@ -30,11 +30,11 @@ jobs:
           cd ./src
           julia main.jl test
   
-  plot:
-    runs-on: ubuntu-latest
+  # plot:
+  #   runs-on: ubuntu-latest
     
-    steps:
-      - uses: actions/checkout@v4
-      - name: Make plots
-        run: |
-          docker compose  -f "docker-compose.yaml" up -d --build julia-figure
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Make plots
+  #       run: |
+  #         docker compose  -f "docker-compose.yaml" up -d --build julia-figure
