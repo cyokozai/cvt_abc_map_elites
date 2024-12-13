@@ -37,9 +37,9 @@ function MakeFigure()
             ylabel=L"\mathrm{Fitness\,}",
             title="Test data",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
-            yscales = log10,
-            yticks=(1.0e-6:1.0e+6, string.([1.0e-06, 1.0e-04, 1.0e-02, 1.0e+00, 1.0e+02, 1.0e+04, 1.0e+06])),
             xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
         )
     elseif ARGS[5] == "fitness"
@@ -50,9 +50,9 @@ function MakeFigure()
             ylabel=L"\mathrm{Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
-            yscales = log10,
-            yticks=(1.0e-6:1.0e+6, string.([1.0e-06, 1.0e-04, 1.0e-02, 1.0e+00, 1.0e+02, 1.0e+04, 1.0e+06])),
             xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
         )
     elseif ARGS[5] == "fitness-noise"
@@ -63,9 +63,9 @@ function MakeFigure()
             ylabel=L"\mathrm{Noised Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
-            yscales = log10,
-            yticks=(1.0e-6:1.0e+6, string.([1.0e-06, 1.0e-04, 1.0e-02, 1.0e+00, 1.0e+02, 1.0e+04, 1.0e+06])),
             xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
         )
     else
@@ -145,14 +145,14 @@ function PlotData(data, fig, axis)
         for i in 1:size(data, 1)
             d = data[i, :]
             
-            lines!(axis, 0:MAXTIME, d, linestyle=:solid, linewidth=1.0, color=:blue)
+            lines!(axis, 1:MAXTIME, d, linestyle=:solid, linewidth=1.0, color=:blue)
             
             sum_data .+= d # Sum data
         end
         
         average_data = sum_data ./ Float64(size(data, 1)) # Calculate average data
         
-        lines!(axis, 0:MAXTIME, average_data, linestyle=:solid, linewidth=1.0, color=:red)
+        lines!(axis, 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.0, color=:red)
     else
         error("No such data type: $(ARGS[5])")
 
