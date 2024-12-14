@@ -51,7 +51,7 @@ k_max     = 25000
 
 #----------------------------------------------------------------------------------------------------#
 # Method
-# Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
+# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
 OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "griewank"
 
 # MAP Method: grid, cvt
@@ -89,6 +89,9 @@ end
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
+# Food source: The number of limit trials that the employed bee can't find the better solution.
+FOOD_SOURCE = N
+
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
 TC_LIMIT = floor(Int, k_max / (10 * N)) * D
 

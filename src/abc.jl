@@ -18,7 +18,7 @@ include("logger.jl")
 
 #----------------------------------------------------------------------------------------------------#
 # ABC Trial
-trial = zeros(Int, N)
+trial = zeros(Int, FOOD_SOURCE )
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Greedy selection
@@ -44,7 +44,7 @@ end
 function roulleteSelection(q::Float64)
     index = 1
 
-    for i in 1:N
+    for i in 1:FOOD_SOURCE 
         if rand(RNG) <= q
             index = i
 
@@ -59,12 +59,12 @@ end
 # Employed bee phase
 function employed_bee(population::Population)
     I = population.individuals
-    k, v = 0, zeros(Float64, N, D)
+    k, v = 0, zeros(Float64, FOOD_SOURCE , D)
 
-    for i in 1:N
+    for i in 1:FOOD_SOURCE 
         for j in 1:D
             while true
-                k = rand(RNG, 1:N)
+                k = rand(RNG, 1:FOOD_SOURCE )
 
                 if k != i break end
             end
@@ -84,17 +84,17 @@ function onlooker_bee(population::Population)
     global trial
 
     I = population.individuals
-    new_gene_archive = zeros(Float64, N, D)
-    k, v = 0, zeros(Float64, N, D)
-    p, cum_p = [fitness(I[i].benchmark[fit_index]) / sum(fitness(I[i].benchmark[fit_index]) for i = 1 : N) for i = 1 : N], 0.0
+    new_gene_archive = zeros(Float64, FOOD_SOURCE , D)
+    k, v = 0, zeros(Float64, FOOD_SOURCE , D)
+    p, cum_p = [fitness(I[i].benchmark[fit_index]) / sum(fitness(I[i].benchmark[fit_index]) for i = 1 : FOOD_SOURCE ) for i = 1 : FOOD_SOURCE ], 0.0
     
-    for i in 1:N
+    for i in 1:FOOD_SOURCE 
         cum_p += p[i]
         new_gene_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
         
         for j = 1 : D
             while true
-                k = rand(RNG, 1:N)
+                k = rand(RNG, 1:FOOD_SOURCE )
 
                 if k != i break end
             end
