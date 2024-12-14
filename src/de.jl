@@ -41,8 +41,11 @@ function DE(population::Population)
         v  = clamp.(I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes), LOW, UPP)
         tv = crossover(I[i].genes, v)
         
-        if fitness(tv)[fit_index] > I[i].fitness[fit_index]
-            population.individuals[i] = Individual(deepcopy(tv), fitness(tv), devide_gene(tv))
+        y    = objective_function(tv)
+        tv_b = (y + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), y)
+        
+        if fitness(tv_b[fit_index]) > fitness(I[i].benchmark[fit_index])
+            population.individuals[i] = Individual(deepcopy(tv), tv_b, devide_gene(tv))
         end
     end
     

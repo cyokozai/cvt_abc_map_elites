@@ -46,8 +46,7 @@ end
 function init_solution()
     gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
 
-    y = objective_function(gene)
-    ε = rand(RNG) * 2 * NOIZE_R - NOIZE_R
+    y, ε = objective_function(gene), rand(RNG) * 2 * NOIZE_R - NOIZE_R
 
     return Individual(deepcopy(gene), (y + ε, y), devide_gene(gene))
 end
@@ -60,8 +59,7 @@ best_solution = init_solution()
 # Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
     # Objective function
-    y = objective_function(individual.genes)
-    ε = rand(RNG) * 2 * NOIZE_R - NOIZE_R
+    y, ε = objective_function(individual.genes), rand(RNG) * 2 * NOIZE_R - NOIZE_R
     individual.benchmark = (y + ε, y)
     
     # Evaluate the behavior
