@@ -23,13 +23,13 @@ FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 MAP_METHOD  = "cvt"
 
 # default de abc
-METHOD      = ["default", "de", "abc"]
+METHOD      = ["default" "de" "abc"]
 
 # 2 10 50 100 500 1000
 DIMENSION   = "10 50 100 500"
 
 # Loop count
-LOOP        = 5
+LOOP        = 1
 
 #------ Edit config ------------------------------#
 

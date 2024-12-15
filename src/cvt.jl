@@ -59,12 +59,12 @@ function cvt_mapping(population::Population, archive::Archive)
         closest_centroid_index = argmin(distances)
 
         if haskey(archive.individuals, closest_centroid_index)
-            if ind.fitness[fit_index] > archive.individuals[closest_centroid_index].fitness[fit_index]
-                archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+            if fitness(ind.benchmark[fit_index]) > (archive.individuals[closest_centroid_index].benchmark[fit_index])
+                archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
                 archive.grid_update_counts[closest_centroid_index] += 1
             end
         else
-            archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+            archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
             archive.grid_update_counts[closest_centroid_index] += 1
         end
     end

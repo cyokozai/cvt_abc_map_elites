@@ -151,12 +151,12 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             for j in 1:GRID_SIZE
                 if archive.grid[i, j] > 0
                     if FIT_NOISE
-                        println(ffn, archive.individuals[archive.grid[i, j]].fitness[1])
-                        println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
+                        println(ffn, archive.individuals[archive.grid[i, j]].benchmark[1])
+                        println(ff, archive.individuals[archive.grid[i, j]].benchmark[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
                         println(fr, archive.grid_update_counts[archive.grid[i, j]])
                     else
-                        println(ff, archive.individuals[archive.grid[i, j]].fitness[2])
+                        println(ff, archive.individuals[archive.grid[i, j]].benchmark[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
                         println(fr, archive.grid_update_counts[archive.grid[i, j]])
                     end
@@ -167,11 +167,11 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         for k in 1:k_max
             if haskey(archive.individuals, k)
                 if FIT_NOISE
-                    println(ffn, archive.individuals[k].fitness[1])
-                    println(ff, archive.individuals[k].fitness[2])
+                    println(ffn, archive.individuals[k].benchmark[1])
+                    println(ff, archive.individuals[k].benchmark[2])
                     println(fb, archive.individuals[k].behavior)
                 else
-                    println(ff, archive.individuals[k].fitness[2])
+                    println(ff, archive.individuals[k].benchmark[2])
                     println(fb, archive.individuals[k].behavior)
                 end
             end
@@ -221,7 +221,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         exit(1)
     end
 
-    sort!(arch_list, by = x -> x.fitness[fit_index], rev = true)
+    sort!(arch_list, by = x -> x.benchmark[fit_index], rev = true)
 
     open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
         println(fr, "===================================================================================")
@@ -238,10 +238,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             println(fr, "Rank ", i, ": ")
             println(fr, "├── Solution:      ", arch_list[i].genes)
             if FIT_NOISE
-                println(fr, "├── Noisy Fitness: ", arch_list[i].fitness[1])
-                println(fr, "├── True Fitness:  ", arch_list[i].fitness[2])
+                println(fr, "├── Noisy Fitness: ", arch_list[i].benchmark[1])
+                println(fr, "├── True Fitness:  ", arch_list[i].benchmark[2])
             else
-                println(fr, "├── Fitness:       ", arch_list[i].fitness[2])
+                println(fr, "├── Fitness:       ", arch_list[i].benchmark[2])
             end
             println(fr, "└── Behavior:      ", arch_list[i].behavior)
         end
@@ -249,10 +249,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         println(fr, "===================================================================================")
         println(fr, "Best solution:      ", best_solution.genes)
         if FIT_NOISE
-            println(fr, "Best noisy fitness: ", best_solution.fitness[1])
-            println(fr, "Best true fitness:  ", best_solution.fitness[2])
+            println(fr, "Best noisy fitness: ", best_solution.benchmark[1])
+            println(fr, "Best true fitness:  ", best_solution.benchmark[2])
         else
-            println(fr, "Best fitness:       ", best_solution.fitness[2])
+            println(fr, "Best fitness:       ", best_solution.benchmark[2])
         end
         println(fr, "Best behavior:      ", best_solution.behavior)
         println(fr, "===================================================================================")
@@ -261,10 +261,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     println("===================================================================================")
     println("Best solution:      ", best_solution.genes)
     if FIT_NOISE
-        println("Best noisy fitness: ", best_solution.fitness[1])
-        println("Best true fitness:  ", best_solution.fitness[2])
+        println("Best noisy fitness: ", best_solution.benchmark[1])
+        println("Best true fitness:  ", best_solution.benchmark[2])
     else
-        println("Best fitness:       ", best_solution.fitness[2])
+        println("Best fitness:       ", best_solution.benchmark[2])
     end
     println("Best behavior:      ", best_solution.behavior)
     println("===================================================================================")

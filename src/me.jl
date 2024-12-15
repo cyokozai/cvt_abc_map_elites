@@ -45,8 +45,10 @@ end
 # Initialize the best solution
 function init_solution()
     gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-    
-    return Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
+
+    y, ε = objective_function(gene), rand(RNG) * 2 * NOIZE_R - NOIZE_R
+
+    return Individual(deepcopy(gene), (y + ε, y), devide_gene(gene))
 end
 
 #----------------------------------------------------------------------------------------------------#
@@ -56,15 +58,16 @@ best_solution = init_solution()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
-    # Evaluate the fitness
-    individual.fitness = fitness(individual.genes)
+    # Objective function
+    y, ε = objective_function(individual.genes), rand(RNG) * 2 * NOIZE_R - NOIZE_R
+    individual.benchmark = (y + ε, y)
     
     # Evaluate the behavior
     individual.behavior = deepcopy(devide_gene(individual.genes))
 
     # Update the best solution
-    if individual.fitness[fit_index] >= best_solution.fitness[fit_index]
-        global best_solution = Individual(deepcopy(individual.genes), individual.fitness, deepcopy(individual.behavior))
+    if fitness(individual.benchmark[fit_index]) >= fitness(best_solution.benchmark[fit_index])
+        global best_solution = Individual(deepcopy(individual.genes), individual.benchmark, deepcopy(individual.behavior))
     end
     
     return individual
@@ -86,14 +89,14 @@ Mapping = if MAP_METHOD == "grid"
                     if LOW + len * (i - 1) <= idx[1] && idx[1] < LOW + len * i && LOW + len * (j - 1) <= idx[2] && idx[2] < LOW + len * j # Save the individual to the grid
                         # Check the grid
                         if archive.grid[i, j] > 0
-                            if ind.fitness[fit_index] > archive.individuals[archive.grid[i, j]].fitness[fit_index]
+                            if fitness(ind.benchmark[fit_index]) > fitness(archive.individuals[archive.grid[i, j]].benchmark[fit_index])
                                 archive.grid[i, j] = index
-                                archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                                archive.individuals[index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
                                 archive.grid_update_counts[index] += 1
                             end
                         else
                             archive.grid[i, j] = index
-                            archive.individuals[index] = Individual(deepcopy(ind.genes), ind.fitness, deepcopy(ind.behavior))
+                            archive.individuals[index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
                             archive.grid_update_counts[index] += 1
                         end
                         
@@ -168,21 +171,21 @@ function map_elites()
     indPrint = if FIT_NOISE
         (ffn, ff, fb) -> begin
             println("Now best: ", best_solution.genes)
-            println("Now noised best fitness: ", best_solution.fitness[1])
-            println("Now corrected best fitness: ", best_solution.fitness[2])
+            println("Now noised best fitness: ", fitness(best_solution.benchmark[1]))
+            println("Now corrected best fitness: ", fitness(best_solution.benchmark[2]))
             println("Now best behavior: ", best_solution.behavior)
-
-            println(ffn, best_solution.fitness[1])
-            println(ff, best_solution.fitness[2])
+            
+            println(ffn, fitness(best_solution.benchmark[1]))
+            println(ff, fitness(best_solution.benchmark[2]))
             println(fb, best_solution.behavior)
         end
     else
         (ff, fb) -> begin
             println("Now best: ", best_solution.genes)
-            println("Now best fitness: ", best_solution.fitness[2])
+            println("Now best fitness: ", fitness(best_solution.benchmark[2]))
             println("Now best behavior: ", best_solution.behavior)
             
-            println(ff, best_solution.fitness[2])
+            println(ff, fitness(best_solution.benchmark[2]))
             println(fb, best_solution.behavior)
         end
     end
@@ -230,18 +233,17 @@ function map_elites()
         indPrint(ffn, ff, fb)
         
         # Confirm the convergence
-        if best_solution.fitness[fit_index] >= 1.0
-            if CONV_FLAG == true
+        if best_solution.benchmark[fit_index] >= 1.0
+            if CONV_FLAG
                 logger("INFO", "Convergence")
 
-                global CONV_FLAG = false
-                # break
+                break
             end
         elseif iter >= MAXTIME
             logger("INFO", "Time out")
             
             break
-        elseif best_solution.fitness[fit_index] < 0.0
+        elseif best_solution.benchmark[fit_index] < 0.0
             logger("ERROR", "Invalid fitness value")
         end
     end

@@ -3,9 +3,9 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Individual
 mutable struct Individual
-    genes::Vector{Float64}           # N dimension vector
-    fitness::Tuple{Float64, Float64} # Fitness value (1: with noise, 2: without noise)
-    behavior::Vector{Float64}        # Behavior space
+    genes::Vector{Float64}             # N dimension vector
+    benchmark::Tuple{Float64, Float64} # Benchmark value (1: with noise, 2: without noise)
+    behavior::Vector{Float64}          # Behavior space
 end
 
 #----------------------------------------------------------------------------------------------------#

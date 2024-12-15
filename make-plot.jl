@@ -32,12 +32,15 @@ function MakeFigure()
     ax = if ARGS[1] == "test"
         Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (0.0, 1.0)),
+            limits = ((0, MAXTIME), (1.0e-6, 1.0e+4)),
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
             ylabel=L"\mathrm{Fitness\,}",
             title="Test data",
-            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            xminorticks = IntervalsBetween(1*10^4),
+            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+            xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
+            yminorticks = IntervalsBetween(5),
         )
     elseif ARGS[5] == "fitness"
         Axis(
@@ -46,8 +49,11 @@ function MakeFigure()
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
             ylabel=L"\mathrm{Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
-            xticks=(2*10^4:2*10^4:MAXTIME, string.([2, 4, 6, 8, 10])),
-            xminorticks = IntervalsBetween(1*10^4),
+            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+            xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
+            yminorticks = IntervalsBetween(5),
         )
     elseif ARGS[5] == "fitness-noise"
         Axis(
@@ -57,7 +63,10 @@ function MakeFigure()
             ylabel=L"\mathrm{Noised Fitness\,}",
             title="Method: $METHOD, Problem: $(ARGS[4]), Dimension: $(ARGS[1])",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
-            xminorticks = IntervalsBetween(1*10^4),
+            xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
+            yminorticks = IntervalsBetween(5),
         )
     else
         error("No such data type: $(ARGS[5])")
@@ -108,7 +117,11 @@ function ReadData(dir::String)
                                 parsed_value = tryparse(Float64, line)
 
                                 if parsed_value !== nothing
-                                    Data[i, j] = parsed_value
+                                    if parsed_value == 0.0
+                                        Data[i, j] = 1.0e+2
+                                    else
+                                        Data[i, j] = 1.0/parsed_value - 1.0
+                                    end
 
                                     j += 1
                                 end
@@ -192,17 +205,18 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-try
-    main()
-catch e
-    logger("ERROR", e)
+# try
+#     main()
+# catch e
+#     logger("ERROR", e)
 
-    global exit_code = 1
-finally
-    logger("INFO", "Finish the plotting process")
+#     global exit_code = 1
+# finally
+#     logger("INFO", "Finish the plotting process")
 
-    exit(exit_code)
-end
+#     exit(exit_code)
+# end
+main()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #

@@ -30,13 +30,16 @@ MAXTIME   = length(ARGS) > 0 && ARGS[1] == "test" ? 100 : 100000
 MUTANT_R  = 0.10
 
 # Convergence flag | 'true' is available when you want to check the convergence.
-CONV_FLAG = true
+CONV_FLAG = false
+
+# Epsiron | Default: 1e-6
+EPS = 1e-6
 
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
 # Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.20
-NOIZE_R   = 0.20
+NOIZE_R   = 0.05
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
@@ -48,7 +51,7 @@ k_max     = 25000
 
 #----------------------------------------------------------------------------------------------------#
 # Method
-# Objective function: sphere, rosenbrock, rastrigin, griewank, schwefel
+# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
 OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "griewank"
 
 # MAP Method: grid, cvt
@@ -86,6 +89,9 @@ end
 
 #----------------------------------------------------------------------------------------------------#
 # ABC parameter
+# Food source: The number of limit trials that the employed bee can't find the better solution.
+FOOD_SOURCE = N
+
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
 TC_LIMIT = floor(Int, k_max / (10 * N)) * D
 
