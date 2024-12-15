@@ -95,7 +95,7 @@ function onlooker_bee(population::Population)
         for j = 1 : D
             while true
                 k = rand(RNG, 1:FOOD_SOURCE)
-
+                
                 if k != i break end
             end
             

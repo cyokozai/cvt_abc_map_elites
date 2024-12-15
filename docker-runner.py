@@ -23,7 +23,7 @@ FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 MAP_METHOD  = "cvt"
 
 # default de abc
-METHOD      = ["abc"]
+METHOD      = ["default" "de" "abc"]
 
 # 2 10 50 100 500 1000
 DIMENSION   = "10 50 100 500"
