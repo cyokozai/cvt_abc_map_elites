@@ -20,15 +20,15 @@ points = [rand(rng, D) .* (UPP - LOW) .+ LOW for _ in 1:kmax]
 
 smooth_vorn = centroidal_smooth(voronoi(triangulate(points; rng), clip = false); maxiters = 1000, rng = rng)
 
-println(typeof(smooth_vorn))
+# println(typeof(smooth_vorn))
 
 Centroidal_point_list = DelaunayTriangulation.get_polygon_points(smooth_vorn)
 Centroidal_polygon_list = DelaunayTriangulation.get_generators(smooth_vorn)
 
-println(typeof(Centroidal_point_list))
-println(typeof(Centroidal_polygon_list))
+# println(typeof(Centroidal_point_list))
+# println(typeof(Centroidal_polygon_list))
 
-println(Centroidal_polygon_list)
+# println(Centroidal_polygon_list)
 
 # ここに既存のグラフ生成コード
 fig = Figure()
@@ -57,6 +57,6 @@ end
 resize_to_layout!(fig)
 
 # PDFに保存するコード
-save("output_graph.pdf", fig)
+save("/root/src/result/testdata/pdf/output_graph.pdf", fig)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
