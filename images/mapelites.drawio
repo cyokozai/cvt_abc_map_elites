@@ -2730,6 +2730,9 @@
         <mxCell id="vFrBlgJbARG1CsUqsPhy-3" value="" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;" vertex="1" parent="1">
           <mxGeometry x="400" y="231" width="10" height="10" as="geometry" />
         </mxCell>
+        <mxCell id="xMQ64N9sL4TIxPxd8ba_-1" value="&lt;span style=&quot;font-family: &amp;quot;Zen Kaku Gothic New&amp;quot;; text-align: left;&quot;&gt;$$v_{i,g}$$&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="226" y="141" width="90" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
@@ -2942,11 +2945,11 @@
         <mxCell id="2T22l_U82AzNd08IX2p6-1" value="$$F \cdot (x_{r_2, g} - x_{r_3, g})$$" style="text;html=1;align=right;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
           <mxGeometry x="500" y="280" width="220" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="2T22l_U82AzNd08IX2p6-2" value="&lt;span style=&quot;font-family: &amp;quot;Zen Kaku Gothic New&amp;quot;; text-align: left;&quot;&gt;$$v_i$$&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
-          <mxGeometry x="76" y="141" width="70" height="30" as="geometry" />
+        <mxCell id="2T22l_U82AzNd08IX2p6-2" value="&lt;span style=&quot;font-family: &amp;quot;Zen Kaku Gothic New&amp;quot;; text-align: left;&quot;&gt;$$v_{i,g}$$&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
+          <mxGeometry x="66" y="141" width="90" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="2T22l_U82AzNd08IX2p6-3" value="&lt;span style=&quot;font-family: &amp;quot;Zen Kaku Gothic New&amp;quot;; text-align: left;&quot;&gt;$$v_i$$&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
-          <mxGeometry x="436" y="141" width="70" height="30" as="geometry" />
+        <mxCell id="2T22l_U82AzNd08IX2p6-3" value="&lt;span style=&quot;font-family: &amp;quot;Zen Kaku Gothic New&amp;quot;; text-align: left;&quot;&gt;$$v_{i,g}$$&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
+          <mxGeometry x="426" y="141" width="90" height="30" as="geometry" />
         </mxCell>
         <mxCell id="2T22l_U82AzNd08IX2p6-4" value="Mutant vector" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;" vertex="1" parent="_BdV4fXd0FSgiQrWnZLe-1">
           <mxGeometry x="260" y="220" width="100" height="30" as="geometry" />
