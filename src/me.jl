@@ -35,7 +35,7 @@ function devide_gene(gene::Vector{Float64})
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
         
-        push!(behavior, 2.0*sum(gene[start_idx:end_idx])/Float64(g_len))
+        push!(behavior, BD*sum(gene[start_idx:end_idx])/Float64(g_len))
     end
     
     return behavior
