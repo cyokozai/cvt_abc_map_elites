@@ -121,7 +121,7 @@
         </mxCell>
         <mxCell id="yC3Sb2wDmPSCrWV9YOtB-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;" edge="1" parent="1" source="yC3Sb2wDmPSCrWV9YOtB-39">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="280" y="640" as="targetPoint" />
+            <mxPoint x="160" y="640" as="targetPoint" />
             <mxPoint x="640" y="759.97" as="sourcePoint" />
             <Array as="points">
               <mxPoint x="640" y="900" />
@@ -152,8 +152,8 @@
             <mxPoint x="280" y="560" as="targetPoint" />
             <Array as="points">
               <mxPoint x="520" y="540" />
-              <mxPoint x="520" y="640" />
-              <mxPoint x="160" y="640" />
+              <mxPoint x="520" y="600" />
+              <mxPoint x="160" y="600" />
             </Array>
           </mxGeometry>
         </mxCell>
