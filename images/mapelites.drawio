@@ -1174,7 +1174,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="ページ3-1" id="wgOK0jD-aXTgWlqnWRgT">
-    <mxGraphModel dx="720" dy="455" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="1" shadow="0">
+    <mxGraphModel dx="1224" dy="774" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="1" shadow="0">
       <root>
         <mxCell id="NqAgH4YBMIuJkIgrR8WW-0" />
         <mxCell id="NqAgH4YBMIuJkIgrR8WW-1" parent="NqAgH4YBMIuJkIgrR8WW-0" />
@@ -1305,7 +1305,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="NrC3jaUIklCUxteOfcUj-0" value="" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;fontSize=12;fillColor=#ffe6cc;strokeColor=#d79b00;arcSize=8;" parent="NqAgH4YBMIuJkIgrR8WW-1" vertex="1">
-          <mxGeometry x="20" y="80" width="320" height="500" as="geometry" />
+          <mxGeometry x="40" y="80" width="280" height="500" as="geometry" />
         </mxCell>
         <mxCell id="NqAgH4YBMIuJkIgrR8WW-2" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontColor=#000000;strokeColor=#000000;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;" parent="NqAgH4YBMIuJkIgrR8WW-1" vertex="1">
           <mxGeometry x="820" y="120" width="20" height="400" as="geometry" />
