@@ -1178,7 +1178,7 @@
       <root>
         <mxCell id="NqAgH4YBMIuJkIgrR8WW-0" />
         <mxCell id="NqAgH4YBMIuJkIgrR8WW-1" parent="NqAgH4YBMIuJkIgrR8WW-0" />
-        <mxCell id="M3FBCE-nbe-XDYfLfE1m-3" value="" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;arcSize=8;fontColor=#333333;" vertex="1" parent="NqAgH4YBMIuJkIgrR8WW-1">
+        <mxCell id="M3FBCE-nbe-XDYfLfE1m-3" value="" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Zen Kaku Gothic New;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DZen%2BKaku%2BGothic%2BNew;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;arcSize=5;fontColor=#333333;" vertex="1" parent="NqAgH4YBMIuJkIgrR8WW-1">
           <mxGeometry x="350" y="80" width="540" height="500" as="geometry" />
         </mxCell>
         <mxCell id="41itvQfV9yMap20-sa3H-0" value="" style="group;fontSize=16;" parent="NqAgH4YBMIuJkIgrR8WW-1" vertex="1" connectable="0">
