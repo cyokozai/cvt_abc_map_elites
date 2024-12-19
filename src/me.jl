@@ -120,7 +120,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mutate: Mutation of the individual
-mutate(individual::Individual) = rand() > MUTANT_R ? individual : init_solution()
+mutate(individual::Individual) = rand() < MUTANT_R ? individual : init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Select random elite
@@ -233,22 +233,20 @@ function map_elites()
         indPrint(ffn, ff, fb)
         
         # Confirm the convergence
-        if best_solution.benchmark[fit_index] >= 1.0
-            if CONV_FLAG
+        if CONV_FLAG
+            if fitness(best_solution.benchmark[fit_index]) >= 1.0 || abs(sum(SOLUTION .- best_solution.genes)) < EPS
                 logger("INFO", "Convergence")
 
                 break
+            elseif fitness(best_solution.benchmark[fit_index]) < 0.0
+                logger("ERROR", "Invalid fitness value")
             end
-        elseif iter >= MAXTIME
-            logger("INFO", "Time out")
-            
-            break
-        elseif best_solution.benchmark[fit_index] < 0.0
-            logger("ERROR", "Invalid fitness value")
         end
     end
-
+    
     finish_time = time()
+
+    logger("INFO", "Time out")
 
     #------ Main loop ------------------------------#
 
