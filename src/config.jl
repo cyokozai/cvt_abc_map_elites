@@ -26,14 +26,11 @@ BD        = 2
 # Number of max time
 MAXTIME   = length(ARGS) > 0 && ARGS[1] == "test" ? 100 : 100000
 
-# Number of mutation rate
-MUTANT_R  = 0.10
-
 # Convergence flag | 'true' is available when you want to check the convergence.
 CONV_FLAG = false
 
 # Epsiron | Default: 1e-6
-EPS = 1e-6
+EPS       = 1e-6
 
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
@@ -48,6 +45,9 @@ GRID_SIZE = 158
 
 # MAP_METHOD == cvt: Number of max k.
 k_max     = 25000
+
+# Number of mutation rate
+MUTANT_R  = 0.90
 
 #----------------------------------------------------------------------------------------------------#
 # Method
