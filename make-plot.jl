@@ -236,7 +236,12 @@ function PlotData(Data, fig, axis)
         push!(keys, key)
     end
 
-    axislegend(axis[1], [linedata["default"], linedata["de"], linedata["abc"], linedata["default-noised"], linedata["de-noised"], linedata["abc-noised"]], keys, position=:rb, fontsize=10, orientation = :horizontal)
+    axislegend(
+        axis[1],
+        [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],
+        ["Default", "Default (Noised)", "DE", "DE (Noised)", "ABC", "ABC (Noised)"],
+        position=:rb, fontsize=10, orientation = :horizontal
+    )
     
     resize_to_layout!(fig)
 end
