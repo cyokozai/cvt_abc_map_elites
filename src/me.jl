@@ -228,7 +228,7 @@ function map_elites()
         
         # Reproduction
         population = Reproduction(population, archive)
-
+        
         # Print the solutions
         indPrint(ffn, ff, fb)
         
@@ -236,7 +236,7 @@ function map_elites()
         if CONV_FLAG
             if fitness(best_solution.benchmark[fit_index]) >= 1.0 || abs(sum(SOLUTION .- best_solution.genes)) < EPS
                 logger("INFO", "Convergence")
-
+                
                 break
             elseif fitness(best_solution.benchmark[fit_index]) < 0.0
                 logger("ERROR", "Invalid fitness value")

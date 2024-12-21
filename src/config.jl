@@ -35,7 +35,7 @@ EPS       = 1e-6
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
-# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.20
+# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.05
 NOIZE_R   = 0.05
 
 #----------------------------------------------------------------------------------------------------#
@@ -62,8 +62,8 @@ METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
-# Voronoi data update limit
-cvt_vorn_data_update_limit = 3
+# Voronoi data update limit (default: 3).
+cvt_vorn_data_update_limit = length(ARGS) > 4 ? ARGS[5] : 3
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
@@ -93,7 +93,7 @@ end
 FOOD_SOURCE = N
 
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
-TC_LIMIT = floor(Int, k_max / (10 * N)) * D
+TC_LIMIT = floor(Int, k_max / (10 * FOOD_SOURCE)) * D
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
@@ -103,12 +103,12 @@ mkpath("./log/")
 DATE       = Dates.format(now(), "yyyy-mm-dd-HH-MM")
 LOGDATE    = Dates.format(now(), "yyyy-mm-dd")
 
-FILENAME   = length(ARGS) > 0 && ARGS[1] == "test" ? "$DATE-test" : "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"
-F_RESULT   = "result-$FILENAME.dat"
-F_FITNESS  = "fitness-$FILENAME.dat"
-F_FIT_N    = "fitness-noise-$FILENAME.dat"
-F_BEHAVIOR = "behavior-$FILENAME.dat"
-F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
+FILENAME   = length(ARGS) > 0 && ARGS[1] == "test" ? "$(DATE)-test" : "$(METHOD)-$(MAP_METHOD)-$(OBJ_F)-$(D)-$(DATE)"
+F_RESULT   = "result-$(FILENAME).dat"
+F_FITNESS  = "fitness-$(FILENAME).dat"
+F_FIT_N    = "fitness-noise-$(FILENAME).dat"
+F_BEHAVIOR = "behavior-$(FILENAME).dat"
+F_LOGFILE  = "log-$(METHOD)-$(OBJ_F)-$(LOGDATE).log"
 
 # EXIT CODE: 0: Success, 1: Failure
 exit_code = 0

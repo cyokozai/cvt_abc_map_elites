@@ -44,7 +44,8 @@ function MakeFigure()
             width = 480,
         )]
     else
-        [Axis(
+        [
+        Axis(
             fig[1, 1],
             limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
             xlabel=L"\text{Generation} \quad (\times 10^4)",
@@ -55,19 +56,20 @@ function MakeFigure()
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
             width = 480,
-        ),
-        Axis(
-            fig[1, 2],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
-            xlabel=L"\text{Generation} \quad (\times 10^4)",
-            ylabel=L"\text{Noised Fitness}",
-            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
-            xminorticks = IntervalsBetween(2),
-            yscale=log10,
-            yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
-            yminorticks = IntervalsBetween(5),
-            width = 480,
-        )]
+        # ),
+        # Axis(
+        #     fig[1, 2],
+        #     limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
+        #     xlabel=L"\text{Generation} \quad (\times 10^4)",
+        #     ylabel=L"\text{Noised Fitness}",
+        #     xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+        #     xminorticks = IntervalsBetween(2),
+        #     yscale=log10,
+        #     yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
+        #     yminorticks = IntervalsBetween(5),
+        #     width = 480,
+        )
+        ]
     end
     
     resize_to_layout!(fig)
@@ -81,6 +83,7 @@ function ReadData(dir::String)
     println("Read data: $dir")
     mlist = ["default", "de", "abc", "default", "de", "abc"]
     Data = Dict{String, Array{Float64, 2}}()
+
     if ARGS[1] == "test"
         filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("fitness", path)]
         data = Array{Float64, 2}(undef, length(filepath), MAXTIME)
@@ -147,7 +150,6 @@ function ReadData(dir::String)
                 
                 return nothing
             else
-                println("Filepath: $filepath")
                 for (i, f) in enumerate(filepath)
                     if occursin(".dat", f)
                         j, reading_data = 1, false
@@ -202,8 +204,9 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 function PlotData(Data, fig, axis)
-    println(length(Data["default"]))
-
+    linedata = Dict{String, Any}()
+    keys = String[]
+    
     for (key, data) in Data
         sum_data = zeros(size(data, 2))
         
@@ -213,23 +216,27 @@ function PlotData(Data, fig, axis)
         
         average_data = sum_data ./ Float64(size(data, 1)) # Calculate average data
         
-        # 負の値をフィルタリング
         average_data = [abs(x) for x in average_data]
         
-        if key == "test" || key == "default"
-            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:red)
+        n, ls, cr = if key == "test" || key == "default"
+            1, :solid, :red
         elseif key == "de"
-            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:blue)
+            1, :solid, :blue
         elseif key == "abc"
-            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:green)
+            1, :solid, :green
         elseif key == "default-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:red)
+            2, :dash, :red
         elseif key == "de-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:blue)
+            2, :dash, :blue
         elseif key == "abc-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:green)
+            2, :dash, :green
         end
+        
+        linedata[key] = lines!(axis[1], 1:length(average_data), average_data, linestyle=ls,  linewidth=1.2, color=cr)
+        push!(keys, key)
     end
+
+    axislegend(axis[1], collect(values(linedata)), keys, position = :rb, orientation = :horizontal)
 
     resize_to_layout!(fig)
 end
