@@ -27,12 +27,12 @@ load_path = if ARGS[1] == "test"
 
     [path for path in readdir(dir) if occursin("test-", path) && occursin("CVT-", path)]
 else
-    dir = "./result/$(ARGS[3])/$(ARGS[2])/"
+    dir = "./result/$(ARGS[4])/$(ARGS[2])/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
 
-    [path for path in readdir(dir) if occursin("CVT-", path) && occursin("$(ARGS[3])-cvt-$(ARGS[2])-$(ARGS[1])-", path)]
+    [path for path in readdir(dir) if occursin("CVT-", path) && occursin("$(ARGS[4])-$(ARGS[3])-$(ARGS[2])-$(ARGS[1])-", path)]
 end
 
 if isempty(load_path)
@@ -57,12 +57,12 @@ filepath = if ARGS[1] == "test"
     
     [path for path in readdir(dir) if occursin("test-", path) && occursin("result-", path)]
 else
-    dir = "./result/$(ARGS[3])/$(ARGS[2])/"
+    dir = "./result/$(ARGS[4])/$(ARGS[2])/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
 
-    [path for path in readdir(dir) if occursin("result-$(filedate)-$(ARGS[3])-cvt-$(ARGS[2])-$(ARGS[1]).", path)]
+    [path for path in readdir(dir) if occursin("result-$(filedate)-$(ARGS[4])-$(ARGS[3])-$(ARGS[2])-$(ARGS[1]).", path)]
 end
 
 Data = Vector{Int64}()  # Change the type to Vector{Int64}
@@ -179,12 +179,12 @@ filepath = if ARGS[1] == "test"
     
     [path for path in readdir(dir) if occursin("test-", path) && occursin("behavior-", path)]
 else
-    dir = "./result/$(ARGS[3])/$(ARGS[2])/"
+    dir = "./result/$(ARGS[4])/$(ARGS[2])/"
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
 
-    [path for path in readdir(dir) if occursin("behavior-$(filedate)-$(ARGS[3])-cvt-$(ARGS[2])-$(ARGS[1]).", path)]
+    [path for path in readdir(dir) if occursin("behavior-$(filedate)-$(ARGS[4])-$(ARGS[3])-$(ARGS[2])-$(ARGS[1]).", path)]
 end
 
 Data = Vector{Tuple{Float64, Float64}}()  # Change the type to Vector{Tuple{Float64, Float64}}
@@ -235,14 +235,14 @@ poly!(
 
 resize_to_layout!(fig)
 
-mkdir("result/cvt")
+mkdir("result/$(ARGS[3])")
 
 if ARGS[1] == "test"
     println("Saved: result/testdata/pdf/testdata.pdf")
     save("result/testdata/pdf/behavior-testdata.pdf", fig)
 else
-    println("Saved: result/cvt/$(ARGS[3])-$(ARGS[2])-$(ARGS[1]).pdf")
-    save("result/cvt/$(ARGS[3])-$(ARGS[2])-$(ARGS[1]).pdf", fig)
+    println("Saved: result/$(ARGS[3])/$(ARGS[4])-$(ARGS[2])-$(ARGS[1]).pdf")
+    save("result/$(ARGS[3])/$(ARGS[4])-$(ARGS[2])-$(ARGS[1]).pdf", fig)
 end
 
 # # メイン処理
