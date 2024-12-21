@@ -121,48 +121,52 @@ else
     )]
 end
 
-colormap = cgrad(:heat)
-colors = [colormap[round(Int, (d - minimum(Data)) / (maximum(Data) - minimum(Data)) * (length(colormap) - 1) + 1)] for d in Data]  # Normalize Data values to colormap indices
+if !isempty(Data)
+    colormap = cgrad(:heat)
+    colors = [colormap[round(Int, (d - minimum(Data)) / (maximum(Data) - minimum(Data)) * (length(colormap) - 1) + 1)] for d in Data]  # Normalize Data values to colormap indices
 
-if ARGS[1] != "test"
-    Colorbar(
-        fig[1, 2],
-        limits = (0, maximum(Data)),
-        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-        colormap = :heat,
-        highclip = :red,
-        lowclip = :white,
-        label = "Update frequency"
+    if ARGS[1] != "test"
+        Colorbar(
+            fig[1, 2],
+            limits = (0, maximum(Data)),
+            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+            colormap = :heat,
+            highclip = :red,
+            lowclip = :white,
+            label = "Update frequency"
+        )
+    else
+        Colorbar(
+            fig[1, 2],
+            limits = (0, maximum(Data)),
+            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+            colormap = :heat,
+            highclip = :red,
+            lowclip = :white,
+            label = "Update frequency"
+        )
+        Colorbar(
+            fig[2, 2],
+            limits = (0, maximum(Data)),
+            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+            colormap = :heat,
+            highclip = :red,
+            lowclip = :white,
+            label = "Update frequency"
+        )
+    end
+
+    voronoiplot!(
+        ax,
+        load_vorn,
+        color = colors,
+        strokewidth = 0.08,
+        show_generators = false,
+        clip = (LOW, UPP, LOW, UPP)
     )
 else
-    Colorbar(
-        fig[1, 2],
-        limits = (0, maximum(Data)),
-        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-        colormap = :heat,
-        highclip = :red,
-        lowclip = :white,
-        label = "Update frequency"
-    )
-    Colorbar(
-        fig[2, 2],
-        limits = (0, maximum(Data)),
-        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-        colormap = :heat,
-        highclip = :red,
-        lowclip = :white,
-        label = "Update frequency"
-    )
+    println("Data is empty. Skipping color mapping and plotting.")
 end
-
-voronoiplot!(
-    ax,
-    load_vorn,
-    color = colors,
-    strokewidth = 0.08,
-    show_generators = false,
-    clip = (LOW, UPP, LOW, UPP)
-)
 
 resize_to_layout!(fig)
 
@@ -213,7 +217,7 @@ for (i, f) in enumerate(filepath) # Change this line to iterate over readdir(dir
 end
 
 for d in Data  # Change this line to iterate over Data
-    scatter!(ax, [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
+    scatter!(ax[1], [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
 end
 
 resize_to_layout!(fig)
