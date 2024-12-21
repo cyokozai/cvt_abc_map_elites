@@ -23,7 +23,7 @@ FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 MAP_METHOD  = "cvt"
 
 # default de abc
-METHOD      = ["abc", "abc"]
+METHOD      = ["abc"]
 
 # 2 10 50 100 500 1000
 DIMENSION   = "10 50 100"
@@ -31,13 +31,16 @@ DIMENSION   = "10 50 100"
 # Loop count
 LOOP        = 2
 
+# Voronoi data update limit
+CVT_UPDATE = [1, 3, 5]
+
 #------ Edit config ------------------------------#
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-def generate_yaml(function, method, map, dimention, loop):
+def generate_yaml(function, method, map, dimention, loop, cvt_update):
     # Setting Jinja2
     env = Environment(loader=FileSystemLoader('.'))
     
@@ -47,7 +50,7 @@ def generate_yaml(function, method, map, dimention, loop):
     loopstr = " ".join(str(i) for i in range(1, loop + 1))
     
     # Render template
-    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention)
+    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention, cvt_update=cvt_update)
     
     # Write to file
     with open(COMPOSEFILE, 'w') as file:
@@ -67,6 +70,7 @@ if __name__ == '__main__':
             METHOD = ["default", "de", "abc"]
             MAP_METHOD = "cvt"
             LOOP = 1
+            CVT_UPDATE = [3]
             
             print(f"COMPOSEFILE: {COMPOSEFILE}")
             print("==================== TEST MODE ====================")
@@ -78,7 +82,7 @@ if __name__ == '__main__':
             print(f"LOOP: {LOOP}")
 
         # generate yaml
-        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP)
+        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP, CVT_UPDATE)
         
         # docker compose up
         subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])
