@@ -45,10 +45,11 @@ services:
         limits:
           cpus: 2.0
           memory: 8G
-    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-vorn.jl test; done; done"]
-    command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; for m in $$METHOD; do julia make-vorn.jl $$d $$f cvt $$m; done; done; done"]
+    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; done; done"]
+    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; for m in $$METHOD; do julia make-vorn.jl $$d $$f cvt $$m; done; done; done"]
+    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do for m in $$METHOD; do julia make-vorn.jl $$d $$f cvt $$m; done; done; done"]
     # command: ["bash"]
-    # command: ["julia", "make-vorn.jl", "test"]
+    command: ["julia", "make-vorn.jl", "10", "sphere", "cvt", "default"]
 
 networks:
   default:
