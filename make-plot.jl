@@ -241,7 +241,7 @@ function PlotData(Data, fig, axis)
         linedata[key] = lines!(axis[1], 1:length(average_data), average_data, linestyle=ls,  linewidth=1.2, color=cr)
         push!(keys, key)
     end
-
+    
     axislegend(
         axis[1],
         [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],

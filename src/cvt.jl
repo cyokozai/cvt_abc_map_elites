@@ -41,7 +41,7 @@ function init_CVT(population::Population)
 
     vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
     
-    save("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_update.jld2", "voronoi", vorn)
+    save("result/$(METHOD)/$(OBJ_F)/CVT-$(FILENAME)-$(cvt_vorn_data_update).jld2", "voronoi", vorn)
     
     cvt_vorn_data_update += 1
     

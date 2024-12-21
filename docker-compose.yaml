@@ -22,7 +22,7 @@ services:
           cpus: 2.0
           memory: 8G
     command: ["bash"]
-  
+
   julia-figure:
     container_name: julia-figure
     tty: true
@@ -31,20 +31,24 @@ services:
       dockerfile: Dockerfile.figure
     working_dir: /root/
     volumes:
-      - ./src/results:/root/result
+      - ./src/result:/root/result
       - ./src/log:/root/log
     networks:
       - default
     environment:
       - TZ=Asia/Tokyo
       - FUNCTION=sphere rosenbrock rastrigin
+      - METHOD=default de abc
       - D=10 50 100
     deploy:
       resources:
         limits:
           cpus: 2.0
           memory: 8G
-    command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; done; done"]
+    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-vorn.jl test; done; done"]
+    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; done; done"]
+    # command: ["bash"]
+    command: ["julia", "make-plot.jl", "test"]
 
 networks:
   default:

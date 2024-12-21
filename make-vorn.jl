@@ -41,8 +41,8 @@ end
 
 loadpath = joinpath(dir, load_path[end])
 println(loadpath)
-load_vorn = load(loadpath, "voronoi")
 
+load_vorn = load(loadpath, "voronoi")
 Centroidal_polygon_list = DelaunayTriangulation.get_generators(load_vorn)
 
 filepath = if ARGS[1] == "test"
@@ -67,20 +67,20 @@ for f in filepath
     if occursin(".dat", f)
         open(joinpath(dir, f), "r") do io  # Use joinpath to construct the full path
             reading_data = false # ボーダーライン検出用フラグ
+            border_count = 0  # ボーダーラインのカウント
             
-            for line in eachline(io) # ファイルを1行ずつ読み込む
+            for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
                 if occursin("=", line) # ボーダーラインを検出
-                    if !reading_data # データ読み取り開始
+                    border_count += 1
+                    if border_count == 2 # 2つ目のボーダーラインに到達したらデータ読み取り開始
                         reading_data = true
                         continue
-                    else # 2つ目のボーダーラインに到達したら終了
-                        break
                     end
                 end
                 
                 if reading_data
                     parsed_value = tryparse(Int64, line)
-
+                    
                     if parsed_value !== nothing && parsed_value >= 0
                         push!(Data, parsed_value)  # Use push! to add elements to Data
                     end
@@ -88,12 +88,12 @@ for f in filepath
             end
         end
     end
-end
+end       
 
 fig = Figure()  # Add this line to define fig
 
 ax = if ARGS[1] == "test"
-    Axis(
+    [Axis(
         fig[1, 1],
         limits = ((LOW, UPP), (LOW, UPP)),
         xlabel = L"b_1",
@@ -101,37 +101,65 @@ ax = if ARGS[1] == "test"
         title="Test data",
         width=500,
         height=500
-    )
+    )]
 else
-    Axis(
+    [Axis(
         fig[1, 1],
         limits = ((LOW, UPP), (LOW, UPP)),
         xlabel = L"b_1",
         ylabel = L"b_2",
-        title="CVT Map and plotted behavior: $METHOD",
         width=500,
         height=500
-    )
+    ),
+    Axis(
+        fig[2, 1],
+        limits = ((-3, 3), (-3, 3)),
+        xlabel = L"b_1",
+        ylabel = L"b_2",
+        width=500,
+        height=500
+    )]
 end
 
 colormap = cgrad(:heat)
 colors = [colormap[round(Int, (d - minimum(Data)) / (maximum(Data) - minimum(Data)) * (length(colormap) - 1) + 1)] for d in Data]  # Normalize Data values to colormap indices
 
-Colorbar(
-    fig[1, 2],
-    limits = (0, maximum(Data)),
-    ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-    colormap = :heat,
-    highclip = :red,
-    lowclip = :white,
-    label = "Update frequency"
-)
+if ARGS[1] != "test"
+    Colorbar(
+        fig[1, 2],
+        limits = (0, maximum(Data)),
+        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+        colormap = :heat,
+        highclip = :red,
+        lowclip = :white,
+        label = "Update frequency"
+    )
+else
+    Colorbar(
+        fig[1, 2],
+        limits = (0, maximum(Data)),
+        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+        colormap = :heat,
+        highclip = :red,
+        lowclip = :white,
+        label = "Update frequency"
+    )
+    Colorbar(
+        fig[2, 2],
+        limits = (0, maximum(Data)),
+        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+        colormap = :heat,
+        highclip = :red,
+        lowclip = :white,
+        label = "Update frequency"
+    )
+end
 
 voronoiplot!(
     ax,
     load_vorn,
     color = colors,
-    strokewidth = 0.05,
+    strokewidth = 0.08,
     show_generators = false,
     clip = (LOW, UPP, LOW, UPP)
 )
@@ -160,15 +188,14 @@ for (i, f) in enumerate(filepath) # Change this line to iterate over readdir(dir
     if occursin(".dat", f)
         open(joinpath(dir, f), "r") do io  # Use joinpath to construct the full path
             reading_data = false # ボーダーライン検出用フラグ
+            border_count = 0  # ボーダーラインのカウント
             
             for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
                 if occursin("=", line) # ボーダーラインを検出
-                    if !reading_data # データ読み取り開始
+                    border_count += 1
+                    if border_count == 2 # 2つ目のボーダーラインに到達したらデータ読み取り開始
                         reading_data = true
-                        
                         continue
-                    else # 2つ目のボーダーラインに到達したら終了
-                        break
                     end
                 end
                 
@@ -199,22 +226,6 @@ else
     save("result/$(ARGS[2])/$(ARGS[4])/pdf/$(ARGS[2])-$(ARGS[4])-$(ARGS[1])-$(ARGS[5]).pdf", fig)
 end
 
-
-# function load_voronoi_data(filepath::String)
-#     data = load(filepath)
-
-#     return data["voronoi"]
-# end
-
-# # Voronoi図を生成する関数
-# function plot_voronoi(voronoi_data, output_path::String)
-#     fig = Figure()
-#     ax = Axis(fig[1, 1], limits = ((LOW, UPP), (LOW, UPP)), xlabel = L"b_1", ylabel = L"b_2", title = "Voronoi Diagram", width = 500, height = 500)
-#     voronoiplot!(ax, voronoi_data, colormap = :matter, strokewidth = 0.1, show_generators = false)
-#     resize_to_layout!(fig)
-#     save(output_path, fig)
-# end
-
 # # メイン処理
 # function main()
 #     if length(ARGS) < 2
@@ -229,5 +240,3 @@ end
 #     voronoi_data = load_voronoi_data(input_file)
 #     plot_voronoi(voronoi_data, output_file)
 # end
-
-# main()
