@@ -32,7 +32,7 @@ function MakeFigure()
     ax = if ARGS[1] == "test"
         [Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+4)),
+            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
             ylabel=L"\mathrm{Fitness\,}",
             title="Test data",
@@ -46,7 +46,7 @@ function MakeFigure()
     else
         [Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+4)),
+            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
             xlabel=L"\text{Generation} \quad (\times 10^4)",
             ylabel=L"\text{Fitness}",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
@@ -58,7 +58,7 @@ function MakeFigure()
         ),
         Axis(
             fig[1, 2],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+4)),
+            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
             xlabel=L"\text{Generation} \quad (\times 10^4)",
             ylabel=L"\text{Noised Fitness}",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
@@ -82,15 +82,17 @@ function ReadData(dir::String)
     mlist = ["default", "de", "abc", "default", "de", "abc"]
     Data = Dict{String, Array{Float64, 2}}()
     if ARGS[1] == "test"
-        filepath = [path for path in readdir(dir) if occursin("$(ARGS[1])", path) && occursin("fitness", path)]
+        filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("fitness", path)]
         data = Array{Float64, 2}(undef, length(filepath), MAXTIME)
 
         if length(filepath) == 0
             println("No such file: $ARGS")
             
             return nothing
-        else            
+        else
             for (i, f) in enumerate(filepath)
+                o_val, old, parsed_value = 0.0, 0.0, 0.0
+
                 if occursin(".dat", f)
                     j, reading_data = 1, false
                     
@@ -108,16 +110,21 @@ function ReadData(dir::String)
                             
                             if reading_data
                                 parsed_value = tryparse(Float64, line)
-                                
-                                if parsed_value !== nothing
-                                    if parsed_value == 0.0
-                                        data[i, j] = 1.0e+2
+
+                                if parsed_value == 0.0
+                                    data[i, j] = old
+                                else
+                                    o_val = 1.0/parsed_value - 1.0
+
+                                    if o_val < 0.0
+                                        data[i, j] = abs(parsed_value - 1.0)
                                     else
-                                        data[i, j] = 1.0/parsed_value - 1.0
+                                        data[i, j] = o_val
                                     end
-                                    
-                                    j += 1
                                 end
+
+                                old = parsed_value
+                                j += 1
                             end
                         end
                     end
@@ -129,9 +136,9 @@ function ReadData(dir::String)
     else
         for (m, method) in enumerate(mlist)
             filepath = if m <= 3
-                [path for path in readdir("$(dir)$(method)/$(ARGS[2])/") if occursin("-$(ARGS[1])", path) && occursin("$(ARGS[2])", path) && occursin("fitness-2", path)]
+                [path for path in readdir("$(dir)$(method)/$(ARGS[2])/") if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("fitness-2", path)]
             else
-                [path for path in readdir("$(dir)$(method)/$(ARGS[2])/") if occursin("-$(ARGS[1])", path) && occursin("$(ARGS[2])", path) && occursin("fitness-noise-2", path)]
+                [path for path in readdir("$(dir)$(method)/$(ARGS[2])/") if occursin("-$(ARGS[1]).", path) && occursin("-$(ARGS[2])-", path) && occursin("fitness-noise-2", path)]
             end
             data = Array{Float64, 2}(undef, length(filepath), MAXTIME)
 
@@ -140,6 +147,7 @@ function ReadData(dir::String)
                 
                 return nothing
             else
+                println("Filepath: $filepath")
                 for (i, f) in enumerate(filepath)
                     if occursin(".dat", f)
                         j, reading_data = 1, false
@@ -158,14 +166,20 @@ function ReadData(dir::String)
                                 
                                 if reading_data
                                     parsed_value = tryparse(Float64, line)
-                                    
+
                                     if parsed_value !== nothing
                                         if parsed_value == 0.0
                                             data[i, j] = 1.0e+2
                                         else
-                                            data[i, j] = 1.0/parsed_value - 1.0
+                                            o_val = 1.0/parsed_value - 1.0
+
+                                            if o_val < 0.0
+                                                data[i, j] = abs(parsed_value - 1.0)
+                                            else
+                                                data[i, j] = o_val
+                                            end
                                         end
-                                        
+
                                         j += 1
                                     end
                                 end
@@ -188,18 +202,19 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 function PlotData(Data, fig, axis)
+    println(length(Data["default"]))
+
     for (key, data) in Data
         sum_data = zeros(size(data, 2))
         
         for j in 1:size(data, 1)
             sum_data .+= data[j, :] # Sum data
-            println("$(key) $(j)")
         end
         
         average_data = sum_data ./ Float64(size(data, 1)) # Calculate average data
         
         # 負の値をフィルタリング
-        average_data = filter(x -> x > 0, average_data)
+        average_data = [abs(x) for x in average_data]
         
         if key == "test" || key == "default"
             lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:red)
@@ -208,11 +223,11 @@ function PlotData(Data, fig, axis)
         elseif key == "abc"
             lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:green)
         elseif key == "default-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:red)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:red)
         elseif key == "de-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:blue)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:blue)
         elseif key == "abc-noised"
-            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:green)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.2, color=:green)
         end
     end
 
