@@ -147,7 +147,7 @@ if !isempty(Data)
         ax[1],
         load_vorn,
         color = colors,
-        strokewidth = 0.08,
+        strokewidth = 0.01,
         show_generators = false,
         clip = (LOW, UPP, LOW, UPP)
     )
@@ -155,7 +155,7 @@ if !isempty(Data)
         ax[2],
         load_vorn,
         color = colors,
-        strokewidth = 0.08,
+        strokewidth = 0.06,
         show_generators = false,
         clip = (LOW * 0.2, UPP * 0.2, LOW * 0.2, UPP * 0.2)
     )
@@ -218,8 +218,8 @@ for d in Data  # Change this line to iterate over Data
     scatter!(ax[2], [d[1]], [d[2]], marker = :circle, markersize = 14, color = (:blue, 0.6))
 end
 
-scatter!(ax[1], BestPoint, marker = :star5, markersize = 30, color = :green)
-scatter!(ax[2], BestPoint, marker = :star5, markersize = 60, color = :green)
+scatter!(ax[1], BestPoint, marker = :star5, markersize = 20, color = :green)
+scatter!(ax[2], BestPoint, marker = :star5, markersize = 50, color = :green)
 
 resize_to_layout!(fig)
 
