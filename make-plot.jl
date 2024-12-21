@@ -236,7 +236,7 @@ function PlotData(Data, fig, axis)
         push!(keys, key)
     end
 
-    axislegend(axis[1], [linedata["default"], linedata["de"], linedata["abc"], linedata["default-noised"], linedata["de-noised"], linedata["abc-noised"]], keys, position=:rt, fontsize=10)
+    axislegend(axis[1], [linedata["default"], linedata["de"], linedata["abc"], linedata["default-noised"], linedata["de-noised"], linedata["abc-noised"]], keys, position=:rb, fontsize=10)
     
     resize_to_layout!(fig)
 end
