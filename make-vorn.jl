@@ -221,6 +221,14 @@ end
 scatter!(ax[1], BestPoint, marker = :star5, markersize = 20, color = :green)
 scatter!(ax[2], BestPoint, marker = :star5, markersize = 50, color = :green)
 
+poly!(
+    ax[1], 
+    Rect(-UPP * 0.1, -UPP * 0.1, UPP * 0.2, UPP * 0.2),
+    strokecolor = :white,
+    color = (:white, 0.0),
+    strokewidth = 1.0
+)
+
 resize_to_layout!(fig)
 
 if ARGS[1] == "test"
