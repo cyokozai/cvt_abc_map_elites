@@ -203,12 +203,12 @@ function map_elites()
     
     # Open file
     if FIT_NOISE
-        ffn = open("result/$METHOD/$OBJ_F/$F_FIT_N", "a")
-        ff  = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-        fb  = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+        ffn = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FIT_N)", "a")
+        ff  = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FITNESS)", "a")
+        fb  = open("$(output)$(METHOD)/$(OBJ_F)/$(F_BEHAVIOR)", "a")
     else
-        ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-        fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+        ff = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FITNESS)", "a")
+        fb = open("$(output)$(METHOD)/$(OBJ_F)/$(F_BEHAVIOR)", "a")
     end
 
     #------ Main loop ------------------------------#

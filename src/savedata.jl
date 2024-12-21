@@ -21,7 +21,7 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Make result directory and log file
 function MakeFiles()
-    open("result/$METHOD/$OBJ_F/$F_RESULT", "w") do fr
+    open("$(output)$METHOD/$OBJ_F/$F_RESULT", "w") do fr
         println(fr, "Date: ", DATE)
         println(fr, "Method: ", METHOD)
         if METHOD == "de"
@@ -44,7 +44,7 @@ function MakeFiles()
     end
 
     if FIT_NOISE
-        open("result/$METHOD/$OBJ_F/$F_FIT_N", "w") do ffn
+        open("$(output)$METHOD/$OBJ_F/$F_FIT_N", "w") do ffn
             println(ffn, "Date: ", DATE)
             println(ffn, "Method: ", METHOD)
             if METHOD == "de"
@@ -67,7 +67,7 @@ function MakeFiles()
         end
     end
 
-    open("result/$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
+    open("$(output)$METHOD/$OBJ_F/$F_FITNESS", "w") do ff
         println(ff, "Date: ", DATE)
         println(ff, "Method: ", METHOD)
         if METHOD == "de"
@@ -89,7 +89,7 @@ function MakeFiles()
         println(ff, "===================================================================================")
     end
 
-    open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "w") do fb
+    open("$(output)$METHOD/$OBJ_F/$F_BEHAVIOR", "w") do fb
         println(fb, "Date: ", DATE)
         println(fb, "Method: ", METHOD)
         if METHOD == "DE"
@@ -121,14 +121,14 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
 
     # Open file
     if FIT_NOISE
-        ffn = open("result/$METHOD/$OBJ_F/$F_FIT_N", "a")
-        fr  = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
-        ff  = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-        fb  = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+        ffn = open("$(output)$METHOD/$OBJ_F/$F_FIT_N", "a")
+        fr  = open("$(output)$METHOD/$OBJ_F/$F_RESULT", "a")
+        ff  = open("$(output)$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb  = open("$(output)$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
     else
-        fr = open("result/$METHOD/$OBJ_F/$F_RESULT", "a")
-        ff = open("result/$METHOD/$OBJ_F/$F_FITNESS", "a")
-        fb = open("result/$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
+        fr = open("$(output)$METHOD/$OBJ_F/$F_RESULT", "a")
+        ff = open("$(output)$METHOD/$OBJ_F/$F_FITNESS", "a")
+        fb = open("$(output)$METHOD/$OBJ_F/$F_BEHAVIOR", "a")
     end
 
     # Write result
@@ -223,7 +223,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
 
     sort!(arch_list, by = x -> x.benchmark[fit_index], rev = true)
 
-    open("result/$METHOD/$OBJ_F/$F_RESULT", "a") do fr
+    open("$(output)$METHOD/$OBJ_F/$F_RESULT", "a") do fr
         println(fr, "===================================================================================")
         println(fr, "End of Iteration.\n")
         println(fr, "Time of iteration: ", iter_time, " [sec]")

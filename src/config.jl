@@ -97,7 +97,8 @@ TC_LIMIT = floor(Int, k_max / (10 * FOOD_SOURCE)) * D
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
-mkpath("./result/$METHOD/$OBJ_F/")
+output = "./result2/"
+mkpath("$(output)$(METHOD)/$(OBJ_F)/")
 mkpath("./log/")
 
 DATE       = Dates.format(now(), "yyyy-mm-dd-HH-MM")

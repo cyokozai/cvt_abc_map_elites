@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile.figure
     working_dir: /root/
     volumes:
-      - ./src/result_deny:/root/result
+      - ./src/result:/root/result
       - ./src/log:/root/log
     networks:
       - default
