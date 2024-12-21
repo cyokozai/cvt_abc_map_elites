@@ -259,8 +259,8 @@ function SavePDF(fig)
         println("Saved: result/testdata/pdf/testdata.pdf")
         save("result/testdata/pdf/fitness-testdata.pdf", fig)
     else
-        println("Saved: result/pdf/$(ARGS[2])-$(ARGS[1]).pdf")
-        save("result/pdf/$(ARGS[2])-$(ARGS[1]).pdf", fig)
+        println("Saved: result/graph/$(ARGS[2])-$(ARGS[1]).pdf")
+        save("result/graph/$(ARGS[2])-$(ARGS[1]).pdf", fig)
     end
 end
 
