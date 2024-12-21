@@ -19,6 +19,11 @@ include("logger.jl")
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 println("Usage: julia make-vorn.jl [test|result] [benchmark] [date] [name]")
 
+if length(ARGS) < 4
+    println("Error: Insufficient arguments provided.")
+    exit(1)
+end
+
 load_path = if ARGS[1] == "test"
     global LOW, UPP = -5.12, 5.12
     dir = "./result/testdata/"
@@ -37,6 +42,8 @@ end
 
 if isempty(load_path)
     error("No files found matching the criteria.")
+
+    exit(1)
 else
     println("Found $(length(load_path[end])) files matching the criteria.")
 end
