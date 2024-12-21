@@ -41,7 +41,7 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 480,
+            width = 560,
         )]
     else
         [
@@ -55,7 +55,7 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 480,
+            width = 560,
         # ),
         # Axis(
         #     fig[1, 2],
@@ -236,8 +236,8 @@ function PlotData(Data, fig, axis)
         push!(keys, key)
     end
 
-    axislegend(axis[1], collect(values(linedata)), keys, position = :rb, orientation = :horizontal)
-
+    axislegend(axis[1], [linedata["default"], linedata["de"], linedata["abc"], linedata["default-noised"], linedata["de-noised"], linedata["abc-noised"]], keys, position=:rt, fontsize=10)
+    
     resize_to_layout!(fig)
 end
 
@@ -284,18 +284,17 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# try
-#     main()
-# catch e
-#     logger("ERROR", e)
+try
+    main()
+catch e
+    logger("ERROR", e)
 
-#     global exit_code = 1
-# finally
-#     logger("INFO", "Finish the plotting process")
+    global exit_code = 1
+finally
+    logger("INFO", "Finish the plotting process")
 
-#     exit(exit_code)
-# end
-main()
+    exit(exit_code)
+end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #                                                                                                    #
