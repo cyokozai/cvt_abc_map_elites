@@ -35,7 +35,7 @@ function devide_gene(gene::Vector{Float64})
         start_idx = (i - 1) * segment_length + 1
         end_idx = i == BD ? g_len : i * segment_length
         
-        push!(behavior, 2.0*sum(gene[start_idx:end_idx])/Float64(g_len))
+        push!(behavior, BD*sum(gene[start_idx:end_idx])/Float64(g_len))
     end
     
     return behavior
@@ -120,7 +120,7 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Mutate: Mutation of the individual
-mutate(individual::Individual) = rand() > MUTANT_R ? individual : init_solution()
+mutate(individual::Individual) = rand() < MUTANT_R ? individual : init_solution()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Select random elite
@@ -228,27 +228,25 @@ function map_elites()
         
         # Reproduction
         population = Reproduction(population, archive)
-
+        
         # Print the solutions
         indPrint(ffn, ff, fb)
         
         # Confirm the convergence
-        if best_solution.benchmark[fit_index] >= 1.0
-            if CONV_FLAG
+        if CONV_FLAG
+            if fitness(best_solution.benchmark[fit_index]) >= 1.0 || abs(sum(SOLUTION .- best_solution.genes)) < EPS
                 logger("INFO", "Convergence")
-
+                
                 break
+            elseif fitness(best_solution.benchmark[fit_index]) < 0.0
+                logger("ERROR", "Invalid fitness value")
             end
-        elseif iter >= MAXTIME
-            logger("INFO", "Time out")
-            
-            break
-        elseif best_solution.benchmark[fit_index] < 0.0
-            logger("ERROR", "Invalid fitness value")
         end
     end
-
+    
     finish_time = time()
+
+    logger("INFO", "Time out")
 
     #------ Main loop ------------------------------#
 

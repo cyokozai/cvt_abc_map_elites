@@ -39,4 +39,4 @@ RUN apt -y update && apt -y upgrade &&\
 
 #~~~~~~~~~~~~~~~~~~~~~~ EDIT ~~~~~~~~~~~~~~~~~~~~~~~#
 
-COPY make-plot.jl src/logger.jl src/config.jl /root/
+COPY make-plot.jl make-vorn.jl cvt-test.jl src/logger.jl src/config.jl /root/
