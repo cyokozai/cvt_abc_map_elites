@@ -144,7 +144,7 @@ function ReadData(dir::String)
                     if occursin(".dat", f)
                         j, reading_data = 1, false
                         
-                        open("$dir$method/$(ARGS[2])/$f", "r") do io # ファイルを開く
+                        open("$(dir)$(method)/$(ARGS[2])/$f", "r") do io # ファイルを開く
                             for line in eachline(io) # ファイルを1行ずつ読み込む
                                 if occursin("=", line) # ボーダーラインを検出
                                     if !reading_data # データ読み取り開始
@@ -198,18 +198,21 @@ function PlotData(Data, fig, axis)
         
         average_data = sum_data ./ Float64(size(data, 1)) # Calculate average data
         
+        # 負の値をフィルタリング
+        average_data = filter(x -> x > 0, average_data)
+        
         if key == "test" || key == "default"
-            lines!(axis[1], 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.2, color=:red)
+            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:red)
         elseif key == "de"
-            lines!(axis[1], 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.2, color=:blue)
+            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:blue)
         elseif key == "abc"
-            lines!(axis[1], 1:MAXTIME, average_data, linestyle=:solid, linewidth=1.2, color=:green)
+            lines!(axis[1], 1:length(average_data), average_data, linestyle=:solid, linewidth=1.2, color=:green)
         elseif key == "default-noised"
-            lines!(axis[2], 1:MAXTIME, average_data, linestyle=:dash,  linewidth=1.0, color=:red)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:red)
         elseif key == "de-noised"
-            lines!(axis[2], 1:MAXTIME, average_data, linestyle=:dash,  linewidth=1.0, color=:blue)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:blue)
         elseif key == "abc-noised"
-            lines!(axis[2], 1:MAXTIME, average_data, linestyle=:dash,  linewidth=1.0, color=:green)
+            lines!(axis[2], 1:length(average_data), average_data, linestyle=:dash,  linewidth=1.0, color=:green)
         end
     end
 
