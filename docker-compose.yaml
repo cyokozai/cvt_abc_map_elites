@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile.figure
     working_dir: /root/
     volumes:
-      - ./src/result:/root/result
+      - ./src/result.deny:/root/result
       - ./src/log:/root/log
     networks:
       - default
@@ -46,9 +46,9 @@ services:
           cpus: 2.0
           memory: 8G
     # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-vorn.jl test; done; done"]
-    # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; done; done"]
+    command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; for m in $$METHOD; do julia make-vorn.jl $$d $$f $$m; done; done; done"]
     # command: ["bash"]
-    command: ["julia", "make-vorn.jl", "test"]
+    # command: ["julia", "make-vorn.jl", "test"]
 
 networks:
   default:
