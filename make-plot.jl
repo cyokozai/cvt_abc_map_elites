@@ -41,7 +41,8 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 560,
+            width = 640,
+            height = 560,
         )]
     else
         [
@@ -55,7 +56,8 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 560,
+            width = 640,
+            height = 560,
         # ),
         # Axis(
         #     fig[1, 2],
@@ -67,7 +69,8 @@ function MakeFigure()
         #     yscale=log10,
         #     yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
         #     yminorticks = IntervalsBetween(5),
-        #     width = 480,
+        #     width = 640,
+        #     height = 560,
         )
         ]
     end
