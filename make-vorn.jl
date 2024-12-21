@@ -62,6 +62,7 @@ else
 end
 
 Data = Vector{Int64}()  # Change the type to Vector{Int64}
+BestPoint = Vector{Tuple{Float64, Float64}}()  # Change the type to Vector{Tuple{Float64, Float64}}
 
 for f in filepath
     if occursin(".dat", f)
@@ -72,8 +73,11 @@ for f in filepath
             for (k, line) in enumerate(eachline(io)) # ファイルを1行ずつ読み込む
                 if occursin("=", line) # ボーダーラインを検出
                     border_count += 1
-                    if border_count == 2 # 2つ目のボーダーラインに到達したらデータ読み取り開始
+                    if border_count == 1 # 1つ目のボーダーラインに到達したらデータ読み取り開始
                         reading_data = true
+                        continue
+                    elseif border_count == 2
+                        reading_data = false
                         continue
                     end
                 end
@@ -84,6 +88,13 @@ for f in filepath
                     if parsed_value !== nothing && parsed_value >= 0
                         push!(Data, parsed_value)  # Use push! to add elements to Data
                     end
+                elseif occursin("Best behavior:", line)
+                    m = Base.match(r"\[(-?\d+\.\d+),\s*(-?\d+\.\d+)\]", line)  # Use regex to extract two floats
+                    if m !== nothing
+                        x, y = parse(Float64, m.captures[1]), parse(Float64, m.captures[2])
+                        push!(BestPoint, (x, y))
+                        break
+                    end
                 end
             end
         end
@@ -92,80 +103,66 @@ end
 
 fig = Figure()  # Add this line to define fig
 
-ax = if ARGS[1] == "test"
-    [Axis(
-        fig[1, 1],
-        limits = ((LOW, UPP), (LOW, UPP)),
-        xlabel = L"b_1",
-        ylabel = L"b_2",
-        title="Test data",
-        width=500,
-        height=500
-    )]
-else
-    [Axis(
-        fig[1, 1],
-        limits = ((LOW, UPP), (LOW, UPP)),
-        xlabel = L"b_1",
-        ylabel = L"b_2",
-        width=500,
-        height=500
-    ),
-    Axis(
-        fig[2, 1],
-        limits = ((-3, 3), (-3, 3)),
-        xlabel = L"b_1",
-        ylabel = L"b_2",
-        width=500,
-        height=500
-    )]
-end
+ax = [Axis(
+    fig[1, 1],
+    limits = ((LOW, UPP), (LOW, UPP)),
+    xlabel = L"b_1",
+    ylabel = L"b_2",
+    width=500,
+    height=500
+),
+Axis(
+    fig[1, 3],
+    limits = ((LOW * 0.2, UPP * 0.2), (LOW * 0.2, UPP * 0.2)),
+    xlabel = L"b_1",
+    ylabel = L"b_2",
+    width=500,
+    height=500
+)]
 
 if !isempty(Data)
     colormap = cgrad(:heat)
     colors = [colormap[round(Int, (d - minimum(Data)) / (maximum(Data) - minimum(Data)) * (length(colormap) - 1) + 1)] for d in Data]  # Normalize Data values to colormap indices
 
-    if ARGS[1] != "test"
-        Colorbar(
-            fig[1, 2],
-            limits = (0, maximum(Data)),
-            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-            colormap = :heat,
-            highclip = :red,
-            lowclip = :white,
-            label = "Update frequency"
-        )
-    else
-        Colorbar(
-            fig[1, 2],
-            limits = (0, maximum(Data)),
-            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-            colormap = :heat,
-            highclip = :red,
-            lowclip = :white,
-            label = "Update frequency"
-        )
-        Colorbar(
-            fig[2, 2],
-            limits = (0, maximum(Data)),
-            ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
-            colormap = :heat,
-            highclip = :red,
-            lowclip = :white,
-            label = "Update frequency"
-        )
-    end
+    Colorbar(
+        fig[1, 2],
+        limits = (0, maximum(Data)),
+        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+        colormap = :heat,
+        highclip = :red,
+        lowclip = :white,
+        label = "Update frequency"
+    )
+    Colorbar(
+        fig[1, 4],
+        limits = (0, maximum(Data)),
+        ticks=(0:maximum(Data)/4:maximum(Data), string.([0, "", "", "", maximum(Data)])),
+        colormap = :heat,
+        highclip = :red,
+        lowclip = :white,
+        label = "Update frequency"
+    )
 
     voronoiplot!(
-        ax,
+        ax[1],
         load_vorn,
         color = colors,
         strokewidth = 0.08,
         show_generators = false,
         clip = (LOW, UPP, LOW, UPP)
     )
+    voronoiplot!(
+        ax[2],
+        load_vorn,
+        color = colors,
+        strokewidth = 0.08,
+        show_generators = false,
+        clip = (LOW * 0.2, UPP * 0.2, LOW * 0.2, UPP * 0.2)
+    )
 else
     println("Data is empty. Skipping color mapping and plotting.")
+
+    exit(1)
 end
 
 resize_to_layout!(fig)
@@ -217,8 +214,12 @@ for (i, f) in enumerate(filepath) # Change this line to iterate over readdir(dir
 end
 
 for d in Data  # Change this line to iterate over Data
-    scatter!(ax[1], [d[1]], [d[2]], marker = 'x', markersize = 14, color = :blue)
+    scatter!(ax[1], [d[1]], [d[2]], marker = :circle, markersize = 7, color = (:blue, 0.6))
+    scatter!(ax[2], [d[1]], [d[2]], marker = :circle, markersize = 14, color = (:blue, 0.6))
 end
+
+scatter!(ax[1], BestPoint, marker = :star5, markersize = 10, color = :green)
+scatter!(ax[2], BestPoint, marker = :star5, markersize = 20, color = :green)
 
 resize_to_layout!(fig)
 
