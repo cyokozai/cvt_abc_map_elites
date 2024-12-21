@@ -17,6 +17,7 @@ include("benchmark.jl")
 include("logger.jl")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+println("Usage: julia make-vorn.jl [test|result] [benchmark] [date] [name]")
 
 load_path = if ARGS[1] == "test"
     global LOW, UPP = -5.12, 5.12
@@ -31,14 +32,13 @@ else
     if !isdir(dir)
         error("Directory $dir does not exist.")
     end
-
     [path for path in readdir(dir) if occursin("CVT-", path) && occursin("$(ARGS[4])-$(ARGS[3])-$(ARGS[2])-$(ARGS[1])", path)]
 end
 
 if isempty(load_path)
     error("No files found matching the criteria.")
 else
-    println("Found $(length(load_path)) files matching the criteria.")
+    println("Found $(length(load_path[end])) files matching the criteria.")
 end
 
 loadpath = joinpath(dir, load_path[end])
