@@ -48,7 +48,7 @@ services:
     # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-vorn.jl test; done; done"]
     # command: ["sh", "-c", "for f in $$FUNCTION; do for d in $$D; do julia make-plot.jl $$d $$f; done; done"]
     # command: ["bash"]
-    command: ["julia", "make-plot.jl", "test"]
+    command: ["julia", "make-vorn.jl", "test"]
 
 networks:
   default:

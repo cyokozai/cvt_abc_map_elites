@@ -91,11 +91,11 @@ function ReadData(dir::String)
     Data = Dict{String, Array{Float64, 2}}()
 
     if ARGS[1] == "test"
-        filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1]).", path) && occursin("fitness", path)]
+        filepath = [path for path in readdir(dir) if occursin("-$(ARGS[1])-", path) && occursin("fitness", path)]
         data = Array{Float64, 2}(undef, length(filepath), MAXTIME)
 
         if length(filepath) == 0
-            println("No such file: $ARGS")
+            println("No such file: $(ARGS)")
             
             return nothing
         else
@@ -241,7 +241,7 @@ function PlotData(Data, fig, axis)
         linedata[key] = lines!(axis[1], 1:length(average_data), average_data, linestyle=ls,  linewidth=1.2, color=cr)
         push!(keys, key)
     end
-    
+
     axislegend(
         axis[1],
         [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],
