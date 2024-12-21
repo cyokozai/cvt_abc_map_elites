@@ -41,8 +41,9 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 640,
+            width = 720,
             height = 560,
+            fontsize = 16,
         )]
     else
         [
@@ -56,8 +57,9 @@ function MakeFigure()
             yscale=log10,
             yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
             yminorticks = IntervalsBetween(5),
-            width = 640,
+            width = 720,
             height = 560,
+            fontsize = 16,
         # ),
         # Axis(
         #     fig[1, 2],
@@ -69,8 +71,9 @@ function MakeFigure()
         #     yscale=log10,
         #     yticks=(10.0 .^ (-6.0:2.0:6.0), string.(["1.0e-06", "1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06"])),
         #     yminorticks = IntervalsBetween(5),
-        #     width = 640,
+        #     width = 720,
         #     height = 560,
+        #     fontsize = 16,
         )
         ]
     end
@@ -243,7 +246,7 @@ function PlotData(Data, fig, axis)
         axis[1],
         [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],
         ["Default", "Default (Noised)", "DE", "DE (Noised)", "ABC", "ABC (Noised)"],
-        position=:rb, fontsize=10, orientation = :horizontal
+        position=:cb, fontsize=16, orientation = :horizontal
     )
     
     resize_to_layout!(fig)
