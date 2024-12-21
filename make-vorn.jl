@@ -218,8 +218,8 @@ for d in Data  # Change this line to iterate over Data
     scatter!(ax[2], [d[1]], [d[2]], marker = :circle, markersize = 14, color = (:blue, 0.6))
 end
 
-scatter!(ax[1], BestPoint, marker = :star5, markersize = 10, color = :green)
-scatter!(ax[2], BestPoint, marker = :star5, markersize = 20, color = :green)
+scatter!(ax[1], BestPoint, marker = :star5, markersize = 30, color = :green)
+scatter!(ax[2], BestPoint, marker = :star5, markersize = 60, color = :green)
 
 resize_to_layout!(fig)
 
