@@ -29,7 +29,7 @@ METHOD      = ["abc"]
 DIMENSION   = "10 50 100"
 
 # Loop count
-LOOP        = 2
+LOOP        = 5
 
 # Voronoi data update limit
 CVT_UPDATE = [1, 3, 5]
