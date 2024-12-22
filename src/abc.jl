@@ -24,7 +24,7 @@ trial = zeros(Int, FOOD_SOURCE)
 # Greedy selection
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
-
+    
     v_f, f_f = objective_function(v), objective_function(f)
     v_b, f_b = (v_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), v_f), (f_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), f_f)
 
@@ -43,8 +43,8 @@ end
 # Roulette selection
 function roulleteSelection(q::Float64, I::Dict{Int64, Individual})
     index = 1
-
-    for i in I.keys
+    
+    for i in keys(I)
         if rand(RNG) <= q
             index = i
 
@@ -59,20 +59,20 @@ end
 # Employed bee phase
 function employed_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-
+    
     k, v = 0, zeros(Float64, FOOD_SOURCE, D)
-
+    
     for i in 1:FOOD_SOURCE
         for j in 1:D
             while true
-                k = rand(RNG, I_a.keys)
-
+                k = rand(RNG, keys(I_a))
+                println(k)
                 if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
             v[i, j] = I_p[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I_p[i].genes[j] - I_a[k].genes[j])
         end
-
+        
         population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
     end
     
@@ -86,8 +86,8 @@ function onlooker_bee(population::Population, archive::Archive)
     new_gene = zeros(Float64, FOOD_SOURCE, D)
     
     k, v     = 0, zeros(Float64, FOOD_SOURCE, D)
-    Σ_fit    = sum(fitness(I_a[i].benchmark[fit_index]) for i in I_a.keys)
-    p, cum_p = [fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in I_a.keys], 0.0
+    Σ_fit    = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
+    p, cum_p = [fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)], 0.0
     
     for i in 1:FOOD_SOURCE
         cum_p += p[i]
@@ -95,9 +95,9 @@ function onlooker_bee(population::Population, archive::Archive)
         
         for j in 1:D
             while true
-                k = rand(RNG, I_a.keys)
+                k, l = rand(RNG, 1:FOOD_SOURCE), rand(RNG, keys(I_a))
 
-                if I_p[i].genes[j] != I_a[k].genes[j] break end
+                if I_p[i].genes[j] != I_a[l].genes[j] break end
             end
             
             v[i, j] = new_gene[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene[i, j] - new_gene[k, j])
@@ -148,7 +148,7 @@ function ABC(population::Population, archive::Archive)
     
     # Onlooker bee phase
     population, archive = onlooker_bee(population, archive)
-
+    
     # Scout bee phase
     population, archive = scout_bee(population, archive)
     

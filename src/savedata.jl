@@ -159,7 +159,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             end
         end
     elseif MAP_METHOD == "cvt"
-        for k, v in archive.individuals
+        for (k, v) in archive.individuals
             if FIT_NOISE
                 println(ffn, archive.individuals[k].benchmark[1])
                 println(ff, archive.individuals[k].benchmark[2])
