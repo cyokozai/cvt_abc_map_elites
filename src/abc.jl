@@ -82,7 +82,7 @@ end
 # Onlooker bee phase
 function onlooker_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-    v, u = zeros(Float64, FOOD_SOURCE, D, 2)
+    v, u = zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
     k, l = 0, 0
 
     Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))

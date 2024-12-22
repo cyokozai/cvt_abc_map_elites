@@ -15,7 +15,7 @@ OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
 MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
 
 # Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "de"
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Parameter
@@ -49,7 +49,7 @@ NOIZE_R   = 0.01
 # Number of max time | Default: 100000
 MAXTIME   = if OBJ_F == "sphere"
     # Sphere
-    30000
+    300
 elseif OBJ_F == "rosenbrock"
     # Rosenbrock
     60000
