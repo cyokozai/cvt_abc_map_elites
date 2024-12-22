@@ -214,7 +214,7 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
         exit(1)
     end
 
-    sort!(arch_list, by = x -> x.benchmark[fit_index], rev = true)
+    sort!(arch_list, by = x -> fitness(x.benchmark[fit_index]), rev = true)
 
     open("$(output)$METHOD/$OBJ_F/$F_RESULT", "a") do fr
         println(fr, "===================================================================================")
@@ -231,10 +231,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             println(fr, "Rank ", i, ": ")
             println(fr, "├── Solution:      ", arch_list[i].genes)
             if FIT_NOISE
-                println(fr, "├── Noisy Fitness: ", arch_list[i].benchmark[1])
-                println(fr, "├── True Fitness:  ", arch_list[i].benchmark[2])
+                println(fr, "├── Noisy Fitness: ", fitness(arch_list[i].benchmark[1]))
+                println(fr, "├── True Fitness:  ", fitness(arch_list[i].benchmark[2]))
             else
-                println(fr, "├── Fitness:       ", arch_list[i].benchmark[2])
+                println(fr, "├── Fitness:       ", fitness(arch_list[i].benchmark[2]))
             end
             println(fr, "└── Behavior:      ", arch_list[i].behavior)
         end
@@ -243,10 +243,10 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     println("===================================================================================")
     println("Best solution:      ", best_solution.genes)
     if FIT_NOISE
-        println("Best noisy fitness: ", best_solution.benchmark[1])
-        println("Best true fitness:  ", best_solution.benchmark[2])
+        println("Best noisy fitness: ", fitness(best_solution.benchmark[1]))
+        println("Best true fitness:  ", fitness(best_solution.benchmark[2]))
     else
-        println("Best fitness:       ", best_solution.benchmark[2])
+        println("Best fitness:       ", fitness(best_solution.benchmark[2]))
     end
     println("Best behavior:      ", best_solution.behavior)
     println("===================================================================================")

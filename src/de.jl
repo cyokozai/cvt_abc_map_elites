@@ -30,6 +30,7 @@ end
 # Differential Evolution algorithm
 function DE(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
+    r1, r2, r3 = zeros(Int, 3)
     
     for i in 1:N
         while r1 == r2 || r1 == r3 || r2 == r3 || I_a[r1].genes == I_p[i].genes || I_a[r2].genes == I_p[i].genes || I_a[r3].genes == I_p[i].genes
