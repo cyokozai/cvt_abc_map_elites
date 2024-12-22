@@ -7,6 +7,17 @@ using StableRNGs
 using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Method
+# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
+OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
+
+# MAP Method: grid, cvt
+MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
+
+# Method: default, abc, de
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Parameter
 # Random seed
 SEED      = Int(Dates.now().instant.periods.value)
@@ -68,17 +79,6 @@ k_max     = 25000
 
 # Number of mutation rate
 MUTANT_R  = 0.90
-
-#----------------------------------------------------------------------------------------------------#
-# Method
-# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
-OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "griewank"
-
-# MAP Method: grid, cvt
-MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
-
-# Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
