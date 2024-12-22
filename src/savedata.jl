@@ -134,16 +134,11 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
     # Write result
     if FIT_NOISE
         println(ffn, "===================================================================================")
-        println(ffn, "End of Iteration.\n")
         println(ff, "===================================================================================")
-        println(ff, "End of Iteration.\n")
         println(fb, "===================================================================================")
-        println(fb, "End of Iteration.\n")
     else
         println(ff, "===================================================================================")
-        println(ff, "End of Iteration.\n")
         println(fb, "===================================================================================")
-        println(fb, "End of Iteration.\n")
     end
 
     if MAP_METHOD == "grid"
@@ -164,16 +159,14 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             end
         end
     elseif MAP_METHOD == "cvt"
-        for k in 1:k_max
-            if haskey(archive.individuals, k)
-                if FIT_NOISE
-                    println(ffn, archive.individuals[k].benchmark[1])
-                    println(ff, archive.individuals[k].benchmark[2])
-                    println(fb, archive.individuals[k].behavior)
-                else
-                    println(ff, archive.individuals[k].benchmark[2])
-                    println(fb, archive.individuals[k].behavior)
-                end
+        for k, v in archive.individuals
+            if FIT_NOISE
+                println(ffn, archive.individuals[k].benchmark[1])
+                println(ff, archive.individuals[k].benchmark[2])
+                println(fb, archive.individuals[k].behavior)
+            else
+                println(ff, archive.individuals[k].benchmark[2])
+                println(fb, archive.individuals[k].behavior)
             end
 
             println(fr, archive.grid_update_counts[k])
@@ -245,17 +238,6 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
             end
             println(fr, "└── Behavior:      ", arch_list[i].behavior)
         end
-
-        println(fr, "===================================================================================")
-        println(fr, "Best solution:      ", best_solution.genes)
-        if FIT_NOISE
-            println(fr, "Best noisy fitness: ", best_solution.benchmark[1])
-            println(fr, "Best true fitness:  ", best_solution.benchmark[2])
-        else
-            println(fr, "Best fitness:       ", best_solution.benchmark[2])
-        end
-        println(fr, "Best behavior:      ", best_solution.behavior)
-        println(fr, "===================================================================================")
     end
 
     println("===================================================================================")

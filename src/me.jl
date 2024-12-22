@@ -169,7 +169,7 @@ function map_elites()
 
     # Print the solutions
     indPrint = if FIT_NOISE
-        (ffn, ff, fb) -> begin
+        (ffn, ff) -> begin
             println("Now best: ", best_solution.genes)
             println("Now noised best fitness: ", fitness(best_solution.benchmark[1]))
             println("Now corrected best fitness: ", fitness(best_solution.benchmark[2]))
@@ -177,16 +177,14 @@ function map_elites()
             
             println(ffn, fitness(best_solution.benchmark[1]))
             println(ff, fitness(best_solution.benchmark[2]))
-            println(fb, best_solution.behavior)
         end
     else
-        (ff, fb) -> begin
+        (ffn, ff) -> begin
             println("Now best: ", best_solution.genes)
             println("Now best fitness: ", fitness(best_solution.benchmark[2]))
             println("Now best behavior: ", best_solution.behavior)
             
             println(ff, fitness(best_solution.benchmark[2]))
-            println(fb, best_solution.behavior)
         end
     end
     
@@ -202,14 +200,8 @@ function map_elites()
     end
     
     # Open file
-    if FIT_NOISE
-        ffn = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FIT_N)", "a")
-        ff  = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FITNESS)", "a")
-        fb  = open("$(output)$(METHOD)/$(OBJ_F)/$(F_BEHAVIOR)", "a")
-    else
-        ff = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FITNESS)", "a")
-        fb = open("$(output)$(METHOD)/$(OBJ_F)/$(F_BEHAVIOR)", "a")
-    end
+    ffn = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FIT_N)", "a")
+    ff  = open("$(output)$(METHOD)/$(OBJ_F)/$(F_FITNESS)", "a")
 
     #------ Main loop ------------------------------#
 
@@ -230,7 +222,7 @@ function map_elites()
         population, archive = Reproduction(population, archive)
         
         # Print the solutions
-        indPrint(ffn, ff, fb)
+        indPrint(ffn, ff)
         
         # Confirm the convergence
         if CONV_FLAG
@@ -251,14 +243,8 @@ function map_elites()
     #------ Main loop ------------------------------#
 
     # Close file
-    if FIT_NOISE
-        close(ffn)
-        close(ff)
-        close(fb)
-    else
-        close(ff)
-        close(fb)
-    end
+    close(ffn)
+    close(ff)
 
     return population, archive, (finish_time - begin_time)
 end

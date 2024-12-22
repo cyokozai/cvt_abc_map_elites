@@ -16,13 +16,13 @@ import sys
 # docker-compose file name
 COMPOSEFILE = "docker-compose-run.yaml"
 
-# sphere rosenbrock rastrigin griewank schwefel ackley michalewicz
+# "sphere", "rosenbrock", "rastrigin", "griewank", "ackley", "schwefel"
 FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 
-# grep or cvt
+# "grep" or "cvt"
 MAP_METHOD  = "cvt"
 
-# default de abc
+# "default", "de", "abc"
 METHOD      = ["abc"]
 
 # 2 10 50 100 500 1000
