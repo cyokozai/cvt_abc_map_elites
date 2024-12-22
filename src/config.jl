@@ -115,7 +115,7 @@ TC_LIMIT = floor(Int, k_max / D * (10 * FOOD_SOURCE))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
-output = "./result2/"
+output = "./result/"
 mkpath("$(output)$(METHOD)/$(OBJ_F)/")
 mkpath("./log/")
 
