@@ -41,10 +41,10 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
-function roulleteSelection(q::Float64)
+function roulleteSelection(q::Float64, I::Dict{Int64, Individual})
     index = 1
 
-    for i in 1:FOOD_SOURCE
+    for i in I.keys
         if rand(RNG) <= q
             index = i
 
@@ -57,55 +57,56 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Employed bee phase
-function employed_bee(population::Population)
-    I = population.individuals
+function employed_bee(population::Population, archive::Archive)
+    I_p, I_a = population.individuals, archive.individuals
+
     k, v = 0, zeros(Float64, FOOD_SOURCE, D)
 
     for i in 1:FOOD_SOURCE
         for j in 1:D
             while true
-                k = rand(RNG, 1:FOOD_SOURCE)
+                k = rand(RNG, I_a.keys)
 
-                if k != i break end
+                if I_p[i].genes[j] != I_a[k].genes[j] break 
             end
             
-            v[i, j] = I[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I[i].genes[j] - I[k].genes[j])
+            v[i, j] = I_p[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I_p[i].genes[j] - I_a[k].genes[j])
         end
 
-        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
     end
     
-    return population
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Onlooker bee phase
-function onlooker_bee(population::Population)
-    global trial
-
-    I = population.individuals
-    new_gene_archive = zeros(Float64, FOOD_SOURCE, D)
-    k, v = 0, zeros(Float64, FOOD_SOURCE, D)
-    p, cum_p = [fitness(I[i].benchmark[fit_index]) / sum(fitness(I[i].benchmark[fit_index]) for i = 1 : FOOD_SOURCE) for i = 1 : FOOD_SOURCE], 0.0
+function onlooker_bee(population::Population, archive::Archive)
+    I_p, I_a = population.individuals, archive.individuals
+    new_gene = zeros(Float64, FOOD_SOURCE, D)
+    
+    k, v     = 0, zeros(Float64, FOOD_SOURCE, D)
+    Σ_fit    = sum(fitness(I_a[i].benchmark[fit_index]) for i in I_a.keys)
+    p, cum_p = [fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in I_a.keys], 0.0
     
     for i in 1:FOOD_SOURCE
         cum_p += p[i]
-        new_gene_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
+        new_gene[i, :] = deepcopy(I_a[roulleteSelection(cum_p, I_a)].genes)
         
-        for j = 1 : D
+        for j in 1:D
             while true
-                k = rand(RNG, 1:FOOD_SOURCE)
-                
-                if k != i break end
+                k = rand(RNG, I_a.keys)
+
+                if I_p[i].genes[j] != I_a[k].genes[j] break 
             end
             
-            v[i, j] = new_gene_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene_archive[i, j] - new_gene_archive[k, j])
+            v[i, j] = new_gene[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene[i, j] - new_gene[k, j])
         end
         
-        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
     end
     
-    return population
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -114,7 +115,7 @@ function scout_bee(population::Population, archive::Archive)
     global trial
     
     if maximum(trial) > TC_LIMIT
-        for (i, I) in enumerate(population.individuals)
+        for i in 1:FOOD_SOURCE
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
                 population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
@@ -143,15 +144,15 @@ end
 # ABC algorithm
 function ABC(population::Population, archive::Archive)
     # Employee bee phase
-    population = employed_bee(population)
+    population, archive = employed_bee(population, archive)
     
     # Onlooker bee phase
-    population = onlooker_bee(population)
+    population, archive = onlooker_bee(population, archive)
 
     # Scout bee phase
     population, archive = scout_bee(population, archive)
     
-    return population
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

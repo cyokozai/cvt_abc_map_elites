@@ -23,9 +23,6 @@ N         = 64
 # Dumber of behavior dimensions | No need to change because it isn't available.
 BD        = 2
 
-# Number of max time
-MAXTIME   = length(ARGS) > 0 && ARGS[1] == "test" ? 100 : 100000
-
 # Convergence flag | 'true' is available when you want to check the convergence.
 CONV_FLAG = false
 
@@ -37,6 +34,29 @@ FIT_NOISE = true
 
 # Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.05
 NOIZE_R   = 0.05
+
+# Number of max time | Default: 100000
+MAXTIME   = if OBJ_F == "sphere"
+    # Sphere
+    30000
+elseif OBJ_F == "rosenbrock"
+    # Rosenbrock
+    60000
+elseif OBJ_F == "rastrigin"
+    # Rastrigin
+    30000
+elseif OBJ_F == "griewank"
+    # Griewank
+    30000
+elseif OBJ_F == "ackley"
+    # Ackley
+    30000
+elseif OBJ_F == "schwefel"
+    # Schwefel
+    30000
+else
+    100000
+end
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
@@ -62,12 +82,12 @@ METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
-# Voronoi data update limit (default: 3).
+# Voronoi data update limit | Default: 3
 cvt_vorn_data_update_limit = length(ARGS) > 4 ? ARGS[5] : 3
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
-# The crossover probability (default: 0.8).
+# The crossover probability | default: 0.9
 # The differentiation (mutation) scaling factor (default: 0.9).
 CR, F = if OBJ_F == "sphere"
     [0.20, 0.40]
@@ -80,8 +100,6 @@ elseif OBJ_F == "griewank"
 elseif OBJ_F == "ackley"
     [0.20, 0.50]
 elseif OBJ_F == "schwefel"
-    [0.20, 0.50]
-elseif OBJ_F == "michalewicz"
     [0.20, 0.50]
 else
     [0.80, 0.90]

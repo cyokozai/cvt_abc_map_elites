@@ -33,9 +33,9 @@ function DE(population::Population, archive::Archive)
     r1, r2, r3 = 1, 1, 1
     v, tv = zeros(Float64, D, 2)
     
-    for i in 1:length(I.keys)
-        while r1 == i || r2 == i || r3 == i || r1 == r2 || r1 == r3 || r2 == r3
-            r1, r2, r3 = rand(RNG, 1:length(I.keys), 3)
+    for i in I.keys
+        while r1 == i || r2 == i || r3 == i || r1 == r2 || r1 == r3 || r2 == r3 || !haskey(I, r1) || !haskey(I, r2) || !haskey(I, r3)
+            r1, r2, r3 = rand(RNG, 1:k_max, 3)
         end
         
         v  = clamp.(I[r1].genes .+ F .* (I[r2].genes .- I[r3].genes), LOW, UPP)
@@ -49,7 +49,7 @@ function DE(population::Population, archive::Archive)
         end
     end
     
-    return population
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

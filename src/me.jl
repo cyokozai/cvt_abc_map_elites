@@ -149,7 +149,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Reproduction: Generate new individuals
 Reproduction = if METHOD == "default"
-    (population::Population, archive::Archive) -> Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N])
+    (population::Population, archive::Archive) -> (Population([evaluator(mutate(select_random_elite(population, archive))) for _ in 1:N]), archive)
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
@@ -227,7 +227,7 @@ function map_elites()
         archive = Mapping(population, archive)
         
         # Reproduction
-        population = Reproduction(population, archive)
+        population, archive = Reproduction(population, archive)
         
         # Print the solutions
         indPrint(ffn, ff, fb)
