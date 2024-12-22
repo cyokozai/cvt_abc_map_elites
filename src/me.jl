@@ -153,7 +153,7 @@ Reproduction = if METHOD == "default"
 elseif METHOD == "abc"
     (population::Population, archive::Archive) -> ABC(population, archive)
 elseif METHOD == "de"
-    (population::Population, archive::Archive) -> DE(population)
+    (population::Population, archive::Archive) -> DE(population, archive)
 else
     error("Invalid method")
 

@@ -30,12 +30,13 @@ function MakeFigure()
     fig = CairoMakie.Figure()
     
     ax = if ARGS[1] == "test"
-        [Axis(
+        [
+        Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
-            xlabelsize=16,
+            limits = ((0-2000, MAXTIME), (1.0e-6, 1.0e+6)),
+            xlabelsize=18,
             xlabel=L"\mathrm{Generation\,} (\times 10^4)",
-            ylabelsize=16,
+            ylabelsize=18,
             ylabel=L"\mathrm{Fitness\,}",
             title="Test data",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
@@ -45,15 +46,16 @@ function MakeFigure()
             yminorticks = IntervalsBetween(5),
             width = 720,
             height = 560
-        )]
-    elseif ARGS[2] == "rosenbrock"
+        )
+        ]
+    elseif ARGS[2] == "rosenbrock" && ARGS[1] == "10"
         [
         Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (1.0e-4, 1.0e+8)),
-            xlabelsize=16,
+            limits = ((0-2000, MAXTIME), (1.0e-4, 1.0e+8)),
+            xlabelsize=18,
             xlabel=L"\text{Generation} \quad (\times 10^4)",
-            ylabelsize=16,
+            ylabelsize=18,
             ylabel=L"\text{Fitness}",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
             xminorticks = IntervalsBetween(2),
@@ -64,14 +66,32 @@ function MakeFigure()
             height = 560
         )
         ]
+    elseif ARGS[2] == "rosenbrock" && ARGS[1] != "10"
+        [
+        Axis(
+            fig[1, 1],
+            limits = ((0-2000, MAXTIME), (1.0e-2, 1.0e+10)),
+            xlabelsize=18,
+            xlabel=L"\text{Generation} \quad (\times 10^4)",
+            ylabelsize=18,
+            ylabel=L"\text{Fitness}",
+            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+            xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-2.0:2.0:10.0), string.(["1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06", "1.0e+08", "1.0e+10"])),
+            yminorticks = IntervalsBetween(5),
+            width = 720,
+            height = 560
+        )
+        ]
     else
         [
         Axis(
             fig[1, 1],
-            limits = ((0, MAXTIME), (1.0e-6, 1.0e+6)),
-            xlabelsize=16,
+            limits = ((0-2000, MAXTIME), (1.0e-6, 1.0e+6)),
+            xlabelsize=18,
             xlabel=L"\text{Generation} \quad (\times 10^4)",
-            ylabelsize=16,
+            ylabelsize=18,
             ylabel=L"\text{Fitness}",
             xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
             xminorticks = IntervalsBetween(2),
