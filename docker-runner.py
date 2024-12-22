@@ -34,23 +34,27 @@ LOOP        = 2
 # Voronoi data update limit
 CVT_UPDATE = [1, 3, 5]
 
+# Prosess interval
+interbal = 10
+
 #------ Edit config ------------------------------#
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #       Main                                                                                         #
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-def generate_yaml(function, method, map, dimention, loop, cvt_update):
+def generate_yaml(function, method, map, dimention, loop, cvt_update, interbal):
     # Setting Jinja2
     env = Environment(loader=FileSystemLoader('.'))
     
     # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
-    
     loopstr = " ".join(str(i) for i in range(1, loop + 1))
     
+    # 
+    
     # Render template
-    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention, cvt_update=cvt_update)
+    output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention, cvt_update=cvt_update, interbal=interbal)
     
     # Write to file
     with open(COMPOSEFILE, 'w') as file:
@@ -82,7 +86,7 @@ if __name__ == '__main__':
             print(f"LOOP: {LOOP}")
 
         # generate yaml
-        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP, CVT_UPDATE)
+        generate_yaml(FUNCTION, METHOD, MAP_METHOD, DIMENSION, LOOP, CVT_UPDATE, interbal)
         
         # docker compose up
         subprocess.run(['docker', 'compose', '-f', COMPOSEFILE, 'up', '-d', '--build'])

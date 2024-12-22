@@ -1,4 +1,4 @@
-services:{% for m in method %}{% for f in function %}{% for cup in cvt_update %}
+services:{% set iter = 0 %}{% for m in method %}{% for f in function %}{% for cup in cvt_update %}
   julia-run-{{ m }}-{{ cup }}-{{ f }}:
     container_name: "julia-run-{{ m }}-{{ cup }}-{{ f }}"
     tty: true
@@ -20,9 +20,10 @@ services:{% for m in method %}{% for f in function %}{% for cup in cvt_update %}
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d {{ m }} {{ map }} $$f {{ cup }}; done; done; done"]{% endfor %}{% endfor %}{% endfor %}
-
+          memory: 8G
+    {% with sleeptime = loop.index0 * interbal %}
+    command: ["sh", "-c", "sleep {{ sleeptime }}; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d {{ m }} {{ map }} $$f {{ cup }}; done; done; done"]{% endwith %}{% endfor %}{% endfor %}{% endfor %}
+    
 networks:
   default:
     driver: bridge

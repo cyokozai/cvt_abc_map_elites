@@ -20,8 +20,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 0; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
   julia-run-abc-3-sphere:
     container_name: "julia-run-abc-3-sphere"
     tty: true
@@ -43,8 +44,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 10; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
   julia-run-abc-5-sphere:
     container_name: "julia-run-abc-5-sphere"
     tty: true
@@ -66,8 +68,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 20; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
   julia-run-abc-1-rosenbrock:
     container_name: "julia-run-abc-1-rosenbrock"
     tty: true
@@ -89,8 +92,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 0; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
   julia-run-abc-3-rosenbrock:
     container_name: "julia-run-abc-3-rosenbrock"
     tty: true
@@ -112,8 +116,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 10; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
   julia-run-abc-5-rosenbrock:
     container_name: "julia-run-abc-5-rosenbrock"
     tty: true
@@ -135,8 +140,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 20; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
   julia-run-abc-1-rastrigin:
     container_name: "julia-run-abc-1-rastrigin"
     tty: true
@@ -158,8 +164,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 0; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 1; done; done; done"]
   julia-run-abc-3-rastrigin:
     container_name: "julia-run-abc-3-rastrigin"
     tty: true
@@ -181,8 +188,9 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 10; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 3; done; done; done"]
   julia-run-abc-5-rastrigin:
     container_name: "julia-run-abc-5-rastrigin"
     tty: true
@@ -204,9 +212,10 @@ services:
       resources:
         limits:
           cpus: 1.0
-          memory: 6G
-    command: ["sh", "-c", "for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
-
+          memory: 8G
+    
+    command: ["sh", "-c", "sleep 20; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d abc cvt $$f 5; done; done; done"]
+    
 networks:
   default:
     driver: bridge
