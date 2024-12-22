@@ -58,7 +58,7 @@ end
 # Employed bee phase
 function employed_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-    k, v     = 0, zeros(Float64, FOOD_SOURCE, D)
+    v = zeros(Float64, FOOD_SOURCE, D)
     
     for i in 1:FOOD_SOURCE
         for j in 1:D
@@ -81,7 +81,7 @@ end
 # Onlooker bee phase
 function onlooker_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-    k, v, u  = 0, zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
+    v, u  = zeros(Float64, FOOD_SOURCE, D, 2)
 
     Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
     cum_p = cumsum([fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)])

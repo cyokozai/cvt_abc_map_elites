@@ -15,7 +15,7 @@ OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
 MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
 
 # Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "de"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Parameter
@@ -43,8 +43,8 @@ EPS       = 1e-6
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
-# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.05
-NOIZE_R   = 0.05
+# Noise rate | Default: 0.01
+NOIZE_R   = 0.01
 
 # Number of max time | Default: 100000
 MAXTIME   = if OBJ_F == "sphere"
@@ -111,7 +111,7 @@ end
 FOOD_SOURCE = N
 
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
-TC_LIMIT = floor(Int, k_max / (10 * FOOD_SOURCE)) * D
+TC_LIMIT = floor(Int, k_max / D * (10 * FOOD_SOURCE))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
