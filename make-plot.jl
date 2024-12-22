@@ -45,6 +45,38 @@ function MakeFigure()
             height = 560,
             fontsize = 16,
         )]
+    elseif ARGS[2] == "rosenbrock"
+        [
+        Axis(
+            fig[1, 1],
+            limits = ((0, MAXTIME), (1.0e-4, 1.0e+8)),
+            xlabel=L"\text{Generation} \quad (\times 10^4)",
+            ylabel=L"\text{Fitness}",
+            xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+            xminorticks = IntervalsBetween(2),
+            yscale=log10,
+            yticks=(10.0 .^ (-4.0:2.0:8.0), string.(["1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06", "1.0e+08"])),
+            yminorticks = IntervalsBetween(5),
+            width = 720,
+            height = 560,
+            fontsize = 16,
+        # ),
+        # Axis(
+        #     fig[1, 2],
+        #     limits = ((0, MAXTIME), (1.0e-4, 1.0e+8)),
+        #     xlabel=L"\text{Generation} \quad (\times 10^4)",
+        #     ylabel=L"\text{Fitness}",
+        #     xticks=(0:2*10^4:MAXTIME, string.([0, 2, 4, 6, 8, 10])),
+        #     xminorticks = IntervalsBetween(2),
+        #     yscale=log10,
+        #     yticks=(10.0 .^ (-4.0:2.0:8.0), string.(["1.0e-04", "1.0e-02", "1.0e+00", "1.0e+02", "1.0e+04", "1.0e+06", "1.0e+08"])),
+        #     yminorticks = IntervalsBetween(5),
+        #     width = 720,
+        #     height = 560,
+        #     fontsize = 16,
+        #
+        )
+        ]
     else
         [
         Axis(
