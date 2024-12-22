@@ -45,10 +45,9 @@ end
 # Initialize the best solution
 function init_solution()
     gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
+    y    = objective_function(gene)
 
-    y, ε = objective_function(gene), rand(RNG) * 2 * NOIZE_R - NOIZE_R
-
-    return Individual(deepcopy(gene), (y + ε, y), devide_gene(gene))
+    return Individual(deepcopy(gene), (noise(y), y), devide_gene(gene))
 end
 
 #----------------------------------------------------------------------------------------------------#
@@ -59,8 +58,8 @@ best_solution = init_solution()
 # Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
     # Objective function
-    y, ε = objective_function(individual.genes), rand(RNG) * 2 * NOIZE_R - NOIZE_R
-    individual.benchmark = (y + ε, y)
+    y = objective_function(individual.genes)
+    individual.benchmark = (noise(y), y)
     
     # Evaluate the behavior
     individual.behavior = deepcopy(devide_gene(individual.genes))
@@ -245,7 +244,7 @@ function map_elites()
     # Close file
     close(ffn)
     close(ff)
-    
+
     return population, archive, (finish_time - begin_time)
 end
 
