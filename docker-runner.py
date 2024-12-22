@@ -23,7 +23,7 @@ FUNCTION    = ["sphere", "rosenbrock", "rastrigin"]
 MAP_METHOD  = "cvt"
 
 # "default", "de", "abc"
-METHOD      = ["de abc"]
+METHOD      = ["abc"]
 
 # 2 10 50 100 500 1000
 DIMENSION   = "10 50 100"
@@ -50,8 +50,6 @@ def generate_yaml(function, method, map, dimention, loop, cvt_update, interbal):
     # Load template
     template = env.get_template('./template/docker-comp.yaml.temp')
     loopstr = " ".join(str(i) for i in range(1, loop + 1))
-    
-    # 
     
     # Render template
     output = template.render(looprange=loopstr, function=function, method=method, map=map, dimention=dimention, cvt_update=cvt_update, interbal=interbal)
