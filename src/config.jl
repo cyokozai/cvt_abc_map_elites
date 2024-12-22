@@ -83,7 +83,7 @@ MUTANT_R  = 0.90
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
 # Voronoi data update limit | Default: 3
-cvt_vorn_data_update_limit = length(ARGS) > 4 ? ARGS[5] : 3
+cvt_vorn_data_update_limit = length(ARGS) > 4 ? parse(Int64, ARGS[5]) : 3
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
