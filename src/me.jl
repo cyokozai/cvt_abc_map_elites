@@ -67,7 +67,7 @@ function evaluator(individual::Individual)
 
     # Update the best solution
     if fitness(individual.benchmark[fit_index]) >= fitness(best_solution.benchmark[fit_index])
-        global best_solution = Individual(deepcopy(individual.genes), individual.benchmark, deepcopy(individual.behavior))
+        global best_solution = Individual(deepcopy(individual.genes), deepcopy(individual.benchmark), deepcopy(individual.behavior))
     end
     
     return individual
@@ -91,12 +91,12 @@ Mapping = if MAP_METHOD == "grid"
                         if archive.grid[i, j] > 0
                             if fitness(ind.benchmark[fit_index]) > fitness(archive.individuals[archive.grid[i, j]].benchmark[fit_index])
                                 archive.grid[i, j] = index
-                                archive.individuals[index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
+                                archive.individuals[index] = Individual(deepcopy(ind.genes), deepcopy(ind.benchmark), deepcopy(ind.behavior))
                                 archive.grid_update_counts[index] += 1
                             end
                         else
                             archive.grid[i, j] = index
-                            archive.individuals[index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
+                            archive.individuals[index] = Individual(deepcopy(ind.genes), deepcopy(ind.benchmark), deepcopy(ind.behavior))
                             archive.grid_update_counts[index] += 1
                         end
                         
@@ -241,7 +241,7 @@ function map_elites()
     logger("INFO", "Time out")
 
     #------ Main loop ------------------------------#
-
+    
     # Close file
     close(ffn)
     close(ff)
