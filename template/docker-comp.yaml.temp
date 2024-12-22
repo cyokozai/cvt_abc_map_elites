@@ -20,10 +20,9 @@ services:{% set iter = 0 %}{% for m in method %}{% for f in function %}{% for cu
       resources:
         limits:
           cpus: 1.0
-          memory: 8G
-    {% with sleeptime = loop.index0 * interbal %}
+          memory: 8G {% with sleeptime = loop.index0 * interbal %}
     command: ["sh", "-c", "sleep {{ sleeptime }}; for i in $$LOOP; do echo $$i; for f in $$FUNCTION; do for d in $$D; do julia main.jl $$d {{ m }} {{ map }} $$f {{ cup }}; done; done; done"]{% endwith %}{% endfor %}{% endfor %}{% endfor %}
-    
+
 networks:
   default:
     driver: bridge
