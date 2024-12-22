@@ -67,7 +67,7 @@ function employed_bee(population::Population, archive::Archive)
             while true
                 k = rand(RNG, I_a.keys)
 
-                if I_p[i].genes[j] != I_a[k].genes[j] break 
+                if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
             v[i, j] = I_p[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I_p[i].genes[j] - I_a[k].genes[j])
@@ -97,7 +97,7 @@ function onlooker_bee(population::Population, archive::Archive)
             while true
                 k = rand(RNG, I_a.keys)
 
-                if I_p[i].genes[j] != I_a[k].genes[j] break 
+                if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
             v[i, j] = new_gene[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene[i, j] - new_gene[k, j])
