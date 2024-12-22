@@ -24,10 +24,10 @@ trial = zeros(Int, FOOD_SOURCE)
 # Greedy selection
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
     global trial
-    
-    v_f, f_f = objective_function(v), objective_function(f)
-    v_b, f_b = (v_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), v_f), (f_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), f_f)
 
+    v_f, f_f = objective_function(v), objective_function(f)
+    v_b, f_b = (noise(v_f), v_f), (noise(f_f), f_f)
+    
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
         
@@ -66,7 +66,7 @@ function employed_bee(population::Population, archive::Archive)
         for j in 1:D
             while true
                 k = rand(RNG, keys(I_a))
-                println(k)
+                
                 if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             

@@ -42,7 +42,7 @@ function DE(population::Population, archive::Archive)
         tv = crossover(I[i].genes, v)
         
         y    = objective_function(tv)
-        tv_b = (y + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), y)
+        tv_b = (noise(y), y)
         
         if fitness(tv_b[fit_index]) > fitness(I[i].benchmark[fit_index])
             archive.individuals[i] = Individual(deepcopy(tv), deepcopy(tv_b), devide_gene(tv))

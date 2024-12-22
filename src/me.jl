@@ -237,15 +237,15 @@ function map_elites()
     end
     
     finish_time = time()
-
+    
     logger("INFO", "Time out")
 
     #------ Main loop ------------------------------#
-    
+
     # Close file
     close(ffn)
     close(ff)
-
+    
     return population, archive, (finish_time - begin_time)
 end
 
