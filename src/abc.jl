@@ -27,7 +27,7 @@ function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
 
     v_f, f_f = objective_function(v), objective_function(f)
     v_b, f_b = (noise(v_f), v_f), (noise(f_f), f_f)
-    
+
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
         
@@ -42,9 +42,10 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
 function roulleteSelection(q::Float64, I::Dict{Int64, Individual})
-    index = 1
+    keys_array = collect(keys(I))
+    index = keys_array[1]
     
-    for i in keys(I)
+    for i in keys_array
         if rand(RNG) <= q
             index = i
 
@@ -97,7 +98,7 @@ function onlooker_bee(population::Population, archive::Archive)
             while true
                 k, l = rand(RNG, 1:FOOD_SOURCE), rand(RNG, keys(I_a))
 
-                if I_p[i].genes[j] != I_a[l].genes[j] break end
+                if i != k && I_p[i].genes[j] != I_a[l].genes[j] break end
             end
             
             v[i, j] = new_gene[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene[i, j] - new_gene[k, j])
@@ -118,7 +119,8 @@ function scout_bee(population::Population, archive::Archive)
         for i in 1:FOOD_SOURCE
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
-                population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
+                y    = objective_function(gene)
+                population.individuals[i] = Individual(deepcopy(gene), (noise(y), y), devide_gene(gene))
                 trial[i] = 0
                 
                 if MAP_METHOD == "cvt"
