@@ -110,7 +110,7 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Scout bee phase
 function scout_bee(population::Population, archive::Archive)
-    global trial
+    global trial, cvt_vorn_data_update
     
     if maximum(trial) > TC_LIMIT
         for i in 1:FOOD_SOURCE
