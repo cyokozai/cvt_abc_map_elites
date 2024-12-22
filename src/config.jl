@@ -111,7 +111,7 @@ end
 FOOD_SOURCE = N
 
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
-TC_LIMIT = floor(Int, k_max / D * (10 * FOOD_SOURCE))
+TC_LIMIT = D * floor(Int, k_max / (10 * FOOD_SOURCE))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
