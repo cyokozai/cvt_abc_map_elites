@@ -49,7 +49,7 @@ NOIZE_R   = 0.01
 # Number of max time | Default: 100000
 MAXTIME   = if OBJ_F == "sphere"
     # Sphere
-    300
+    30000
 elseif OBJ_F == "rosenbrock"
     # Rosenbrock
     60000
