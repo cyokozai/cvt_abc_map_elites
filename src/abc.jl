@@ -41,27 +41,24 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
-function roulleteSelection(q::Float64, I::Dict{Int64, Individual})
+function roulleteSelection(cum_probs::Vector{Float64}, I::Dict{Int64, Individual})
     keys_array = collect(keys(I))
-    index = keys_array[1]
+    r = rand()
     
-    for i in keys_array
-        if rand(RNG) <= q
-            index = i
-
-            break
+    for (i, cum_p) in enumerate(cum_probs)
+        if r <= cum_p
+            return keys_array[i]
         end
     end
 
-    return index
+    return keys_array[end]
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Employed bee phase
 function employed_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-    
-    k, v = 0, zeros(Float64, FOOD_SOURCE, D)
+    k, v     = 0, zeros(Float64, FOOD_SOURCE, D)
     
     for i in 1:FOOD_SOURCE
         for j in 1:D
@@ -84,24 +81,22 @@ end
 # Onlooker bee phase
 function onlooker_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
-    new_gene = zeros(Float64, FOOD_SOURCE, D)
-    
-    k, v     = 0, zeros(Float64, FOOD_SOURCE, D)
-    Σ_fit    = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
-    p, cum_p = [fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)], 0.0
+    k, v, u  = 0, zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
+
+    Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
+    cum_p = cumsum([fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)])
     
     for i in 1:FOOD_SOURCE
-        cum_p += p[i]
-        new_gene[i, :] = deepcopy(I_a[roulleteSelection(cum_p, I_a)].genes)
+        u[i, :] = deepcopy(I_a[roulleteSelection(cum_p, I_a)].genes)
         
         for j in 1:D
             while true
                 k, l = rand(RNG, 1:FOOD_SOURCE), rand(RNG, keys(I_a))
-
+                
                 if i != k && I_p[i].genes[j] != I_a[l].genes[j] break end
             end
             
-            v[i, j] = new_gene[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene[i, j] - new_gene[k, j])
+            v[i, j] = u[i, j] + (rand(RNG) * 2.0 - 1.0) * (u[i, j] - u[k, j])
         end
         
         population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
