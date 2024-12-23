@@ -22,12 +22,12 @@ trial = zeros(Int, FOOD_SOURCE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Greedy selection
-function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
+function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int, k::Int)
     global trial
 
     v_f, f_f = objective_function(v), objective_function(f)
     v_b, f_b = (noise(v_f), v_f), (noise(f_f), f_f)
-
+    
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
         
@@ -50,7 +50,7 @@ function roulleteSelection(cum_probs::Vector{Float64}, I::Dict{Int64, Individual
             return l[i]
         end
     end
-    
+
     return l[end]
 end
 
@@ -61,6 +61,8 @@ function employed_bee(population::Population, archive::Archive)
     v = zeros(Float64, FOOD_SOURCE, D)
     k = 0
     
+    print(".")
+
     for i in 1:FOOD_SOURCE
         for j in 1:D
             while true
@@ -72,9 +74,11 @@ function employed_bee(population::Population, archive::Archive)
             v[i, j] = I_p[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I_p[i].genes[j] - I_a[k].genes[j])
         end
         
-        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i, k))
     end
     
+    print(".")
+
     return population, archive
 end
 
@@ -87,6 +91,8 @@ function onlooker_bee(population::Population, archive::Archive)
 
     Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
     cum_p = cumsum([fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)])
+    
+    print(".")
     
     for i in 1:FOOD_SOURCE
         u[i, :] = deepcopy(I_a[roulleteSelection(cum_p, I_a)].genes)
@@ -101,9 +107,11 @@ function onlooker_bee(population::Population, archive::Archive)
             v[i, j] = u[i, j] + (rand(RNG) * 2.0 - 1.0) * (u[i, j] - I_a[k].genes[j])
         end
         
-        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i, k))
     end
     
+    print(".")
+
     return population, archive
 end
 
@@ -112,7 +120,7 @@ end
 function scout_bee(population::Population, archive::Archive)
     global trial, cvt_vorn_data_update
 
-    print("..")
+    print(".")
 
     if maximum(trial) > TC_LIMIT
         for i in 1:FOOD_SOURCE
@@ -122,21 +130,21 @@ function scout_bee(population::Population, archive::Archive)
                 population.individuals[i] = Individual(deepcopy(gene), (noise(y), y), devide_gene(gene))
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt"
-                    if cvt_vorn_data_update < cvt_vorn_data_update_limit
-                        init_CVT(population)
-                        
-                        new_archive = Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
-                        archive = deepcopy(cvt_mapping(population, new_archive))
-                        
-                        logger("INFO", "Recreate Voronoi diagram")
-                    end
-                end
-                
                 logger("INFO", "Scout bee found a new food source")
+                
+                if cvt_vorn_data_update < cvt_vorn_data_update_limit
+                    init_CVT(population)
+                    
+                    new_archive = Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
+                    archive = deepcopy(cvt_mapping(population, new_archive))
+                    
+                    logger("INFO", "Recreate Voronoi diagram")
+                end
             end
         end
     end
+
+    print(".")
     
     return population, archive
 end
@@ -144,16 +152,18 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # ABC algorithm
 function ABC(population::Population, archive::Archive)
-    print("Employed bee phase")
     # Employee bee phase
+    print("Employed bee phase")
     population, archive = employed_bee(population, archive)
-    println("... Done")
-    print("Onlooker bee phase")
+    println(". Done")
+
     # Onlooker bee phase
+    print("Onlooker bee phase")
     population, archive = onlooker_bee(population, archive)
-    println("... Done")
-    print("Scout bee phase")
+    println(". Done")
+
     # Scout bee phase
+    print("Scout bee phase")
     population, archive = scout_bee(population, archive)
     println(". Done")
     
