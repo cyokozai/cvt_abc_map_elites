@@ -125,6 +125,8 @@ mutate(individual::Individual) = rand(RNG) < MUTANT_R ? individual : init_soluti
 # Select random elite
 select_random_elite = if MAP_METHOD == "grid"
     (population::Population, archive::Archive) -> begin
+        print(".")
+        
         while true
             i, j = rand(RNG, 1:GRID_SIZE, 2)
             
@@ -135,6 +137,8 @@ select_random_elite = if MAP_METHOD == "grid"
     end
 elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
+        print(".")
+
         random_centroid_index = rand(RNG, keys(archive.individuals))
         
         return archive.individuals[random_centroid_index]

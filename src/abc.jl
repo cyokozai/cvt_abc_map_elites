@@ -112,6 +112,8 @@ end
 function scout_bee(population::Population, archive::Archive)
     global trial, cvt_vorn_data_update
     
+    print("..")
+
     if maximum(trial) > TC_LIMIT
         for i in 1:FOOD_SOURCE
             if trial[i] > TC_LIMIT
@@ -153,7 +155,7 @@ function ABC(population::Population, archive::Archive)
     print("Scout bee phase")
     # Scout bee phase
     population, archive = scout_bee(population, archive)
-    println("... Done")
+    println(". Done")
     
     return population, archive
 end
