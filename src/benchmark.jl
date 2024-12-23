@@ -39,7 +39,7 @@ SOLUTION, LOW, UPP = if OBJ_F == "sphere"
     [zeros(D), -5.12, 5.12]
 elseif OBJ_F == "rosenbrock"
     # Rosenbrock
-    [zeros(D), -5.12, 5.12]
+    [zeros(D), -5.00, 5.00]
 elseif OBJ_F == "rastrigin"
     # Rastrigin
     [zeros(D), -5.12, 5.12]
