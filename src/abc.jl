@@ -93,12 +93,12 @@ function onlooker_bee(population::Population, archive::Archive)
         
         for j in 1:D
             while true
-                k, l = rand(RNG, 1:FOOD_SOURCE), rand(RNG, keys(I_a))
+                k = rand(RNG, keys(I_a))
                 
-                if i != k && I_p[i].genes[j] != I_a[l].genes[j] break end
+                if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
-            v[i, j] = u[i, j] + (rand(RNG) * 2.0 - 1.0) * (u[i, j] - u[k, j])
+            v[i, j] = u[i, j] + (rand(RNG) * 2.0 - 1.0) * (u[i, j] - I_a[k].genes[j])
         end
         
         population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i))
@@ -111,7 +111,7 @@ end
 # Scout bee phase
 function scout_bee(population::Population, archive::Archive)
     global trial, cvt_vorn_data_update
-    
+
     print("..")
 
     if maximum(trial) > TC_LIMIT
