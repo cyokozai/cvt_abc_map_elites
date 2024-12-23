@@ -34,24 +34,24 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Number of solution and bounds
-SOLUTION, UPP, LOW = if OBJ_F == "sphere"
+SOLUTION, LOW, UPP = if OBJ_F == "sphere"
     # Sphere
-    [zeros(D), 100.0, -100.0]
+    [zeros(D), -5.12, 5.12]
 elseif OBJ_F == "rosenbrock"
     # Rosenbrock
-    [ones(D), 30.0, -30.0]
+    [zeros(D), -5.12, 5.12]
 elseif OBJ_F == "rastrigin"
     # Rastrigin
-    [zeros(D), 5.12, -5.12]
+    [zeros(D), -5.12, 5.12]
 elseif OBJ_F == "griewank"
     # Griewank
-    [zeros(D), 600.0, -600.0]
+    [zeros(D), -512.0, 512.0]
 elseif OBJ_F == "ackley"
     # Ackley
-    [zeros(D), 32.0, -32.0]
+    [zeros(D), -32.0, 32.0]
 elseif OBJ_F == "schwefel"
     # Schwefel
-    [zeros(D), 500.0, -500.0]
+    [zeros(D), -500.0, 500.0]
 else
     logger("ERROR", "Objective parameter is invalid")
     
