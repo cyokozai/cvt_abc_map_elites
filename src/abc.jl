@@ -42,16 +42,16 @@ end
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
 function roulleteSelection(cum_probs::Vector{Float64}, I::Dict{Int64, Individual})
-    keys_array = collect(keys(I))
+    l = collect(keys(I))
     r = rand()
     
     for (i, cum_p) in enumerate(cum_probs)
         if r <= cum_p
-            return keys_array[i]
+            return l[i]
         end
     end
-
-    return keys_array[end]
+    
+    return l[end]
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -83,7 +83,7 @@ end
 function onlooker_bee(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
     v, u = zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
-    k, l = 0, 0
+    k = 0
 
     Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
     cum_p = cumsum([fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)])
