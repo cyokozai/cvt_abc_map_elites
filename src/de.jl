@@ -32,6 +32,8 @@ function DE(population::Population, archive::Archive)
     I_p, I_a = population.individuals, archive.individuals
     r1, r2, r3 = zeros(Int, 3)
     
+    print("DE")
+
     for i in 1:N
         while r1 == r2 || r1 == r3 || r2 == r3 || I_a[r1].genes == I_p[i].genes || I_a[r2].genes == I_p[i].genes || I_a[r3].genes == I_p[i].genes
             r1, r2, r3 = rand(RNG, keys(I_a), 3)
@@ -56,7 +58,13 @@ function DE(population::Population, archive::Archive)
         if fitness((noise(y), y)[fit_index]) > fitness(I_p[i].benchmark[fit_index])
             population.individuals[i] = Individual(deepcopy(u), (noise(y), y), devide_gene(u))
         end
+
+        if i % 10 == 0
+            print(".")
+        end
     end
+
+    println("done")
     
     return population, archive
 end

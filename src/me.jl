@@ -207,7 +207,7 @@ function map_elites()
     logger("INFO", "Start Iteration")
 
     begin_time = time()
-
+    
     for iter in 1:MAXTIME
         println("Generation: ", iter)
         
