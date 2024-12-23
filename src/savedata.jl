@@ -149,11 +149,11 @@ function SaveResult(archive::Archive, iter_time::Float64, run_time::Float64)
                         println(ffn, archive.individuals[archive.grid[i, j]].benchmark[1])
                         println(ff, archive.individuals[archive.grid[i, j]].benchmark[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
-                        println(fr, archive.grid_update_counts[archive.grid[i, j]])
+                        println(fr, archive.grid_update_counts[i, j])
                     else
                         println(ff, archive.individuals[archive.grid[i, j]].benchmark[2])
                         println(fb, archive.individuals[archive.grid[i, j]].behavior)
-                        println(fr, archive.grid_update_counts[archive.grid[i, j]])
+                        println(fr, archive.grid_update_counts[i, j])
                     end
                 end
             end

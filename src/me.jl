@@ -91,12 +91,12 @@ Mapping = if MAP_METHOD == "grid"
                             if fitness(ind.benchmark[fit_index]) > fitness(archive.individuals[archive.grid[i, j]].benchmark[fit_index])
                                 archive.grid[i, j] = index
                                 archive.individuals[index] = Individual(deepcopy(ind.genes), deepcopy(ind.benchmark), deepcopy(ind.behavior))
-                                archive.grid_update_counts[index] += 1
+                                archive.grid_update_counts[i, j] += 1
                             end
                         else
                             archive.grid[i, j] = index
                             archive.individuals[index] = Individual(deepcopy(ind.genes), deepcopy(ind.benchmark), deepcopy(ind.behavior))
-                            archive.grid_update_counts[index] += 1
+                            archive.grid_update_counts[i, j] += 1
                         end
                         
                         break
@@ -136,7 +136,7 @@ select_random_elite = if MAP_METHOD == "grid"
 elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
         while true
-            random_centroid_index = rand(RNG, 1:k_max)
+            random_centroid_index = rand(RNG, keys(archive.individuals))
             
             if haskey(archive.individuals, random_centroid_index)
                 return archive.individuals[random_centroid_index]
@@ -207,7 +207,7 @@ function map_elites()
     logger("INFO", "Start Iteration")
 
     begin_time = time()
-    
+
     for iter in 1:MAXTIME
         println("Generation: ", iter)
         
