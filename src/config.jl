@@ -43,8 +43,11 @@ EPS       = 1e-6
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
+# Noise probability | Default: 0.01
+p_noise   = 0.1
+
 # Noise rate | Default: 0.01
-NOIZE_R   = 0.01
+r_noise   = 0.01
 
 # Number of max time | Default: 100000
 MAXTIME   = if OBJ_F == "sphere"
@@ -84,6 +87,9 @@ MUTANT_R  = 0.90
 # Voronoi parameter
 # Voronoi data update limit | Default: 3
 cvt_vorn_data_update_limit = length(ARGS) > 4 ? parse(Int64, ARGS[5]) : 3
+
+# CVT Max iteration | Default: 100
+CVT_MAXIT = 100
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter

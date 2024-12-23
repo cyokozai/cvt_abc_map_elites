@@ -39,7 +39,7 @@ function init_CVT(population::Population)
     append!(points, behavior)
     append!(points, [[UPP, UPP], [UPP, LOW], [LOW, UPP], [LOW, LOW]])
 
-    vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
+    vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = CVT_MAXIT, rng = RNG)
     
     save("$(output)$(METHOD)/$(OBJ_F)/CVT-$(FILENAME)-$(cvt_vorn_data_update).jld2", "voronoi", vorn)
     
