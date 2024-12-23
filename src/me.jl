@@ -135,13 +135,9 @@ select_random_elite = if MAP_METHOD == "grid"
     end
 elseif MAP_METHOD == "cvt"
     (population::Population, archive::Archive) -> begin
-        while true
-            random_centroid_index = rand(RNG, keys(archive.individuals))
-            
-            if haskey(archive.individuals, random_centroid_index)
-                return archive.individuals[random_centroid_index]
-            end
-        end
+        random_centroid_index = rand(RNG, keys(archive.individuals))
+        
+        return archive.individuals[random_centroid_index]
     end
 end
 
