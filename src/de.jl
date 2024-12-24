@@ -41,22 +41,22 @@ function DE(population::Population, archive::Archive)
         
         v = clamp.(I_a[r1].genes .+ F .* (I_a[r2].genes .- I_a[r3].genes), LOW, UPP)
         u = crossover(I_p[i].genes, v)
-        y = objective_function(u)
+        u_noised = noise(u)
         
-        if fitness((noise(y), y)[fit_index]) > fitness(I_a[r1].benchmark[fit_index])
-            archive.individuals[r1] = Individual(deepcopy(u), (noise(y), y), devide_gene(u))
+        if fitness((objective_function(u_noised), objective_function(u))[fit_index]) > fitness(I_a[r1].benchmark[fit_index])
+            archive.individuals[r1] = Individual(deepcopy(u), (objective_function(u_noised), objective_function(u)), devide_gene(u))
         end
 
-        if fitness((noise(y), y)[fit_index]) > fitness(I_a[r2].benchmark[fit_index])
-            archive.individuals[r2] = Individual(deepcopy(u), (noise(y), y), devide_gene(u))
+        if fitness((objective_function(u_noised), objective_function(u))[fit_index]) > fitness(I_a[r2].benchmark[fit_index])
+            archive.individuals[r2] = Individual(deepcopy(u), (objective_function(u_noised), objective_function(u)), devide_gene(u))
         end
         
-        if fitness((noise(y), y)[fit_index]) > fitness(I_a[r3].benchmark[fit_index])
-            archive.individuals[r3] = Individual(deepcopy(u), (noise(y), y), devide_gene(u))
+        if fitness((objective_function(u_noised), objective_function(u))[fit_index]) > fitness(I_a[r3].benchmark[fit_index])
+            archive.individuals[r3] = Individual(deepcopy(u), (objective_function(u_noised), objective_function(u)), devide_gene(u))
         end
 
-        if fitness((noise(y), y)[fit_index]) > fitness(I_p[i].benchmark[fit_index])
-            population.individuals[i] = Individual(deepcopy(u), (noise(y), y), devide_gene(u))
+        if fitness((objective_function(u_noised), objective_function(u))[fit_index]) > fitness(I_p[i].benchmark[fit_index])
+            population.individuals[i] = Individual(deepcopy(u), (objective_function(u_noised), objective_function(u)), devide_gene(u))
         end
 
         if i % 10 == 0

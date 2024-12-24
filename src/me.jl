@@ -45,9 +45,9 @@ end
 # Initialize the best solution
 function init_solution()
     gene = rand(RNG, D) .* (UPP - LOW) .+ LOW
-    y    = objective_function(gene)
+    gene_noised = noise(gene)
 
-    return Individual(deepcopy(gene), (noise(y), y), devide_gene(gene))
+    return Individual(deepcopy(gene_noised), (objective_function(gene_noised), objective_function(gene)), devide_gene(gene_noised))
 end
 
 #----------------------------------------------------------------------------------------------------#
@@ -58,11 +58,11 @@ best_solution = init_solution()
 # Evaluator: Evaluation of the individual
 function evaluator(individual::Individual)
     # Objective function
-    y = objective_function(individual.genes)
-    individual.benchmark = (noise(y), y)
+    gene_noised = noise(individual.genes)
+    individual.benchmark = (objective_function(gene_noised), objective_function(gene))
     
     # Evaluate the behavior
-    individual.behavior = deepcopy(devide_gene(individual.genes))
+    individual.behavior = deepcopy(devide_gene(gene_noised))
 
     # Update the best solution
     if fitness(individual.benchmark[fit_index]) >= fitness(best_solution.benchmark[fit_index])

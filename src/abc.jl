@@ -25,8 +25,7 @@ trial = zeros(Int, FOOD_SOURCE)
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int, k::Int)
     global trial
 
-    v_f, f_f = objective_function(v), objective_function(f)
-    v_b, f_b = (noise(v_f), v_f), (noise(f_f), f_f)
+    v_b, f_b = (objective_function(noise((v)), objective_function(v))), (objective_function(noise((f)), objective_function(f)))
     
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
@@ -126,8 +125,9 @@ function scout_bee(population::Population, archive::Archive)
         for i in 1:FOOD_SOURCE
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
-                y    = objective_function(gene)
-                population.individuals[i] = Individual(deepcopy(gene), (noise(y), y), devide_gene(gene))
+                gene_noised = noise(gene)
+
+                population.individuals[i] = Individual(deepcopy(gene_noised), (objective_function(gene_noised), objective_function(gene)), devide_gene(gene_noised))
                 trial[i] = 0
                 
                 logger("INFO", "Scout bee found a new food source")
