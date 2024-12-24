@@ -14,6 +14,8 @@ if !isempty(ARGS) && ARGS[1] == "figure"
     Pkg.add("UnicodePlots")
     Pkg.add("Plots")
     Pkg.add("StatsPlots")
+    Pkg.add("CSV")
+    Pkg.add("DataFrames")
 end
 
 Pkg.precompile()
