@@ -22,7 +22,7 @@ trial = zeros(Int, FOOD_SOURCE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Greedy selection
-function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int, k::Int)
+function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int64, k::Int64)
     global trial
 
     v_b, f_b = (objective_function(noise((v)), objective_function(v))), (objective_function(noise((f)), objective_function(f)))
