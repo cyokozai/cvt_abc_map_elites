@@ -25,7 +25,7 @@ trial = zeros(Int, FOOD_SOURCE)
 function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int64, k::Int64)
     global trial
 
-    v_b, f_b = (objective_function(noise((v)), objective_function(v))), (objective_function(noise((f)), objective_function(f)))
+    v_b, f_b = (objective_function(noise(v)), objective_function(v)), (objective_function(noise(f)), objective_function(f))
     
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
