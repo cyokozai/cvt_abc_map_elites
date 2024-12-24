@@ -83,10 +83,13 @@ function make_table(input_file::String, output_file::String, method::String, fun
     # 完全なLaTeXコードを組み立てる
     latex_code = header * rows * footer
 
-    # テキストファイルに書き込む
+    # Create output directory if it doesn't exist
+    output_dir = joinpath(dirname(output_file))
     if !isdir(output_dir)
         mkpath(output_dir)
     end
+
+    # テキストファイルに書き込む
     open(output_file, "w") do file
         write(file, latex_code)
     end
