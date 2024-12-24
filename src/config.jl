@@ -7,6 +7,17 @@ using StableRNGs
 using Dates
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Method
+# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
+OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "sphere"
+
+# MAP Method: grid, cvt
+MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
+
+# Method: default, abc, de
+METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Parameter
 # Random seed
 SEED      = Int(Dates.now().instant.periods.value)
@@ -23,23 +34,43 @@ N         = 64
 # Dumber of behavior dimensions | No need to change because it isn't available.
 BD        = 2
 
-# Number of max time
-MAXTIME   = length(ARGS) > 0 && ARGS[1] == "test" ? 100 : 100000
-
-# Number of mutation rate
-MUTANT_R  = 0.10
-
 # Convergence flag | 'true' is available when you want to check the convergence.
 CONV_FLAG = false
 
 # Epsiron | Default: 1e-6
-EPS = 1e-6
+EPS       = 1e-6
 
 # Fitness noise | 'true' is available when you want to add the noise to the fitness.
 FIT_NOISE = true
 
-# Noise rate (ε = rand(RNG, -NOIZE_R:NOIZE_R)) | 0.0 < NOIZE_R < 1.0 | Default: 0.20
-NOIZE_R   = 0.05
+# Noise probability | Default: 0.01
+p_noise   = 0.10
+
+# Noise rate | Default: 0.01
+r_noise   = 0.01
+
+# Number of max time | Default: 100000
+MAXTIME   = if OBJ_F == "sphere"
+    # Sphere
+    30000
+elseif OBJ_F == "rosenbrock"
+    # Rosenbrock
+    60000
+elseif OBJ_F == "rastrigin"
+    # Rastrigin
+    30000
+elseif OBJ_F == "griewank"
+    # Griewank
+    30000
+elseif OBJ_F == "ackley"
+    # Ackley
+    30000
+elseif OBJ_F == "schwefel"
+    # Schwefel
+    30000
+else
+    100000
+end
 
 #----------------------------------------------------------------------------------------------------#
 # Map parameter
@@ -49,25 +80,20 @@ GRID_SIZE = 158
 # MAP_METHOD == cvt: Number of max k.
 k_max     = 25000
 
-#----------------------------------------------------------------------------------------------------#
-# Method
-# Objective function: sphere, rosenbrock, rastrigin, griewank, ackley, schwefel, michalewicz
-OBJ_F      = length(ARGS) > 3 ? ARGS[4] : "griewank"
-
-# MAP Method: grid, cvt
-MAP_METHOD = length(ARGS) > 2 ? ARGS[3] : "cvt"
-
-# Method: default, abc, de
-METHOD     = length(ARGS) > 1 ? ARGS[2] : "abc"
+# Number of mutation rate
+MUTANT_R  = 0.90
 
 #----------------------------------------------------------------------------------------------------#
 # Voronoi parameter
-# Voronoi data update limit
-cvt_vorn_data_update_limit = 3
+# Voronoi data update limit | Default: 3
+cvt_vorn_data_update_limit = length(ARGS) > 4 ? parse(Int64, ARGS[5]) : 3
+
+# CVT Max iteration | Default: 100
+CVT_MAXIT = 100
 
 #----------------------------------------------------------------------------------------------------#
 # DE parameter
-# The crossover probability (default: 0.8).
+# The crossover probability | default: 0.9
 # The differentiation (mutation) scaling factor (default: 0.9).
 CR, F = if OBJ_F == "sphere"
     [0.20, 0.40]
@@ -81,8 +107,6 @@ elseif OBJ_F == "ackley"
     [0.20, 0.50]
 elseif OBJ_F == "schwefel"
     [0.20, 0.50]
-elseif OBJ_F == "michalewicz"
-    [0.20, 0.50]
 else
     [0.80, 0.90]
 end
@@ -93,22 +117,23 @@ end
 FOOD_SOURCE = N
 
 # Limit number: The number of limit trials that the scout bee can't find the better solution.
-TC_LIMIT = floor(Int, k_max / (10 * N)) * D
+TC_LIMIT = D * floor(Int, k_max / (10 * FOOD_SOURCE))
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Result file
-mkpath("./result/$METHOD/$OBJ_F/")
+output = "./result/"
+mkpath("$(output)$(METHOD)/$(OBJ_F)/")
 mkpath("./log/")
 
 DATE       = Dates.format(now(), "yyyy-mm-dd-HH-MM")
 LOGDATE    = Dates.format(now(), "yyyy-mm-dd")
 
-FILENAME   = length(ARGS) > 0 && ARGS[1] == "test" ? "$DATE-test" : "$DATE-$METHOD-$MAP_METHOD-$OBJ_F-$D"
-F_RESULT   = "result-$FILENAME.dat"
-F_FITNESS  = "fitness-$FILENAME.dat"
-F_FIT_N    = "fitness-noise-$FILENAME.dat"
-F_BEHAVIOR = "behavior-$FILENAME.dat"
-F_LOGFILE  = "log-$LOGDATE-$METHOD-$OBJ_F.log"
+FILENAME   = length(ARGS) > 0 && ARGS[1] == "test" ? "$(DATE)-test" : "$(METHOD)-$(MAP_METHOD)-$(OBJ_F)-$(D)-$(DATE)"
+F_RESULT   = "result-$(FILENAME).dat"
+F_FITNESS  = "fitness-$(FILENAME).dat"
+F_FIT_N    = "fitness-noise-$(FILENAME).dat"
+F_BEHAVIOR = "behavior-$(FILENAME).dat"
+F_LOGFILE  = "log-$(METHOD)-$(OBJ_F)-$(LOGDATE).log"
 
 # EXIT CODE: 0: Success, 1: Failure
 exit_code = 0

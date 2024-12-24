@@ -22,12 +22,11 @@ trial = zeros(Int, FOOD_SOURCE)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Greedy selection
-function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int)
+function greedySelection(f::Vector{Float64}, v::Vector{Float64}, i::Int64, k::Int64)
     global trial
 
-    v_f, f_f = objective_function(v), objective_function(f)
-    v_b, f_b = (v_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), v_f), (f_f + (rand(RNG) * 2 * NOIZE_R - NOIZE_R), f_f)
-
+    v_b, f_b = (objective_function(noise(v)), objective_function(v)), (objective_function(noise(f)), objective_function(f))
+    
     if fitness(v_b[fit_index]) > fitness(f_b[fit_index])
         trial[i] = 0
         
@@ -41,100 +40,110 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
-function roulleteSelection(q::Float64)
-    index = 1
-
-    for i in 1:FOOD_SOURCE
-        if rand(RNG) <= q
-            index = i
-
-            break
+function roulleteSelection(cum_probs::Vector{Float64}, I::Vector{Individual})
+    r = rand()
+    
+    for (i, cum_p) in enumerate(cum_probs)
+        if r <= cum_p
+            return i
         end
     end
 
-    return index
+    return FOOD_SOURCE
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Employed bee phase
-function employed_bee(population::Population)
-    I = population.individuals
-    k, v = 0, zeros(Float64, FOOD_SOURCE, D)
+function employed_bee(population::Population, archive::Archive)
+    I_p, I_a = population.individuals, archive.individuals
+    v = zeros(Float64, FOOD_SOURCE, D)
+    k = 0
+    
+    print(".")
 
     for i in 1:FOOD_SOURCE
         for j in 1:D
             while true
-                k = rand(RNG, 1:FOOD_SOURCE)
-
-                if k != i break end
+                k = rand(RNG, keys(I_a))
+                
+                if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
-            v[i, j] = I[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I[i].genes[j] - I[k].genes[j])
+            v[i, j] = I_p[i].genes[j] + (rand(RNG) * 2.0 - 1.0) * (I_p[i].genes[j] - I_a[k].genes[j])
         end
-
-        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
+        
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i, k))
     end
     
-    return population
+    print(".")
+
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Onlooker bee phase
-function onlooker_bee(population::Population)
-    global trial
+function onlooker_bee(population::Population, archive::Archive)
+    I_p, I_a = population.individuals, archive.individuals
+    v, u = zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
+    k = 0
 
-    I = population.individuals
-    new_gene_archive = zeros(Float64, FOOD_SOURCE, D)
-    k, v = 0, zeros(Float64, FOOD_SOURCE, D)
-    p, cum_p = [fitness(I[i].benchmark[fit_index]) / sum(fitness(I[i].benchmark[fit_index]) for i = 1 : FOOD_SOURCE) for i = 1 : FOOD_SOURCE], 0.0
+    Σ_fit = sum(fitness(I_p[i].benchmark[fit_index]) for i in 1:FOOD_SOURCE)
+    cum_p = cumsum([fitness(I_p[i].benchmark[fit_index]) / Σ_fit for i in 1:FOOD_SOURCE])
+    
+    print(".")
     
     for i in 1:FOOD_SOURCE
-        cum_p += p[i]
-        new_gene_archive[i, :] = deepcopy(I[roulleteSelection(cum_p)].genes)
+        u[i, :] = deepcopy(I_p[roulleteSelection(cum_p, I_p)].genes)
         
-        for j = 1 : D
+        for j in 1:D
             while true
-                k = rand(RNG, 1:FOOD_SOURCE)
+                k = rand(RNG, keys(I_a))
                 
-                if k != i break end
+                if I_p[i].genes[j] != I_a[k].genes[j] break end
             end
             
-            v[i, j] = new_gene_archive[i, j] + (rand(RNG) * 2.0 - 1.0) * (new_gene_archive[i, j] - new_gene_archive[k, j])
+            v[i, j] = u[i, j] + (rand(RNG) * 2.0 - 1.0) * (u[i, j] - I_a[k].genes[j])
         end
         
-        population.individuals[i].genes = deepcopy(greedySelection(I[i].genes, v[i, :], i))
+        population.individuals[i].genes = deepcopy(greedySelection(I_p[i].genes, v[i, :], i, k))
     end
     
-    return population
+    print(".")
+
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Scout bee phase
 function scout_bee(population::Population, archive::Archive)
-    global trial
-    
+    global trial, cvt_vorn_data_update
+
+    print(".")
+
     if maximum(trial) > TC_LIMIT
-        for (i, I) in enumerate(population.individuals)
+        for i in 1:FOOD_SOURCE
             if trial[i] > TC_LIMIT
                 gene = rand(Float64, D) .* (UPP - LOW) .+ LOW
-                population.individuals[i] = Individual(deepcopy(gene), fitness(gene), devide_gene(gene))
+                gene_noised = noise(gene)
+
+                population.individuals[i] = Individual(deepcopy(gene_noised), (objective_function(gene_noised), objective_function(gene)), devide_gene(gene_noised))
                 trial[i] = 0
                 
-                if MAP_METHOD == "cvt"
-                    if cvt_vorn_data_update < cvt_vorn_data_update_limit
-                        init_CVT(population)
-                        
-                        new_archive = Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
-                        archive = deepcopy(cvt_mapping(population, new_archive))
-                        
-                        logger("INFO", "Recreate Voronoi diagram")
-                    end
-                end
-                
                 logger("INFO", "Scout bee found a new food source")
+                
+                if cvt_vorn_data_update < cvt_vorn_data_update_limit
+                    init_CVT(population)
+                    
+                    new_archive = Archive(zeros(Int64, 0, 0), zeros(Int64, k_max), Dict{Int64, Individual}())
+                    archive = deepcopy(cvt_mapping(population, new_archive))
+                    
+                    logger("INFO", "Recreate Voronoi diagram")
+                end
             end
         end
     end
+
+    print(".")
     
     return population, archive
 end
@@ -143,15 +152,21 @@ end
 # ABC algorithm
 function ABC(population::Population, archive::Archive)
     # Employee bee phase
-    population = employed_bee(population)
-    
+    print("Employed bee phase")
+    population, archive = employed_bee(population, archive)
+    println(". Done")
+
     # Onlooker bee phase
-    population = onlooker_bee(population)
+    print("Onlooker bee phase")
+    population, archive = onlooker_bee(population, archive)
+    println(". Done")
 
     # Scout bee phase
+    print("Scout bee phase")
     population, archive = scout_bee(population, archive)
+    println(". Done")
     
-    return population
+    return population, archive
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

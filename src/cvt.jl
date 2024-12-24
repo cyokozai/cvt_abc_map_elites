@@ -34,13 +34,14 @@ cvt_vorn_data_update = 0
 function init_CVT(population::Population)
     global vorn, cvt_vorn_data_update
     
-    points = [rand(RNG, BD) .* (UPP - LOW) .+ LOW for _ in 1:k_max-N]
+    points = [rand(RNG, BD) .* (UPP - LOW) .+ LOW for _ in 1:k_max - (N + 4)]
     behavior = [population.individuals[i].behavior for i in 1:N]
     append!(points, behavior)
+    append!(points, [[UPP, UPP], [UPP, LOW], [LOW, UPP], [LOW, LOW]])
+
+    vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = CVT_MAXIT, rng = RNG)
     
-    vorn = centroidal_smooth(voronoi(triangulate(points; rng = RNG), clip = false); maxiters = 1000, rng = RNG)
-    
-    save("result/$METHOD/$OBJ_F/CVT-$FILENAME-$cvt_vorn_data_update.jld2", "voronoi", vorn)
+    save("$(output)$(METHOD)/$(OBJ_F)/CVT-$(FILENAME)-$(cvt_vorn_data_update).jld2", "voronoi", vorn)
     
     cvt_vorn_data_update += 1
     
@@ -57,7 +58,7 @@ function cvt_mapping(population::Population, archive::Archive)
     for ind in population.individuals
         distances = [norm([ind.behavior[1] - centroid[1], ind.behavior[2] - centroid[2]], 2) for centroid in values(DelaunayTriangulation.get_generators(vorn))]
         closest_centroid_index = argmin(distances)
-
+        
         if haskey(archive.individuals, closest_centroid_index)
             if fitness(ind.benchmark[fit_index]) > (archive.individuals[closest_centroid_index].benchmark[fit_index])
                 archive.individuals[closest_centroid_index] = Individual(deepcopy(ind.genes), ind.benchmark, deepcopy(ind.behavior))
