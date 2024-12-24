@@ -224,9 +224,9 @@ function ReadData(dir::String)
             end
 
             if m <= 3
-                Data["$(method)"] = data
-            else
                 Data["$(method)-noised"] = data
+            else
+                Data["$(method)"] = data
             end
         end
     end
@@ -268,10 +268,15 @@ function PlotData(Data, fig, axis)
         push!(keys, key)
     end
 
+    legend_keys = ["default", "default-noised", "de", "de-noised", "abc", "abc-noised"]
+    legend_labels = ["ME", "ME (Noised)", "DME", "DME (Noised)", "ABCME", "ABCME (Noised)"]
+    legend_items = [linedata[key] for key in legend_keys if haskey(linedata, key)]
+    legend_labels = [label for (key, label) in zip(legend_keys, legend_labels) if haskey(linedata, key)]
+
     axislegend(
         axis[1],
-        [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],
-        ["ME", "ME (Noised)", "DME", "DME (Noised)", "ABCME", "ABCME (Noised)"],
+        legend_items,
+        legend_labels,
         position=:cb, fontsize=16, orientation = :horizontal
     )
     
