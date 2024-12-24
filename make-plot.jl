@@ -271,7 +271,7 @@ function PlotData(Data, fig, axis)
     axislegend(
         axis[1],
         [linedata["default"], linedata["default-noised"], linedata["de"], linedata["de-noised"], linedata["abc"], linedata["abc-noised"]],
-        ["Default", "Default (Noised)", "DE", "DE (Noised)", "ABC", "ABC (Noised)"],
+        ["ME", "ME (Noised)", "DME", "DME (Noised)", "ABCME", "ABCME (Noised)"],
         position=:cb, fontsize=16, orientation = :horizontal
     )
     
