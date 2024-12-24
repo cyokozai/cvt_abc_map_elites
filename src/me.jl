@@ -59,7 +59,7 @@ best_solution = init_solution()
 function evaluator(individual::Individual)
     # Objective function
     gene_noised = noise(individual.genes)
-    individual.benchmark = (objective_function(gene_noised), objective_function(gene))
+    individual.benchmark = (objective_function(gene_noised), objective_function(individual.genes))
     
     # Evaluate the behavior
     individual.behavior = deepcopy(devide_gene(gene_noised))
