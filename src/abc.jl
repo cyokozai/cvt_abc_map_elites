@@ -40,17 +40,16 @@ end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Roulette selection
-function roulleteSelection(cum_probs::Vector{Float64}, I::Dict{Int64, Individual})
-    l = collect(keys(I))
+function roulleteSelection(cum_probs::Vector{Float64}, I::Vector{Individual})
     r = rand()
     
     for (i, cum_p) in enumerate(cum_probs)
         if r <= cum_p
-            return l[i]
+            return i
         end
     end
 
-    return l[end]
+    return FOOD_SOURCE
 end
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -88,13 +87,13 @@ function onlooker_bee(population::Population, archive::Archive)
     v, u = zeros(Float64, FOOD_SOURCE, D), zeros(Float64, FOOD_SOURCE, D)
     k = 0
 
-    Σ_fit = sum(fitness(I_a[i].benchmark[fit_index]) for i in keys(I_a))
-    cum_p = cumsum([fitness(I_a[i].benchmark[fit_index]) / Σ_fit for i in keys(I_a)])
+    Σ_fit = sum(fitness(I_p[i].benchmark[fit_index]) for i in 1:FOOD_SOURCE)
+    cum_p = cumsum([fitness(I_p[i].benchmark[fit_index]) / Σ_fit for i in 1:FOOD_SOURCE])
     
     print(".")
     
     for i in 1:FOOD_SOURCE
-        u[i, :] = deepcopy(I_a[roulleteSelection(cum_p, I_a)].genes)
+        u[i, :] = deepcopy(I_p[roulleteSelection(cum_p, I_p)].genes)
         
         for j in 1:D
             while true
