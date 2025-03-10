@@ -2,6 +2,18 @@
 
 ## 品質多様性アルゴリズム ABC MAP-Elitesについて
 
+実世界の問題では優良解が実装不可能な場合や，計測値にノイズが存在する場合がある．  
+それゆえ，最適解と同時に多様な準最適解を探索する，品質多様性アルゴリズムが提案されている．  
+既存手法では，品質多様性アルゴリズムのひとつである MAP-Elites[^1] の探索フェーズに差分進化 (Differential Evolution | DE)[^2] を用いた Differential MAP-Elites (DME)[^3] が提案された．  
+探索性能が向上した一方，差分進化のパラメータ依存性や局所最適解からの脱出能力の低さが指摘されている．  
+そこで，パラメータ調整が容易かつ局所最適解からの脱出能力が高い，Artificial Bee Colony Argorithm (ABC)[^4] に着目する．  
+本研究では，ノイズ耐性を持つ品質多様性探索を行うため，ABC と MAP-Elites を組み合わせた ABC MAP-Elites (ABCME) を提案し，その有効性を検証する．
+
+[^1]: Illuminating search spaces by mapping elites <http://arxiv.org/abs/1504.04909>
+[^2]: Differential Evolution - A Simple and Efficient Heuristic for Global Optimization over Continuous Spaces <https://doi.org/10.1023/A:1008202821328>
+[^3]: Self-referential quality diversity through differential MAP-Elites <https://doi.org/10.1145/3449639.3459383>
+[^4]: An Idea Based on Honey Bee Swarm for Numerical Optimization, Technical Report - TR06 <https://abc.erciyes.edu.tr/pub/tr06_2005.pdf>
+
 ## How to use this program
 
 ### Install
